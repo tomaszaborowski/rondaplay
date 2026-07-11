@@ -1,0 +1,64 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main        # auto-deploy on every push to main
+  workflow_dispatch: # also allow manual trigger from GitHub UI
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # 1. Checkout source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Setup Node.js (match your local version)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Build Next.js app
+      - name: Build production app
+        run: npm run build
+
+      # 5. Deploy to Hostinger via SSH
+      #    rsync sends only changed files — fast and safe
+      - name: Deploy via SSH
+        uses: easingthemes/ssh-deploy@v5
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.HOSTINGER_SSH_KEY }}
+          ARGS: >-
+            -rlgoDzvc
+            --delete
+            --exclude='.git/'
+            --exclude='node_modules/'
+            --exclude='.env*'
+          SOURCE: './'
+          REMOTE_HOST: ${{ secrets.HOSTINGER_HOST }}
+          REMOTE_USER: ${{ secrets.HOSTINGER_USER }}
+          TARGET: ${{ secrets.HOSTINGER_PATH }}
+
+      # 6. Restart the Node.js application on Hostinger
+      - name: Restart Node.js app
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          script: |
+            cd ${{ secrets.HOSTINGER_PATH }}
+            npm ci --omit=dev
+            # Restart using PM2 (Hostinger's default Node.js manager)
+            pm2 restart rondaplay || pm2 start npm --name rondaplay -- start
+            pm2 save

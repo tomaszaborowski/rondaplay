@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-ronda-teal: #34c2b2;
+  --color-ronda-tealDark: #289689;
+  --color-ronda-purple: #431c5d;
+  --color-ronda-purpleDark: #2a113a;
+  --color-ronda-pink: #ff75a0;
+  --color-ronda-pinkDark: #d95a82;
+  --color-ronda-light: #fdf4ff;
+  --color-ronda-slate: #2B2D42;
+
+  --font-fredoka: "Fredoka", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
+  --font-nunito: "Nunito", sans-serif;
+
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-bounce-slow: bounce 3s infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+}
+
+:root {
+  --background: #F9FAFB;
+  --foreground: #2B2D42;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-poppins), sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, .font-brand {
+  font-family: var(--font-fredoka), sans-serif;
+}
+
+.font-body {
+  font-family: var(--font-nunito), sans-serif;
+}
+
+/* Tactile Game Buttons */
+.btn-game-primary {
+  background-color: #34c2b2;
+  color: white;
+  box-shadow: 0 6px 0 #289689;
+  transition: all 0.1s ease;
+  cursor: pointer;
+}
+.btn-game-primary:active {
+  box-shadow: 0 0 0 #289689;
+  transform: translateY(6px);
+}
+
+.btn-game-secondary {
+  background-color: #ff75a0;
+  color: white;
+  box-shadow: 0 6px 0 #d95a82;
+  transition: all 0.1s ease;
+  cursor: pointer;
+}
+.btn-game-secondary:active {
+  box-shadow: 0 0 0 #d95a82;
+  transform: translateY(6px);
+}
+
+/* Hero Gradient matching the Logo */
+.hero-gradient {
+  background: linear-gradient(135deg, #2a0a4a 0%, #431c5d 40%, #209c95 80%, #a82d8c 100%);
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+}
+
+.blob-shape {
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+}
+
+/* Accessibility: Support Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-delay: 0s !important;
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Animations & Transitions */
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
