@@ -1,4 +1,4 @@
-name: Deploy to Hostinger
+name: Deploy to Hostinger VPS
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup Node.js (match your local version)
+      # 2. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -28,12 +28,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 4. Build Next.js app
+      # 4. Build Next.js app (creates production build)
       - name: Build production app
         run: npm run build
 
-      # 5. Deploy to Hostinger via SSH
-      #    rsync sends only changed files — fast and safe
+      # 5. Deploy to VPS via SSH (rsync)
       - name: Deploy via SSH
         uses: easingthemes/ssh-deploy@v5
         with:
@@ -49,8 +48,8 @@ jobs:
           REMOTE_USER: ${{ secrets.HOSTINGER_USER }}
           TARGET: ${{ secrets.HOSTINGER_PATH }}
 
-      # 6. Restart the Node.js application on Hostinger
-      - name: Restart Node.js app
+      # 6. Install production dependencies and restart the Systemd service
+      - name: Restart Systemd service
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.HOSTINGER_HOST }}
@@ -59,6 +58,6 @@ jobs:
           script: |
             cd ${{ secrets.HOSTINGER_PATH }}
             npm ci --omit=dev
-            # Restart using PM2 (Hostinger's default Node.js manager)
-            pm2 restart rondaplay || pm2 start npm --name rondaplay -- start
-            pm2 save
+            # Restart systemd service
+            systemctl restart rondaplay
+            systemctl status rondaplay --no-pager
