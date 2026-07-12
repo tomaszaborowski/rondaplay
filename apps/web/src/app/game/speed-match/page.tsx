@@ -733,7 +733,7 @@ export default function SpeedMatchGame() {
             <div className="flex flex-col items-center w-full">
               <div className="text-center mb-1 text-teal-200 font-bold tracking-wider text-xs uppercase">Common Card</div>
               <div className="w-48 h-48 sm:w-56 sm:h-56 bg-white rounded-full relative shadow-2xl border-[6px] border-[#34C2B2] overflow-hidden flex items-center justify-center animate-pop">
-                <div className="absolute inset-[5%] rounded-full relative">
+                <div className="absolute inset-[5%] rounded-full">
                   {commonCard.map((symbolId, index) => {
                     const slot = commonCardSlots[index] || layoutSlots[index];
                     return (
@@ -775,7 +775,7 @@ export default function SpeedMatchGame() {
                   isShaking ? "animate-shake border-red-500" : ""
                 }`}
               >
-                <div className="absolute inset-[5%] rounded-full relative">
+                <div className="absolute inset-[5%] rounded-full">
                   {playerCard.map((symbolId, index) => {
                     const slot = playerCardSlots[index] || layoutSlots[index];
                     return (
