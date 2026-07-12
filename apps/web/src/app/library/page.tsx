@@ -36,12 +36,12 @@ const GAMES: GameData[] = [
     isPremium: true,
   },
   {
-    titleKey: "game.reaction.title",
-    descKey: "game.reaction.desc",
-    playersKey: "game.reaction.players",
+    titleKey: "game.speed-match.title",
+    descKey: "game.speed-match.desc",
+    playersKey: "game.speed-match.players",
     type: "speed",
     emoji: "⚡",
-    slug: "reaction-rush",
+    slug: "speed-match",
     isPremium: false,
   },
   {

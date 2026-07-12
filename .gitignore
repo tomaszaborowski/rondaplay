@@ -14,8 +14,8 @@
 /coverage
 
 # next.js
-/.next/
-/out/
+**/.next/
+**/out/
 
 # production
 /build
@@ -50,6 +50,7 @@ next-env.d.ts
 .gemini/
 .impeccable/
 .npm-cache/
+**/.turbo/
 
 # backups
 *.bak

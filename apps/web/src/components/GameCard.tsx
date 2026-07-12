@@ -56,8 +56,8 @@ export const GameCard: React.FC<GameCardProps> = ({
   const typeBadge = t(`badge.${type}`);
   const btnText   = isPremium ? t('badge.locked') : t('badge.play');
 
-  // If the game is "imposter", it links to /game/imposter, otherwise dummy link for now.
-  const gameLink = slug === 'imposter' ? `/game/${slug}` : '#';
+  // If the game is "imposter" or "speed-match", it links to their routes, otherwise dummy link.
+  const gameLink = (slug === 'imposter' || slug === 'speed-match') ? `/game/${slug}` : '#';
 
   return (
     <div className="bg-ronda-light border border-purple-100 rounded-[2rem] overflow-hidden shadow-lg group cursor-pointer flex flex-col h-full hover:-translate-y-2 transition-transform duration-300">

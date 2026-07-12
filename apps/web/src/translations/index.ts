@@ -78,6 +78,13 @@ export const translations: Translations = {
   },
   'game.reaction.players': { es: '2-6 JUGADORES', en: '2-6 PLAYERS' },
 
+  'game.speed-match.title': { es: 'Encuentro Veloz (Dobble P2P)', en: 'Speed Match (Dobble P2P)' },
+  'game.speed-match.desc':  {
+    es: 'El clásico juego de emparejar. ¡Conéctate por WebRTC y sé el primero en encontrar el símbolo coincidente entre tu carta y la del centro!',
+    en: 'The classic matching game. Connect via serverless WebRTC and be the first to find the matching symbol between your card and the center card!'
+  },
+  'game.speed-match.players': { es: '1-2 JUGADORES', en: '1-2 PLAYERS' },
+
   // ── Generational Section ─────────────────────────────────
   'gen.h2':   { es: 'Uniendo la Brecha Generacional', en: 'Bridging the Generational Gap' },
   'gen.desc': {
