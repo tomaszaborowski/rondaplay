@@ -52,10 +52,10 @@ export const Navbar: React.FC = () => {
       <nav
         className={`fixed w-full z-50 transition-all duration-300 ${
           isScrolled || isOpen
-            ? 'bg-white/90 backdrop-blur-md shadow-md py-2 border-b border-white/40'
+            ? 'bg-white/60 backdrop-blur-md shadow-md py-2 border-b border-white/20'
             : isHome
             ? 'py-4 bg-transparent'
-            : 'py-4 bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-100'
+            : 'py-4 bg-white/60 backdrop-blur-md shadow-sm border-b border-slate-100'
         }`}
         style={{ top: '36px' }} /* offset below TopBanner */
       >

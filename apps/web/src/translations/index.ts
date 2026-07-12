@@ -16,6 +16,7 @@ export const translations: Translations = {
   'nav.audience':  { es: '¿Quién Juega?',      en: 'Who Plays?'    },
   'nav.library':   { es: 'Biblioteca',         en: 'Game Library'  },
   'nav.playNow':   { es: 'Jugar Ahora',        en: 'Play Now'      },
+  'nav.contact':   { es: 'Contacto',           en: 'Contact Us'    },
 
   // ── Hero ─────────────────────────────────────────────────
   'hero.badge':     { es: '📱 La Mesa Digital',              en: '📱 The Digital Tabletop'        },

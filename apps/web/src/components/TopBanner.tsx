@@ -25,7 +25,7 @@ export function TopBanner() {
   if (pathname?.startsWith('/admin')) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[60] h-9 bg-ronda-purple/85 backdrop-blur-md border-b border-white/10 flex items-center px-4 md:px-8">
+    <div className="fixed top-0 left-0 right-0 z-[60] h-9 bg-ronda-purple/60 backdrop-blur-md border-b border-white/10 flex items-center px-4 md:px-8">
       {/* Left: Instagram link */}
       <a
         href={instagramUrl || 'https://instagram.com/rondaplay'}
