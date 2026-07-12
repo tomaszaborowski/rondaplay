@@ -1,0 +1,18 @@
+0 verbose cli /opt/homebrew/Cellar/node/25.8.0/bin/node /opt/homebrew/bin/npm
+1 info using npm@11.11.0
+2 info using node@v25.8.0
+3 silly config load:file:/opt/homebrew/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/tomaszabo/Library/CloudStorage/OneDrive-Personal/RondaPlay/.npm-cache/_npx/ba4f1959e38407b5/node_modules/re2/.npmrc
+5 silly config load:file:/Users/tomaszabo/.npmrc
+6 silly config load:file:/opt/homebrew/etc/npmrc
+7 verbose title npm run rebuild
+8 verbose argv "run" "rebuild"
+9 verbose logfile logs-max:10 dir:/Users/tomaszabo/Library/CloudStorage/OneDrive-Personal/RondaPlay/.npm-cache/_logs/2026-07-12T14_14_40_926Z-
+10 verbose logfile /Users/tomaszabo/Library/CloudStorage/OneDrive-Personal/RondaPlay/.npm-cache/_logs/2026-07-12T14_14_40_926Z-debug-0.log
+11 silly logfile done cleaning log files
+12 verbose cwd /Users/tomaszabo/Library/CloudStorage/OneDrive-Personal/RondaPlay/.npm-cache/_npx/ba4f1959e38407b5/node_modules/re2
+13 verbose os Darwin 25.5.0
+14 verbose node v25.8.0
+15 verbose npm  v11.11.0
+16 verbose exit 0
+17 info ok

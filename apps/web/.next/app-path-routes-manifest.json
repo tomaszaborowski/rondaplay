@@ -1,0 +1,20 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/admin/games/page": "/admin/games",
+  "/admin/login/page": "/admin/login",
+  "/admin/moderation/page": "/admin/moderation",
+  "/admin/monetization/page": "/admin/monetization",
+  "/admin/page": "/admin",
+  "/admin/pages/[id]/page": "/admin/pages/[id]",
+  "/admin/pages/page": "/admin/pages",
+  "/admin/settings/page": "/admin/settings",
+  "/admin/translations/page": "/admin/translations",
+  "/admin/users/page": "/admin/users",
+  "/contact/page": "/contact",
+  "/favicon.ico/route": "/favicon.ico",
+  "/game/imposter/page": "/game/imposter",
+  "/library/page": "/library",
+  "/page": "/",
+  "/pages/[slug]/page": "/pages/[slug]"
+}

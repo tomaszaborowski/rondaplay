@@ -30,7 +30,7 @@ jobs:
 
       # 4. Build Next.js app (creates production build)
       - name: Build production app
-        run: npm run build
+        run: npx turbo build --filter=@rondaplay/web
 
       # 5. Deploy to VPS via SSH (rsync)
       - name: Deploy via SSH
