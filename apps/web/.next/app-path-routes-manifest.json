@@ -14,6 +14,7 @@
   "/contact/page": "/contact",
   "/favicon.ico/route": "/favicon.ico",
   "/game/imposter/page": "/game/imposter",
+  "/icon.png/route": "/icon.png",
   "/library/page": "/library",
   "/page": "/",
   "/pages/[slug]/page": "/pages/[slug]"

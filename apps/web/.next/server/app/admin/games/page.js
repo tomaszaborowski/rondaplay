@@ -1,8 +1,8 @@
 var R=require("../../../chunks/ssr/[turbopack]_runtime.js")("server/app/admin/games/page.js")
-R.c("server/chunks/ssr/[root-of-the-server]__0f9gf-h._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__005wdf9._.js")
 R.c("server/chunks/ssr/node_modules_09r9c10._.js")
-R.c("server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_1aiv6vx.js")
-R.c("server/chunks/ssr/[root-of-the-server]__1d8g048._.js")
+R.c("server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_0p2nm33.js")
+R.c("server/chunks/ssr/[root-of-the-server]__1p1zfk4._.js")
 R.c("server/chunks/ssr/[root-of-the-server]__0g84hko._.js")
 R.c("server/chunks/ssr/apps_web_src_1zz1kcn._.js")
 R.c("server/chunks/ssr/node_modules_next_dist_client_components_0wpq8j3._.js")
@@ -11,5 +11,5 @@ R.c("server/chunks/ssr/node_modules_next_dist_client_components_builtin_unauthor
 R.c("server/chunks/ssr/node_modules_next_dist_client_components_builtin_global-error_0-o-goa.js")
 R.c("server/chunks/ssr/apps_web_src_app_admin_layout_tsx_1n6poac._.js")
 R.c("server/chunks/ssr/apps_web__next-internal_server_app_admin_games_page_actions_0m2uv6z.js")
-R.m(33726)
-module.exports=R.m(33726).exports
+R.m(99755)
+module.exports=R.m(99755).exports

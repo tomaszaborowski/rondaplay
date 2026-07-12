@@ -131,6 +131,12 @@
       "namedRegex": "^/game/imposter(?:/)?$"
     },
     {
+      "page": "/icon.png",
+      "regex": "^/icon\\.png(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/icon\\.png(?:/)?$"
+    },
+    {
       "page": "/library",
       "regex": "^/library(?:/)?$",
       "routeKeys": {},

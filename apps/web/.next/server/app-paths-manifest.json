@@ -14,6 +14,7 @@
   "/contact/page": "app/contact/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/game/imposter/page": "app/game/imposter/page.js",
+  "/icon.png/route": "app/icon.png/route.js",
   "/library/page": "app/library/page.js",
   "/page": "app/page.js",
   "/pages/[slug]/page": "app/pages/[slug]/page.js"
