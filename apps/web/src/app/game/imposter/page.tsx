@@ -21,6 +21,7 @@ export default function ImposterGame() {
     selectedVotes,
     winner,
     categories,
+    showHint,
     gameMode,
     lobbyId,
     isHost,
@@ -32,6 +33,7 @@ export default function ImposterGame() {
     removePlayer,
     renamePlayer,
     setImposterCount,
+    setShowHint,
     toggleCategory,
     setGameMode,
     setLobbyId,
@@ -98,7 +100,8 @@ export default function ImposterGame() {
           currentPlayerIndex: data.currentPlayerIndex || 0,
           selectedVotes: data.selectedVotes || {},
           winner: data.winner || null,
-          categories: data.categories || ['Objetos'],
+          categories: data.categories || ['Animales Salvajes'],
+          showHint: data.showHint !== undefined ? data.showHint : true,
           scoreboard: data.scoreboard || {},
         });
 
@@ -240,7 +243,8 @@ export default function ImposterGame() {
       currentPlayerIndex: 0,
       selectedVotes: {},
       winner: null,
-      categories: ['Objetos'],
+      categories: ['Animales Salvajes'],
+      showHint: true,
       scoreboard: { [onlinePlayerName.trim()]: 0 },
       host: onlinePlayerName.trim(),
       timerState: { timeLeft: 60, timerMax: 60, isTimerRunning: false }
@@ -820,6 +824,39 @@ export default function ImposterGame() {
                     <Edit2 className="w-5 h-5 text-gray-300" />
                   )}
                 </div>
+
+                {/* CARD 4: HINT OPTION */}
+                <div 
+                  onClick={() => {
+                    if (gameMode === 'local' || isHost) {
+                      const nextHint = !showHint;
+                      setShowHint(nextHint);
+                      if (gameMode === 'online' && lobbyId && isHost) {
+                        const docRef = doc(db, 'imposter_lobbies', lobbyId);
+                        updateDoc(docRef, { showHint: nextHint }).catch(console.error);
+                      }
+                    } else {
+                      alert("Solo el Anfitrión puede cambiar la opción de pistas.");
+                    }
+                  }}
+                  className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 hover:border-black/10 cursor-pointer transition-all flex justify-between items-center"
+                >
+                  <div className="space-y-1">
+                    <span className="text-xs uppercase tracking-wider text-gray-400 font-black">4. Pista para el Impostor</span>
+                    <h3 className="text-sm font-black uppercase flex items-center gap-2 pt-0.5">
+                      {showHint ? (
+                        <span className="text-green-600 flex items-center gap-1 font-bold">💡 Activada <span className="text-[11px] text-gray-400 font-normal lowercase">(ve una pista)</span></span>
+                      ) : (
+                        <span className="text-gray-400 flex items-center gap-1 font-bold">🚫 Desactivada <span className="text-[11px] text-gray-400 font-normal lowercase">(sin pistas)</span></span>
+                      )}
+                    </h3>
+                  </div>
+                  {(gameMode === 'local' || isHost) && (
+                    <div className={`w-12 h-7 rounded-full p-1 transition-colors ${showHint ? 'bg-[#D4FF33]' : 'bg-gray-200'}`}>
+                      <div className={`w-5 h-5 rounded-full bg-black shadow-md transform transition-transform ${showHint ? 'translate-x-5' : 'translate-x-0'}`} />
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Bottom Sticky Action Buttons */}
@@ -921,7 +958,15 @@ export default function ImposterGame() {
                           <span className="text-xs text-white/50 block">Eres un Ciudadano</span>
                         )}
                         {imposters.includes(players[currentPlayerIndex]) && (
-                          <span className="text-xs text-[#FF4C4C] block font-black">Pasa desapercibido</span>
+                          <div className="space-y-1">
+                            {showHint && wordPair?.hint && (
+                              <div className="mt-2 py-1.5 px-4 bg-white/10 rounded-xl border border-[#D4FF33]/30">
+                                <span className="text-[10px] text-[#D4FF33] font-bold uppercase tracking-wider block">💡 Tu Pista</span>
+                                <span className="text-base font-black text-white capitalize">{wordPair.hint}</span>
+                              </div>
+                            )}
+                            <span className="text-xs text-[#FF4C4C] block font-black pt-1">Pasa desapercibido</span>
+                          </div>
                         )}
                       </motion.div>
                     ) : (
@@ -1198,8 +1243,10 @@ export default function ImposterGame() {
                     <span className="text-[#1A1A1A]">{wordPair?.innocent}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400 uppercase text-xs">Palabra Impostor:</span>
-                    <span className="text-[#FF4C4C]">{wordPair?.imposter}</span>
+                    <span className="text-gray-400 uppercase text-xs">
+                      {wordPair?.hint ? "Pista del Impostor:" : "Palabra Impostor:"}
+                    </span>
+                    <span className="text-[#FF4C4C]">{wordPair?.hint || wordPair?.imposter || "Ninguna"}</span>
                   </div>
                   <div className="flex justify-between items-start">
                     <span className="text-gray-400 uppercase text-xs">Impostores:</span>

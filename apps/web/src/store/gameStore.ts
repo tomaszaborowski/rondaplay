@@ -4,61 +4,281 @@ export type GamePhase = 'lobby' | 'assign' | 'play' | 'vote' | 'results';
 
 export interface WordPair {
   innocent: string;
-  imposter: string;
+  imposter?: string;
+  hint?: string;
 }
 
 export const CATEGORIES_DB: Record<string, { free: boolean; pairs: WordPair[] }> = {
+  'Animales Salvajes': {
+    free: true,
+    pairs: [
+      { innocent: 'León', hint: 'Melena' },
+      { innocent: 'Tigre', hint: 'Naranja' },
+      { innocent: 'Elefante', hint: 'Pesado' },
+      { innocent: 'Jirafa', hint: 'Alta' },
+      { innocent: 'Mono', hint: 'Banana' },
+      { innocent: 'Oso', hint: 'Cueva' },
+      { innocent: 'Cocodrilo', hint: 'Pantano' },
+      { innocent: 'Serpiente', hint: 'Veneno' },
+      { innocent: 'Hipopótamo', hint: 'Agua' },
+      { innocent: 'Rinoceronte', hint: 'Gris' },
+      { innocent: 'Cebra', hint: 'África' },
+      { innocent: 'Lobo', hint: 'Luna' },
+      { innocent: 'Zorro', hint: 'Bosque' },
+      { innocent: 'Pingüino', hint: 'Polo' },
+      { innocent: 'Delfín', hint: 'Saltos' },
+      { innocent: 'Ballena', hint: 'Océano' },
+      { innocent: 'Tiburón', hint: 'Peligro' },
+      { innocent: 'Canguro', hint: 'Saltarín' },
+      { innocent: 'Águila', hint: 'Vista' },
+      { innocent: 'Murciélago', hint: 'Noche' }
+    ]
+  },
+  'Animales Domésticos y Granja': {
+    free: true,
+    pairs: [
+      { innocent: 'Perro', hint: 'Collar' },
+      { innocent: 'Gato', hint: 'Bigotes' },
+      { innocent: 'Pez', hint: 'Burbujas' },
+      { innocent: 'Pájaro', hint: 'Nido' },
+      { innocent: 'Hámster', hint: 'Semillas' },
+      { innocent: 'Tortuga', hint: 'Caparazón' },
+      { innocent: 'Conejo', hint: 'Orejas' },
+      { innocent: 'Caballo', hint: 'Montar' },
+      { innocent: 'Vaca', hint: 'Manchas' },
+      { innocent: 'Cerdo', hint: 'Barro' },
+      { innocent: 'Oveja', hint: 'Nube' },
+      { innocent: 'Gallina', hint: 'Granja' },
+      { innocent: 'Pato', hint: 'Laguna' },
+      { innocent: 'Cabra', hint: 'Montaña' },
+      { innocent: 'Pavo', hint: 'Navidad' },
+      { innocent: 'Burro', hint: 'Carga' },
+      { innocent: 'Ratón', hint: 'Trampa' },
+      { innocent: 'Loro', hint: 'Pirata' },
+      { innocent: 'Rana', hint: 'Mosca' },
+      { innocent: 'Araña', hint: 'Patas' }
+    ]
+  },
+  'Frutas y Verduras': {
+    free: true,
+    pairs: [
+      { innocent: 'Manzana', hint: 'Tarta' },
+      { innocent: 'Banana', hint: 'Mono' },
+      { innocent: 'Naranja', hint: 'Desayuno' },
+      { innocent: 'Uva', hint: 'Morada' },
+      { innocent: 'Frutilla', hint: 'Postre' },
+      { innocent: 'Sandía', hint: 'Semillas' },
+      { innocent: 'Melón', hint: 'Verano' },
+      { innocent: 'Pera', hint: 'Campana' },
+      { innocent: 'Limón', hint: 'Exprimir' },
+      { innocent: 'Cereza', hint: 'Gemelas' },
+      { innocent: 'Tomate', hint: 'Salsa' },
+      { innocent: 'Zanahoria', hint: 'Conejo' },
+      { innocent: 'Papa', hint: 'Frita' },
+      { innocent: 'Cebolla', hint: 'Capas' },
+      { innocent: 'Lechuga', hint: 'Verde' },
+      { innocent: 'Choclo', hint: 'Amarillo' },
+      { innocent: 'Brócoli', hint: 'Árbol' },
+      { innocent: 'Zapallo', hint: 'Halloween' },
+      { innocent: 'Ajo', hint: 'Vampiro' },
+      { innocent: 'Pepino', hint: 'Rodajas' }
+    ]
+  },
+  'Comidas y Bebidas': {
+    free: true,
+    pairs: [
+      { innocent: 'Pizza', hint: 'Caja' },
+      { innocent: 'Hamburguesa', hint: 'Medallón' },
+      { innocent: 'Pancho', hint: 'Mostaza' },
+      { innocent: 'Fideos', hint: 'Salsa' },
+      { innocent: 'Arroz', hint: 'Sushi' },
+      { innocent: 'Huevo', hint: 'Yema' },
+      { innocent: 'Queso', hint: 'Ratón' },
+      { innocent: 'Pan', hint: 'Tostada' },
+      { innocent: 'Galletita', hint: 'Paquete' },
+      { innocent: 'Torta', hint: 'Cumpleaños' },
+      { innocent: 'Helado', hint: 'Cucurucho' },
+      { innocent: 'Chocolate', hint: 'Tableta' },
+      { innocent: 'Caramelo', hint: 'Papelito' },
+      { innocent: 'Leche', hint: 'Vaca' },
+      { innocent: 'Agua', hint: 'Canilla' },
+      { innocent: 'Jugo', hint: 'Fruta' },
+      { innocent: 'Sopa', hint: 'Caldo' },
+      { innocent: 'Mermelada', hint: 'Frasco' },
+      { innocent: 'Empanada', hint: 'Relleno' },
+      { innocent: 'Alfajor', hint: 'Kiosco' }
+    ]
+  },
+  'Cosas de la Escuela': {
+    free: false,
+    pairs: [
+      { innocent: 'Lápiz', hint: 'Punta' },
+      { innocent: 'Goma', hint: 'Error' },
+      { innocent: 'Cuaderno', hint: 'Rayas' },
+      { innocent: 'Libro', hint: 'Páginas' },
+      { innocent: 'Mochila', hint: 'Cierre' },
+      { innocent: 'Tijera', hint: 'Filo' },
+      { innocent: 'Regla', hint: 'Línea' },
+      { innocent: 'Voligoma', hint: 'Pegajoso' },
+      { innocent: 'Marcador', hint: 'Tapa' },
+      { innocent: 'Sacapuntas', hint: 'Viruta' },
+      { innocent: 'Pizarrón', hint: 'Borrador' },
+      { innocent: 'Tiza', hint: 'Blanca' },
+      { innocent: 'Escritorio', hint: 'Estudiar' },
+      { innocent: 'Silla', hint: 'Respaldo' },
+      { innocent: 'Computadora', hint: 'Mouse' },
+      { innocent: 'Pintura', hint: 'Arte' },
+      { innocent: 'Pincel', hint: 'Pelo' },
+      { innocent: 'Carpeta', hint: 'Anillos' },
+      { innocent: 'Cartuchera', hint: 'Útiles' },
+      { innocent: 'Patio', hint: 'Correr' }
+    ]
+  },
+  'Muebles y Cocina': {
+    free: false,
+    pairs: [
+      { innocent: 'Cama', hint: 'Colchón' },
+      { innocent: 'Sofá', hint: 'Almohadones' },
+      { innocent: 'Mesa', hint: 'Apoyar' },
+      { innocent: 'Televisión', hint: 'Control' },
+      { innocent: 'Heladera', hint: 'Puerta' },
+      { innocent: 'Horno', hint: 'Fuego' },
+      { innocent: 'Microondas', hint: 'Botones' },
+      { innocent: 'Plato', hint: 'Redondo' },
+      { innocent: 'Vaso', hint: 'Vidrio' },
+      { innocent: 'Tenedor', hint: 'Dientes' },
+      { innocent: 'Cuchara', hint: 'Postre' },
+      { innocent: 'Cuchillo', hint: 'Serrucho' },
+      { innocent: 'Olla', hint: 'Tapa' },
+      { innocent: 'Sartén', hint: 'Mango' },
+      { innocent: 'Almohada', hint: 'Plumas' },
+      { innocent: 'Sábana', hint: 'Fantasma' },
+      { innocent: 'Toalla', hint: 'Baño' },
+      { innocent: 'Espejo', hint: 'Cara' },
+      { innocent: 'Puerta', hint: 'Picaporte' },
+      { innocent: 'Llave', hint: 'Metal' }
+    ]
+  },
+  'Baño y Limpieza': {
+    free: false,
+    pairs: [
+      { innocent: 'Inodoro', hint: 'Botón' },
+      { innocent: 'Ducha', hint: 'Agua' },
+      { innocent: 'Jabón', hint: 'Barra' },
+      { innocent: 'Cepillo de dientes', hint: 'Cerdas' },
+      { innocent: 'Pasta dental', hint: 'Tubo' },
+      { innocent: 'Peine', hint: 'Nudos' },
+      { innocent: 'Papel higiénico', hint: 'Cartón' },
+      { innocent: 'Escoba', hint: 'Palo' },
+      { innocent: 'Basura', hint: 'Bolsa' },
+      { innocent: 'Reloj', hint: 'Agujas' },
+      { innocent: 'Lámpara', hint: 'Enchufe' },
+      { innocent: 'Ventana', hint: 'Mirar' },
+      { innocent: 'Cortina', hint: 'Tapar' },
+      { innocent: 'Alfombra', hint: 'Peluda' },
+      { innocent: 'Teléfono', hint: 'Número' },
+      { innocent: 'Lavarropas', hint: 'Gira' },
+      { innocent: 'Secador de pelo', hint: 'Calor' },
+      { innocent: 'Plancha', hint: 'Arrugas' },
+      { innocent: 'Canilla', hint: 'Gota' },
+      { innocent: 'Caja', hint: 'Mudanza' }
+    ]
+  },
+  'Ropa y Accesorios': {
+    free: false,
+    pairs: [
+      { innocent: 'Remera', hint: 'Estampado' },
+      { innocent: 'Pantalón', hint: 'Bolsillos' },
+      { innocent: 'Short', hint: 'Verano' },
+      { innocent: 'Vestido', hint: 'Fiesta' },
+      { innocent: 'Pollera', hint: 'Girar' },
+      { innocent: 'Zapatillas', hint: 'Cordones' },
+      { innocent: 'Zapatos', hint: 'Taco' },
+      { innocent: 'Medias', hint: 'Par' },
+      { innocent: 'Campera', hint: 'Capucha' },
+      { innocent: 'Gorro', hint: 'Lana' },
+      { innocent: 'Bufanda', hint: 'Tejido' },
+      { innocent: 'Guantes', hint: 'Dedos' },
+      { innocent: 'Malla', hint: 'Arena' },
+      { innocent: 'Pijama', hint: 'Cama' },
+      { innocent: 'Cinturón', hint: 'Hebilla' },
+      { innocent: 'Lentes', hint: 'Sol' },
+      { innocent: 'Collar', hint: 'Perlas' },
+      { innocent: 'Anillo', hint: 'Oro' },
+      { innocent: 'Sombrero', hint: 'Mago' },
+      { innocent: 'Paraguas', hint: 'Abierto' }
+    ]
+  },
+  'Naturaleza y Clima': {
+    free: false,
+    pairs: [
+      { innocent: 'Sol', hint: 'Amarillo' },
+      { innocent: 'Luna', hint: 'Cráteres' },
+      { innocent: 'Estrella', hint: 'Puntas' },
+      { innocent: 'Nube', hint: 'Algodón' },
+      { innocent: 'Lluvia', hint: 'Charcos' },
+      { innocent: 'Nieve', hint: 'Copo' },
+      { innocent: 'Viento', hint: 'Fuerte' },
+      { innocent: 'Rayo', hint: 'Trueno' },
+      { innocent: 'Árbol', hint: 'Raíz' },
+      { innocent: 'Flor', hint: 'Pétalo' },
+      { innocent: 'Pasto', hint: 'Cortar' },
+      { innocent: 'Hoja', hint: 'Seca' },
+      { innocent: 'Montaña', hint: 'Pico' },
+      { innocent: 'Río', hint: 'Piedras' },
+      { innocent: 'Mar', hint: 'Sal' },
+      { innocent: 'Arena', hint: 'Castillo' },
+      { innocent: 'Piedra', hint: 'Gris' },
+      { innocent: 'Tierra', hint: 'Maceta' },
+      { innocent: 'Fuego', hint: 'Rojo' },
+      { innocent: 'Hielo', hint: 'Cubito' }
+    ]
+  },
+  'Transporte y Vehículos': {
+    free: false,
+    pairs: [
+      { innocent: 'Auto', hint: 'Baúl' },
+      { innocent: 'Colectivo', hint: 'Parada' },
+      { innocent: 'Tren', hint: 'Estación' },
+      { innocent: 'Subte', hint: 'Escaleras' },
+      { innocent: 'Avión', hint: 'Pasaporte' },
+      { innocent: 'Helicóptero', hint: 'Rescate' },
+      { innocent: 'Barco', hint: 'Puerto' },
+      { innocent: 'Submarino', hint: 'Periscopio' },
+      { innocent: 'Moto', hint: 'Casco' },
+      { innocent: 'Bicicleta', hint: 'Cadena' },
+      { innocent: 'Triciclo', hint: 'Nene' },
+      { innocent: 'Patineta', hint: 'Trucos' },
+      { innocent: 'Patines', hint: 'Frenar' },
+      { innocent: 'Tractor', hint: 'Granja' },
+      { innocent: 'Camión', hint: 'Ruta' },
+      { innocent: 'Ambulancia', hint: 'Blanca' },
+      { innocent: 'Patrulla', hint: 'Luces' },
+      { innocent: 'Bomberos', hint: 'Manguera' },
+      { innocent: 'Cohete', hint: 'Fuego' },
+      { innocent: 'Bote', hint: 'Chaleco' }
+    ]
+  },
   'Objetos': {
     free: true,
     pairs: [
-      { innocent: 'Manzana', imposter: 'Pera' },
-      { innocent: 'Computadora', imposter: 'Tablet' },
-      { innocent: 'Pizza', imposter: 'Hamburguesa' },
-      { innocent: 'Bicicleta', imposter: 'Motocicleta' },
-      { innocent: 'Avión', imposter: 'Helicóptero' },
-      { innocent: 'Guitarra', imposter: 'Violín' },
-      { innocent: 'Café', imposter: 'Té' }
-    ]
-  },
-  'Animales': {
-    free: true,
-    pairs: [
-      { innocent: 'Perro', imposter: 'Gato' },
-      { innocent: 'León', imposter: 'Tigre' },
-      { innocent: 'Delfín', imposter: 'Tiburón' },
-      { innocent: 'Caballo', imposter: 'Cebra' },
-      { innocent: 'Oso', imposter: 'Panda' },
-      { innocent: 'Rana', imposter: 'Sapo' }
+      { innocent: 'Manzana', imposter: 'Pera', hint: 'Fruta' },
+      { innocent: 'Computadora', imposter: 'Tablet', hint: 'Pantalla' },
+      { innocent: 'Pizza', imposter: 'Hamburguesa', hint: 'Comida' },
+      { innocent: 'Bicicleta', imposter: 'Motocicleta', hint: 'Ruedas' },
+      { innocent: 'Avión', imposter: 'Helicóptero', hint: 'Volar' },
+      { innocent: 'Guitarra', imposter: 'Violín', hint: 'Cuerdas' },
+      { innocent: 'Café', imposter: 'Té', hint: 'Bebida' }
     ]
   },
   'Películas': {
-    free: false, // Premium
+    free: false,
     pairs: [
-      { innocent: 'Star Wars', imposter: 'Star Trek' },
-      { innocent: 'Harry Potter', imposter: 'El Señor de los Anillos' },
-      { innocent: 'Batman', imposter: 'Spiderman' },
-      { innocent: 'Titanic', imposter: 'Avatar' },
-      { innocent: 'Toy Story', imposter: 'Shrek' }
-    ]
-  },
-  'Lugares': {
-    free: false, // Premium
-    pairs: [
-      { innocent: 'París', imposter: 'Roma' },
-      { innocent: 'Tokio', imposter: 'Seúl' },
-      { innocent: 'Nueva York', imposter: 'Los Ángeles' },
-      { innocent: 'Londres', imposter: 'Madrid' },
-      { innocent: 'El Cairo', imposter: 'Atenas' }
-    ]
-  },
-  'Profesiones': {
-    free: false, // Premium
-    pairs: [
-      { innocent: 'Médico', imposter: 'Enfermero' },
-      { innocent: 'Piloto', imposter: 'Conductor' },
-      { innocent: 'Policía', imposter: 'Bombero' },
-      { innocent: 'Chef', imposter: 'Panadero' },
-      { innocent: 'Pintor', imposter: 'Escultor' }
+      { innocent: 'Star Wars', imposter: 'Star Trek', hint: 'Espacio' },
+      { innocent: 'Harry Potter', imposter: 'El Señor de los Anillos', hint: 'Magia' },
+      { innocent: 'Batman', imposter: 'Spiderman', hint: 'Héroe' },
+      { innocent: 'Titanic', imposter: 'Avatar', hint: 'Cine' },
+      { innocent: 'Toy Story', imposter: 'Shrek', hint: 'Animación' }
     ]
   }
 };
@@ -67,6 +287,7 @@ interface GameState {
   players: string[];
   imposters: string[];
   imposterCount: number;
+  showHint: boolean;
   gamePhase: GamePhase;
   wordPair: WordPair | null;
   currentPlayerIndex: number;
@@ -88,6 +309,7 @@ interface GameState {
   removePlayer: (index: number) => void;
   renamePlayer: (index: number, newName: string) => void;
   setImposterCount: (count: number) => void;
+  setShowHint: (show: boolean) => void;
   toggleCategory: (cat: string) => void;
   setGameMode: (mode: 'local' | 'online') => void;
   setLobbyId: (id: string | null) => void;
@@ -106,6 +328,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   players: ['Alex', 'Emma', 'Lucas', 'Sofia'], // Default starting players
   imposters: [],
   imposterCount: 1,
+  showHint: true,
   gamePhase: 'lobby',
   wordPair: null,
   currentPlayerIndex: 0,
@@ -113,7 +336,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   selectedVotes: {},
   winner: null,
   
-  categories: ['Objetos'],
+  categories: ['Animales Salvajes'],
   gameMode: 'local',
   lobbyId: null,
   isHost: true,
@@ -176,6 +399,10 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   setImposterCount: (count: number) => {
     set({ imposterCount: count });
+  },
+
+  setShowHint: (show: boolean) => {
+    set({ showHint: show });
   },
 
   toggleCategory: (cat: string) => {
