@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Navbar } from "@/components/Navbar";
-import { TopBanner } from "@/components/TopBanner";
+import { HeaderWrapper } from "@/components/HeaderWrapper";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { LanguageProvider } from "@/context/LanguageContext";
 
@@ -21,12 +20,7 @@ export default function RootLayout({
       <body className="antialiased min-h-screen bg-[#F9FAFB] text-[#2B2D42] flex flex-col">
         <GoogleAnalytics />
         <LanguageProvider>
-          {/* TopBanner sits above the nav — it adds 36px to the top */}
-          <TopBanner />
-          {/* Navbar is offset by the banner height */}
-          <div className="pt-9">
-            <Navbar />
-          </div>
+          <HeaderWrapper />
           <main className="flex-grow">
             {children}
           </main>

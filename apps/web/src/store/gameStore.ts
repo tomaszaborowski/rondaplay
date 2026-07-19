@@ -75,7 +75,7 @@ interface GameState {
   winner: 'innocents' | 'imposters' | null;
   
   // New requirements
-  category: string;
+  categories: string[];
   gameMode: 'local' | 'online';
   lobbyId: string | null;
   isHost: boolean;
@@ -88,7 +88,7 @@ interface GameState {
   removePlayer: (index: number) => void;
   renamePlayer: (index: number, newName: string) => void;
   setImposterCount: (count: number) => void;
-  setCategory: (cat: string) => void;
+  toggleCategory: (cat: string) => void;
   setGameMode: (mode: 'local' | 'online') => void;
   setLobbyId: (id: string | null) => void;
   setIsHost: (isHost: boolean) => void;
@@ -113,7 +113,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   selectedVotes: {},
   winner: null,
   
-  category: 'Objetos',
+  categories: ['Objetos'],
   gameMode: 'local',
   lobbyId: null,
   isHost: true,
@@ -178,8 +178,19 @@ export const useGameStore = create<GameState>((set, get) => ({
     set({ imposterCount: count });
   },
 
-  setCategory: (cat: string) => {
-    set({ category: cat });
+  toggleCategory: (cat: string) => {
+    set((state) => {
+      const exists = state.categories.includes(cat);
+      let nextCats = [...state.categories];
+      if (exists) {
+        if (nextCats.length > 1) {
+          nextCats = nextCats.filter(c => c !== cat);
+        }
+      } else {
+        nextCats.push(cat);
+      }
+      return { categories: nextCats };
+    });
   },
 
   setGameMode: (mode: 'local' | 'online') => {
@@ -202,11 +213,13 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   startGame: () => {
-    const { players, imposterCount, category } = get();
+    const { players, imposterCount, categories } = get();
     if (players.length < 3) return; // Need at least 3 players
     
     // Choose random word pair from database
-    const catData = CATEGORIES_DB[category] || CATEGORIES_DB['Objetos'];
+    const activeCats = categories.length > 0 ? categories : ['Objetos'];
+    const randomCatKey = activeCats[Math.floor(Math.random() * activeCats.length)];
+    const catData = CATEGORIES_DB[randomCatKey] || CATEGORIES_DB['Objetos'];
     const wordPair = catData.pairs[Math.floor(Math.random() * catData.pairs.length)];
     
     // Choose random imposters

@@ -20,7 +20,7 @@ export default function ImposterGame() {
     currentPlayerIndex,
     selectedVotes,
     winner,
-    category,
+    categories,
     gameMode,
     lobbyId,
     isHost,
@@ -32,7 +32,7 @@ export default function ImposterGame() {
     removePlayer,
     renamePlayer,
     setImposterCount,
-    setCategory,
+    toggleCategory,
     setGameMode,
     setLobbyId,
     setIsHost,
@@ -98,7 +98,7 @@ export default function ImposterGame() {
           currentPlayerIndex: data.currentPlayerIndex || 0,
           selectedVotes: data.selectedVotes || {},
           winner: data.winner || null,
-          category: data.category || 'Objetos',
+          categories: data.categories || ['Objetos'],
           scoreboard: data.scoreboard || {},
         });
 
@@ -240,7 +240,7 @@ export default function ImposterGame() {
       currentPlayerIndex: 0,
       selectedVotes: {},
       winner: null,
-      category: 'Objetos',
+      categories: ['Objetos'],
       scoreboard: { [onlinePlayerName.trim()]: 0 },
       host: onlinePlayerName.trim(),
       timerState: { timeLeft: 60, timerMax: 60, isTimerRunning: false }
@@ -300,7 +300,9 @@ export default function ImposterGame() {
   const handleStartOnlineGame = async () => {
     if (players.length < 3) return;
     
-    const catData = CATEGORIES_DB[category] || CATEGORIES_DB['Objetos'];
+    const activeCats = categories.length > 0 ? categories : ['Objetos'];
+    const randomCatKey = activeCats[Math.floor(Math.random() * activeCats.length)];
+    const catData = CATEGORIES_DB[randomCatKey] || CATEGORIES_DB['Objetos'];
     const wordPair = catData.pairs[Math.floor(Math.random() * catData.pairs.length)];
     
     const shuffled = [...players].sort(() => Math.random() - 0.5);
@@ -465,13 +467,22 @@ export default function ImposterGame() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] text-[#1A1A1A] font-sans pt-28 pb-32 relative overflow-hidden flex flex-col items-center">
+    <div className="min-h-screen bg-[#F5F5F5] text-[#1A1A1A] font-montserrat pt-8 pb-12 px-4 relative overflow-hidden flex flex-col items-center select-none">
       
       {/* ── HEADER NAVIGATION ── */}
-      <header className="w-full max-w-md px-6 flex justify-between items-center mb-6 z-10 shrink-0">
-        <h1 className="text-2xl font-black tracking-tighter uppercase text-[#1A1A1A] flex items-center gap-1.5">
-          <ShieldAlert className="w-6 h-6 text-[#FF4C4C] fill-[#FF4C4C]" /> ¿Quién es el Impostor?
-        </h1>
+      <header className="w-full max-w-md px-2 flex justify-between items-center mb-6 z-10 shrink-0">
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => window.location.href = '/'}
+            className="p-2 bg-white/80 hover:bg-white border border-black/10 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer"
+            title="Volver al Inicio"
+          >
+            <ArrowRight className="w-4 h-4 text-black rotate-180" />
+          </button>
+          <h1 className="text-lg font-black tracking-tighter uppercase text-[#1A1A1A]">
+            ¿Quién es el Impostor?
+          </h1>
+        </div>
         {isPremium && (
           <span className="bg-[#D4FF33] text-[#1A1A1A] text-[10px] font-black px-2.5 py-1 rounded-full uppercase shadow-sm">
             Premium ⭐
@@ -763,7 +774,7 @@ export default function ImposterGame() {
                   )}
                 </div>
 
-                {/* CARD 2: CATEGORIES */}
+                {/* CARD 2: CATEGORY SELECTOR */}
                 <div 
                   onClick={() => {
                     if (gameMode === 'local' || isHost) {
@@ -774,18 +785,19 @@ export default function ImposterGame() {
                   }}
                   className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 hover:border-black/10 cursor-pointer transition-all flex justify-between items-center"
                 >
-                  <div className="space-y-1">
-                    <span className="text-xs uppercase tracking-wider text-gray-400 font-black">2. Categoría Elegida</span>
-                    <h3 className="text-lg font-black uppercase flex items-center gap-1.5">
-                      {category} {CATEGORIES_DB[category]?.free ? (
-                        <CheckCircle2 className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <Lock className="w-4 h-4 text-[#FF4C4C]" />
-                      )}
+                  <div className="space-y-1 flex-grow">
+                    <span className="text-xs uppercase tracking-wider text-gray-400 font-black">2. Temas Seleccionados</span>
+                    <h3 className="text-lg font-black uppercase flex flex-wrap gap-1.5 pt-1">
+                      {categories.map((cat) => (
+                        <span key={cat} className="flex items-center gap-1 bg-black/5 text-[#1A1A1A] text-[10px] px-2.5 py-1 rounded-full font-bold">
+                          {cat}
+                          {!CATEGORIES_DB[cat]?.free && <Lock className="w-3 h-3 text-[#FF4C4C] inline ml-0.5" />}
+                        </span>
+                      ))}
                     </h3>
                   </div>
                   {(gameMode === 'local' || isHost) && (
-                    <Edit2 className="w-5 h-5 text-gray-300" />
+                    <Edit2 className="w-5 h-5 text-gray-300 ml-2" />
                   )}
                 </div>
 
@@ -1279,7 +1291,7 @@ export default function ImposterGame() {
               <div className="flex justify-between items-center">
                 <h3 className="text-xl font-black uppercase tracking-tight">
                   {activeModal === 'players' && "Administrar Jugadores"}
-                  {activeModal === 'categories' && "Seleccionar Categoría"}
+                  {activeModal === 'categories' && "Seleccionar Temas"}
                   {activeModal === 'impostors' && "Número de Impostores"}
                 </h3>
                 <button 
@@ -1367,14 +1379,33 @@ export default function ImposterGame() {
               {activeModal === 'categories' && (
                 <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
                   {Object.entries(CATEGORIES_DB).map(([catKey, catVal]) => {
-                    const isSelected = category === catKey;
+                    const isSelected = categories.includes(catKey);
                     return (
                       <div
                         key={catKey}
-                        onClick={() => {
+                        onClick={async () => {
                           if (catVal.free || isPremium) {
-                            setCategory(catKey);
-                            setActiveModal(null);
+                            // Toggle category locally
+                            toggleCategory(catKey);
+                            
+                            // Calculate next selection array immediately to sync to Firestore if host
+                            let nextCats = [...categories];
+                            if (nextCats.includes(catKey)) {
+                              if (nextCats.length > 1) {
+                                nextCats = nextCats.filter(c => c !== catKey);
+                              }
+                            } else {
+                              nextCats.push(catKey);
+                            }
+
+                            if (gameMode === 'online' && lobbyId && isHost) {
+                              const docRef = doc(db, 'imposter_lobbies', lobbyId);
+                              try {
+                                await updateDoc(docRef, { categories: nextCats });
+                              } catch (e) {
+                                console.error("Firestore sync error:", e);
+                              }
+                            }
                           } else {
                             // Locked category triggers paywall screen
                             setActiveModal(null);
