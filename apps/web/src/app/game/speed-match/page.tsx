@@ -318,6 +318,9 @@ export default function SpeedMatchGame() {
         
         setScore(msg.scores[gameMode]);
         setOpponentScore(msg.scores[gameMode === "host" ? "client" : "host"]);
+        
+        // Ensure state is updated to playing (e.g. on game restart)
+        setGameState("playing");
       } else if (msg.type === "OPPONENT_FEEDBACK") {
         if (msg.result === "correct") {
           playSound("correct");
@@ -327,6 +330,15 @@ export default function SpeedMatchGame() {
       } else if (msg.type === "TAP" && gameMode === "host") {
         // Host validates client tap request
         validateMultiplayerTap(msg.symbolId, "client");
+      } else if (msg.type === "GAME_OVER") {
+        const myScore = gameMode === "host" ? msg.scores.host : msg.scores.client;
+        const oppScore = gameMode === "host" ? msg.scores.client : msg.scores.host;
+        setScore(myScore);
+        setOpponentScore(oppScore);
+        setGameState("gameover");
+        playSound("win");
+      } else if (msg.type === "RESTART_REQUEST" && gameMode === "host") {
+        startMultiplayerGame();
       }
     };
 
@@ -442,6 +454,12 @@ export default function SpeedMatchGame() {
         const nextScore = score + 1;
         setScore(nextScore);
 
+        if (nextScore >= 10) {
+          setGameState("gameover");
+          playSound("win");
+          return;
+        }
+
         // Next round: player card becomes the new common card
         const nextCommon = [...playerCard];
         
@@ -490,6 +508,19 @@ export default function SpeedMatchGame() {
       const clientScore = player === "client" ? opponentScore + 1 : opponentScore;
       setScore(hostScore);
       setOpponentScore(clientScore);
+
+      // Check if game is complete (first to 10 points wins)
+      if (hostScore >= 10 || clientScore >= 10) {
+        if (dataChannelRef.current?.readyState === "open") {
+          dataChannelRef.current.send(JSON.stringify({
+            type: "GAME_OVER",
+            scores: { host: hostScore, client: clientScore }
+          }));
+        }
+        setGameState("gameover");
+        playSound("win");
+        return;
+      }
 
       // Winning card becomes the new common card
       const winningCard = player === "host" ? playerCard : (playerCard === commonCard ? commonCard : playerCard); // Fallback reference
@@ -803,6 +834,74 @@ export default function SpeedMatchGame() {
                 </div>
               </div>
               <div className="text-center mt-2 text-pink-200 font-bold tracking-wider text-xs uppercase">Your Card (Find & Tap Match)</div>
+            </div>
+          </div>
+        )}
+
+        {gameState === "gameover" && (
+          <div className="w-full bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-2xl flex flex-col items-center text-center space-y-6 animate-pop">
+            <div className="text-6xl animate-bounce">
+              {gameMode === "single" ? "⭐" : score > opponentScore ? "🏆" : score < opponentScore ? "🥈" : "🤝"}
+            </div>
+            
+            <h2 className="text-2xl font-bold font-Fredoka text-white">
+              {gameMode === "single"
+                ? "Practice Complete!"
+                : score > opponentScore
+                ? "Victory!"
+                : score < opponentScore
+                ? "Good Game!"
+                : "It's a Tie!"}
+            </h2>
+
+            <div className="w-full bg-white/5 rounded-2xl p-4 border border-white/10 flex flex-col items-center space-y-3">
+              <span className="text-xs uppercase tracking-wider text-white/50 font-Poppins">Final Scores</span>
+              
+              <div className="flex justify-around items-center w-full">
+                <div className="flex flex-col items-center">
+                  <span className="text-[10px] uppercase text-teal-300 font-bold font-Poppins">You</span>
+                  <span className="text-4xl font-extrabold text-[#34C2B2] font-Fredoka">{score}</span>
+                </div>
+                
+                {gameMode !== "single" && (
+                  <>
+                    <div className="text-white/20 text-xl font-bold font-Poppins">VS</div>
+                    <div className="flex flex-col items-center">
+                      <span className="text-[10px] uppercase text-pink-300 font-bold font-Poppins">Opponent</span>
+                      <span className="text-4xl font-extrabold text-[#FF75A0] font-Fredoka">{opponentScore}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="w-full flex flex-col space-y-3">
+              <button
+                onClick={() => {
+                  if (gameMode === "single") {
+                    startSinglePlayer();
+                  } else if (gameMode === "host") {
+                    startMultiplayerGame();
+                  } else if (gameMode === "client") {
+                    if (dataChannelRef.current?.readyState === "open") {
+                      dataChannelRef.current.send(JSON.stringify({ type: "RESTART_REQUEST" }));
+                    }
+                  }
+                }}
+                className="w-full py-4 bg-gradient-to-r from-[#34C2B2] to-[#289689] font-bold rounded-full shadow-lg border-b-4 border-[#208378] active:translate-y-1 active:border-b-0 transition-all font-Poppins text-lg"
+              >
+                🔄 Play Again
+              </button>
+
+              <button
+                onClick={() => {
+                  peerConnectionRef.current?.close();
+                  setGameState("menu");
+                }}
+                className="w-full py-4 bg-white/10 border border-white/30 font-bold rounded-full shadow-lg active:translate-y-1 transition-all font-Poppins text-lg text-white"
+              >
+                🏠 Return to Main Menu
+              </button>
             </div>
           </div>
         )}

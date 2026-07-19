@@ -2,25 +2,66 @@ import { create } from 'zustand';
 
 export type GamePhase = 'lobby' | 'assign' | 'play' | 'vote' | 'results';
 
-interface WordPair {
+export interface WordPair {
   innocent: string;
   imposter: string;
 }
 
-const WORD_PAIRS: WordPair[] = [
-  { innocent: 'Apple', imposter: 'Pear' },
-  { innocent: 'Football', imposter: 'Basketball' },
-  { innocent: 'Airplane', imposter: 'Helicopter' },
-  { innocent: 'Guitar', imposter: 'Violin' },
-  { innocent: 'Coffee', imposter: 'Tea' },
-  { innocent: 'Library', imposter: 'School' },
-  { innocent: 'Beach', imposter: 'Swimming Pool' },
-  { innocent: 'Laptop', imposter: 'Tablet' },
-  { innocent: 'Pizza', imposter: 'Hamburger' },
-  { innocent: 'Dog', imposter: 'Cat' },
-  { innocent: 'Cinema', imposter: 'Theatre' },
-  { innocent: 'Bicycle', imposter: 'Motorcycle' },
-];
+export const CATEGORIES_DB: Record<string, { free: boolean; pairs: WordPair[] }> = {
+  'Objetos': {
+    free: true,
+    pairs: [
+      { innocent: 'Manzana', imposter: 'Pera' },
+      { innocent: 'Computadora', imposter: 'Tablet' },
+      { innocent: 'Pizza', imposter: 'Hamburguesa' },
+      { innocent: 'Bicicleta', imposter: 'Motocicleta' },
+      { innocent: 'Avión', imposter: 'Helicóptero' },
+      { innocent: 'Guitarra', imposter: 'Violín' },
+      { innocent: 'Café', imposter: 'Té' }
+    ]
+  },
+  'Animales': {
+    free: true,
+    pairs: [
+      { innocent: 'Perro', imposter: 'Gato' },
+      { innocent: 'León', imposter: 'Tigre' },
+      { innocent: 'Delfín', imposter: 'Tiburón' },
+      { innocent: 'Caballo', imposter: 'Cebra' },
+      { innocent: 'Oso', imposter: 'Panda' },
+      { innocent: 'Rana', imposter: 'Sapo' }
+    ]
+  },
+  'Películas': {
+    free: false, // Premium
+    pairs: [
+      { innocent: 'Star Wars', imposter: 'Star Trek' },
+      { innocent: 'Harry Potter', imposter: 'El Señor de los Anillos' },
+      { innocent: 'Batman', imposter: 'Spiderman' },
+      { innocent: 'Titanic', imposter: 'Avatar' },
+      { innocent: 'Toy Story', imposter: 'Shrek' }
+    ]
+  },
+  'Lugares': {
+    free: false, // Premium
+    pairs: [
+      { innocent: 'París', imposter: 'Roma' },
+      { innocent: 'Tokio', imposter: 'Seúl' },
+      { innocent: 'Nueva York', imposter: 'Los Ángeles' },
+      { innocent: 'Londres', imposter: 'Madrid' },
+      { innocent: 'El Cairo', imposter: 'Atenas' }
+    ]
+  },
+  'Profesiones': {
+    free: false, // Premium
+    pairs: [
+      { innocent: 'Médico', imposter: 'Enfermero' },
+      { innocent: 'Piloto', imposter: 'Conductor' },
+      { innocent: 'Policía', imposter: 'Bombero' },
+      { innocent: 'Chef', imposter: 'Panadero' },
+      { innocent: 'Pintor', imposter: 'Escultor' }
+    ]
+  }
+};
 
 interface GameState {
   players: string[];
@@ -33,15 +74,32 @@ interface GameState {
   selectedVotes: Record<string, string>; // voter -> votedFor
   winner: 'innocents' | 'imposters' | null;
   
+  // New requirements
+  category: string;
+  gameMode: 'local' | 'online';
+  lobbyId: string | null;
+  isHost: boolean;
+  scoreboard: Record<string, number>;
+  isPremium: boolean;
+  
   // Actions
+  initializePlayers: () => void;
   addPlayer: (name: string) => void;
   removePlayer: (index: number) => void;
+  renamePlayer: (index: number, newName: string) => void;
   setImposterCount: (count: number) => void;
+  setCategory: (cat: string) => void;
+  setGameMode: (mode: 'local' | 'online') => void;
+  setLobbyId: (id: string | null) => void;
+  setIsHost: (isHost: boolean) => void;
+  setPremium: (premium: boolean) => void;
   startGame: () => void;
   nextPlayerReveal: () => void;
   submitVote: (voter: string, votedFor: string) => void;
   tallyVotes: () => void;
   resetGame: () => void;
+  updateScoreboard: (winner: 'innocents' | 'imposters') => void;
+  resetScoreboard: () => void;
 }
 
 export const useGameStore = create<GameState>((set, get) => ({
@@ -54,13 +112,41 @@ export const useGameStore = create<GameState>((set, get) => ({
   revealedCount: 0,
   selectedVotes: {},
   winner: null,
+  
+  category: 'Objetos',
+  gameMode: 'local',
+  lobbyId: null,
+  isHost: true,
+  scoreboard: {},
+  isPremium: false,
+
+  initializePlayers: () => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('rondaplay_imposter_players');
+      const premium = localStorage.getItem('rondaplay_premium') === 'true';
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length >= 3) {
+            set({ players: parsed, isPremium: premium });
+            return;
+          }
+        } catch (_) {}
+      }
+      set({ isPremium: premium });
+    }
+  },
 
   addPlayer: (name: string) => {
     const trimmed = name.trim();
     if (!trimmed) return;
     set((state) => {
       if (state.players.includes(trimmed)) return {};
-      return { players: [...state.players, trimmed] };
+      const nextPlayers = [...state.players, trimmed];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('rondaplay_imposter_players', JSON.stringify(nextPlayers));
+      }
+      return { players: nextPlayers };
     });
   },
 
@@ -68,6 +154,22 @@ export const useGameStore = create<GameState>((set, get) => ({
     set((state) => {
       const players = [...state.players];
       players.splice(index, 1);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('rondaplay_imposter_players', JSON.stringify(players));
+      }
+      return { players };
+    });
+  },
+
+  renamePlayer: (index: number, newName: string) => {
+    const trimmed = newName.trim();
+    if (!trimmed) return;
+    set((state) => {
+      const players = [...state.players];
+      players[index] = trimmed;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('rondaplay_imposter_players', JSON.stringify(players));
+      }
       return { players };
     });
   },
@@ -76,12 +178,36 @@ export const useGameStore = create<GameState>((set, get) => ({
     set({ imposterCount: count });
   },
 
+  setCategory: (cat: string) => {
+    set({ category: cat });
+  },
+
+  setGameMode: (mode: 'local' | 'online') => {
+    set({ gameMode: mode });
+  },
+
+  setLobbyId: (id: string | null) => {
+    set({ lobbyId: id });
+  },
+
+  setIsHost: (isHost: boolean) => {
+    set({ isHost });
+  },
+
+  setPremium: (premium: boolean) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('rondaplay_premium', premium ? 'true' : 'false');
+    }
+    set({ isPremium: premium });
+  },
+
   startGame: () => {
-    const { players, imposterCount } = get();
+    const { players, imposterCount, category } = get();
     if (players.length < 3) return; // Need at least 3 players
     
-    // Choose random word pair
-    const wordPair = WORD_PAIRS[Math.floor(Math.random() * WORD_PAIRS.length)];
+    // Choose random word pair from database
+    const catData = CATEGORIES_DB[category] || CATEGORIES_DB['Objetos'];
+    const wordPair = catData.pairs[Math.floor(Math.random() * catData.pairs.length)];
     
     // Choose random imposters
     const shuffled = [...players].sort(() => Math.random() - 0.5);
@@ -144,20 +270,47 @@ export const useGameStore = create<GameState>((set, get) => ({
       }
     });
 
+    let roundWinner: 'innocents' | 'imposters';
+
     if (tie || !votedOutPlayer) {
-      // Tie results in imposter win or retry. Let's make it so imposters win on tie to add pressure!
-      set({
-        gamePhase: 'results',
-        winner: 'imposters',
-      });
+      // Tie results in imposter win
+      roundWinner = 'imposters';
     } else {
       // Check if voted out player is an imposter
       const isImposter = imposters.includes(votedOutPlayer);
-      set({
-        gamePhase: 'results',
-        winner: isImposter ? 'innocents' : 'imposters',
-      });
+      roundWinner = isImposter ? 'innocents' : 'imposters';
     }
+
+    set({
+      gamePhase: 'results',
+      winner: roundWinner,
+    });
+
+    get().updateScoreboard(roundWinner);
+  },
+
+  updateScoreboard: (roundWinner: 'innocents' | 'imposters') => {
+    const { players, imposters, scoreboard } = get();
+    const nextScoreboard = { ...scoreboard };
+    
+    players.forEach((p) => {
+      if (nextScoreboard[p] === undefined) {
+        nextScoreboard[p] = 0;
+      }
+      
+      const isImposter = imposters.includes(p);
+      if (roundWinner === 'innocents' && !isImposter) {
+        nextScoreboard[p] += 1; // Citizen points
+      } else if (roundWinner === 'imposters' && isImposter) {
+        nextScoreboard[p] += 2; // Imposter points (harder role)
+      }
+    });
+
+    set({ scoreboard: nextScoreboard });
+  },
+
+  resetScoreboard: () => {
+    set({ scoreboard: {} });
   },
 
   resetGame: () => {
