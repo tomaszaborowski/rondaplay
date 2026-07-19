@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useGameStore, CATEGORIES_DB, WordPair, GamePhase } from '@/store/gameStore';
+import { useGameStore, CATEGORIES_DB, GamePhase } from '@/store/gameStore';
 import { 
-  Users, UserPlus, Trash2, ShieldAlert,
-  HelpCircle, Eye, EyeOff, CheckCircle2, Play, 
-  RotateCcw, Vote, ArrowRight, ShieldCheck,
-  Share2, Award, Clock, Star, Lock, Unlock, X, Edit2
+  UserPlus, Trash2, ShieldAlert, HelpCircle, CheckCircle2, 
+  Play, RotateCcw, Vote, ArrowRight, Share2, Lock, X, Edit2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from "@/lib/firebase";
@@ -131,9 +129,12 @@ export default function ImposterGame() {
 
   // Ad Countdown timer trigger
   useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
     if (gamePhase === 'results' && !isPremium) {
-      setShowAd(true);
-      setAdCountdown(3);
+      timer = setTimeout(() => {
+        setShowAd(true);
+        setAdCountdown(3);
+      }, 0);
       
       adTimerRef.current = setInterval(() => {
         setAdCountdown((prev) => {
@@ -147,6 +148,7 @@ export default function ImposterGame() {
     }
     
     return () => {
+      if (timer) clearTimeout(timer);
       if (adTimerRef.current) clearInterval(adTimerRef.current);
     };
   }, [gamePhase, isPremium]);
@@ -321,7 +323,7 @@ export default function ImposterGame() {
   };
 
   // Sync state transitions to Firestore (Online Mode)
-  const syncPhaseToFirestore = async (nextPhase: GamePhase, overrides: any = {}) => {
+  const syncPhaseToFirestore = async (nextPhase: GamePhase, overrides: Record<string, unknown> = {}) => {
     if (gameMode !== 'online' || !lobbyId) return;
     const docRef = doc(db, 'imposter_lobbies', lobbyId);
     try {
@@ -435,8 +437,9 @@ export default function ImposterGame() {
   // Native Billing Simulation
   const handleSimulatePurchase = (skuType: 'weekly' | 'annual') => {
     // Triggers standard WebView bridge protocol for mobile app wrapper if present
-    if (typeof window !== 'undefined' && (window as any).ReactNativeWebView) {
-      (window as any).ReactNativeWebView.postMessage(
+    const win = window as unknown as { ReactNativeWebView?: { postMessage: (msg: string) => void } };
+    if (typeof window !== 'undefined' && win.ReactNativeWebView) {
+      win.ReactNativeWebView.postMessage(
         JSON.stringify({ type: 'PURCHASE', sku: skuType })
       );
     }

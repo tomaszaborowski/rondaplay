@@ -287,7 +287,7 @@ export default function GameCMSManager() {
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Category</label>
                   <select
                     value={category}
-                    onChange={(e) => setCategory(e.target.value as any)}
+                    onChange={(e) => setCategory(e.target.value as 'logic' | 'memory' | 'speed')}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-ronda-teal outline-none transition-colors text-sm font-semibold"
                   >
                     <option value="logic">Logic</option>
@@ -299,7 +299,7 @@ export default function GameCMSManager() {
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Status</label>
                   <select
                     value={status}
-                    onChange={(e) => setStatus(e.target.value as any)}
+                    onChange={(e) => setStatus(e.target.value as 'active' | 'draft')}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-ronda-teal outline-none transition-colors text-sm font-semibold"
                   >
                     <option value="active">Active</option>

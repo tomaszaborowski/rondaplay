@@ -14,10 +14,6 @@ export const Navbar: React.FC = () => {
   const isHome = pathname === '/';
   const { t } = useLanguage();
 
-  // Hide landing page Navbar completely on admin dashboard routes
-  if (pathname?.startsWith('/admin')) {
-    return null;
-  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,6 +42,11 @@ export const Navbar: React.FC = () => {
   // On non-home pages (white bg from the start) always use dark text.
   // On home page: transparent hero → white text; scrolled → dark text.
   const useDarkText = isScrolled || isOpen || !isHome;
+
+  // Hide landing page Navbar completely on admin dashboard routes
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <>

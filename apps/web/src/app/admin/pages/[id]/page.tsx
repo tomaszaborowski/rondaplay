@@ -82,7 +82,9 @@ function BlockEditor({
 
   useEffect(() => {
     if (block.type === 'list') {
-      try { setEditingList(JSON.parse(block.content)); } catch { setEditingList([]); }
+      setTimeout(() => {
+        try { setEditingList(JSON.parse(block.content)); } catch { setEditingList([]); }
+      }, 0);
     }
   }, [block.type, block.content]);
 

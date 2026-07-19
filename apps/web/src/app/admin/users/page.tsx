@@ -101,7 +101,7 @@ export default function UserDirectory() {
           {/* Subscription */}
           <select
             value={filterPremium}
-            onChange={(e) => setFilterPremium(e.target.value as any)}
+            onChange={(e) => setFilterPremium(e.target.value as 'all' | 'premium' | 'free')}
             className="px-3 py-2 rounded-xl border border-slate-200 focus:border-ronda-teal outline-none text-xs font-bold text-slate-500 bg-white"
           >
             <option value="all">All Plans</option>
@@ -112,7 +112,7 @@ export default function UserDirectory() {
           {/* Platform */}
           <select
             value={filterOrigin}
-            onChange={(e) => setFilterOrigin(e.target.value as any)}
+            onChange={(e) => setFilterOrigin(e.target.value as 'all' | 'web' | 'app')}
             className="px-3 py-2 rounded-xl border border-slate-200 focus:border-ronda-teal outline-none text-xs font-bold text-slate-500 bg-white"
           >
             <option value="all">All Sources</option>
@@ -123,7 +123,7 @@ export default function UserDirectory() {
           {/* Account status */}
           <select
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as any)}
+            onChange={(e) => setFilterStatus(e.target.value as 'all' | 'active' | 'banned')}
             className="px-3 py-2 rounded-xl border border-slate-200 focus:border-ronda-teal outline-none text-xs font-bold text-slate-500 bg-white"
           >
             <option value="all">All Statuses</option>

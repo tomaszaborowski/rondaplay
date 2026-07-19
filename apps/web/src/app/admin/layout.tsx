@@ -36,7 +36,9 @@ export default function AdminLayout({
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    setTimeout(() => {
+      setIsMounted(true);
+    }, 0);
   }, []);
 
   // Redirect to login if not authenticated (skip for login page itself)

@@ -145,7 +145,7 @@ export default function MonetizationAnalytics() {
             {/* Platform filter */}
             <select
               value={platformFilter}
-              onChange={(e) => setPlatformFilter(e.target.value as any)}
+              onChange={(e) => setPlatformFilter(e.target.value as 'all' | 'Stripe' | 'Apple')}
               className="px-3 py-2 rounded-xl border border-slate-200 focus:border-ronda-teal outline-none text-xs font-bold text-slate-500 bg-white"
             >
               <option value="all">All Channels</option>
@@ -156,7 +156,7 @@ export default function MonetizationAnalytics() {
             {/* Status filter */}
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
+              onChange={(e) => setStatusFilter(e.target.value as 'all' | 'completed' | 'failed')}
               className="px-3 py-2 rounded-xl border border-slate-200 focus:border-ronda-teal outline-none text-xs font-bold text-slate-500 bg-white"
             >
               <option value="all">All Statuses</option>

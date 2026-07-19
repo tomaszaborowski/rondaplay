@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
+import type { Html5Qrcode } from "html5-qrcode";
 
 // 13 distinct emojis representing symbols for n=3 Dobble algorithm
 const symbolsAssets = [
@@ -67,7 +68,7 @@ function packSDP(sdp: string): string {
   let ufrag = '';
   let pwd = '';
   let fingerprint = '';
-  const candidates: any[] = [];
+  const candidates: [string, string, string][] = [];
   
   lines.forEach(line => {
     if (line.startsWith('a=ice-ufrag:')) ufrag = line.split(':')[1];
@@ -102,11 +103,38 @@ function unpackSDP(packedStr: string, type: 'offer' | 'answer'): string {
     'a=max-message-size:262144'
   ].join('\r\n') + '\r\n';
 
-  c.forEach((cand: any) => {
+  c.forEach((cand: [string, string, string]) => {
     sdp += `a=candidate:1 1 UDP 2122260991 ${cand[1]} ${cand[2]} typ ${cand[0]}\r\n`;
   });
 
   return sdp;
+}
+
+type LayoutSlot = { x: number; y: number; scale: number; rot: number };
+
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  tx: number;
+  ty: number;
+}
+
+function generateParticles(x: number, y: number): Particle[] {
+  const numParticles = 8;
+  const newParticles: Particle[] = [];
+  for (let i = 0; i < numParticles; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 40 + Math.random() * 60;
+    newParticles.push({
+      id: Date.now() + Math.random(),
+      x,
+      y,
+      tx: Math.cos(angle) * distance,
+      ty: Math.sin(angle) * distance
+    });
+  }
+  return newParticles;
 }
 
 export default function SpeedMatchGame() {
@@ -118,8 +146,8 @@ export default function SpeedMatchGame() {
   // Cards state
   const [commonCard, setCommonCard] = useState<number[]>([]);
   const [playerCard, setPlayerCard] = useState<number[]>([]);
-  const [commonCardSlots, setCommonCardSlots] = useState<any[]>([]);
-  const [playerCardSlots, setPlayerCardSlots] = useState<any[]>([]);
+  const [commonCardSlots, setCommonCardSlots] = useState<LayoutSlot[]>([]);
+  const [playerCardSlots, setPlayerCardSlots] = useState<LayoutSlot[]>([]);
   
   // WebRTC & connection states
   const [connectionStatus, setConnectionStatus] = useState<"disconnected" | "generating" | "scanning" | "connecting" | "connected">("disconnected");
@@ -136,12 +164,12 @@ export default function SpeedMatchGame() {
   // WebRTC refs
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
-  const qrScannerRef = useRef<any>(null);
+  const qrScannerRef = useRef<Html5Qrcode | null>(null);
 
   // Audio Context for sound synthesis (no asset files required)
   const playSound = (type: "correct" | "error" | "win") => {
     try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (!AudioCtx) return;
       const ctx = new AudioCtx();
       
@@ -190,24 +218,12 @@ export default function SpeedMatchGame() {
   };
 
   // Particles generator
-  const [particles, setParticles] = useState<{ id: number; x: number; y: number; tx: number; ty: number }[]>([]);
+  const [particles, setParticles] = useState<Particle[]>([]);
   const createParticles = (x: number, y: number) => {
-    const numParticles = 8;
-    const newParticles: typeof particles = [];
-    for (let i = 0; i < numParticles; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const distance = 40 + Math.random() * 60;
-      newParticles.push({
-        id: Date.now() + Math.random(),
-        x,
-        y,
-        tx: Math.cos(angle) * distance,
-        ty: Math.sin(angle) * distance
-      });
-    }
+    const newParticles = generateParticles(x, y);
     setParticles(prev => [...prev, ...newParticles]);
     setTimeout(() => {
-      setParticles(prev => prev.slice(numParticles));
+      setParticles(prev => prev.slice(newParticles.length));
     }, 600);
   };
 
@@ -566,10 +582,9 @@ export default function SpeedMatchGame() {
           style={{
             left: `${p.x}px`,
             top: `${p.y}px`,
-            // @ts-ignore
             "--tx": `${p.tx}px`,
             "--ty": `${p.ty}px`
-          }}
+          } as React.CSSProperties}
         />
       ))}
 
@@ -666,7 +681,7 @@ export default function SpeedMatchGame() {
                   onClick={startCameraScanner}
                   className="w-full py-3 bg-[#FF75A0] hover:bg-[#D95A82] text-white font-bold rounded-full shadow-md text-sm transition-all"
                 >
-                  Step 2: Scan Guest's QR Answer Code
+                  Step 2: Scan Guest&apos;s QR Answer Code
                 </button>
               </div>
             )}
