@@ -15,7 +15,8 @@ import {
   ToggleRight,
   Upload,
   Image as ImageIcon,
-  Sparkles
+  Sparkles,
+  RotateCcw
 } from 'lucide-react';
 
 export default function GameCMSManager() {
@@ -25,6 +26,7 @@ export default function GameCMSManager() {
   const updateGame = useAdminStore((state) => state.updateGame);
   const deleteGame = useAdminStore((state) => state.deleteGame);
   const togglePremiumGame = useAdminStore((state) => state.togglePremiumGame);
+  const resetGamesToDefaults = useAdminStore((state) => state.resetGamesToDefaults);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -186,13 +188,28 @@ export default function GameCMSManager() {
           />
         </div>
 
-        <Button
-          onClick={handleOpenAddModal}
-          variant="primary"
-          className="flex items-center gap-2 text-xs py-3 w-full sm:w-auto shadow-md"
-        >
-          <Plus className="w-4 h-4" /> Añadir Nuevo Juego
-        </Button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button
+            onClick={() => {
+              if (confirm('¿Restaurar los juegos por defecto del sistema? Esto sobrescribirá los títulos y descripciones por defecto.')) {
+                resetGamesToDefaults();
+                showToast('¡Juegos restaurados por defecto con éxito!');
+              }
+            }}
+            variant="outline"
+            className="flex items-center gap-2 text-xs py-3 w-full sm:w-auto"
+          >
+            <RotateCcw className="w-4 h-4" /> Restaurar Por Defecto
+          </Button>
+
+          <Button
+            onClick={handleOpenAddModal}
+            variant="primary"
+            className="flex items-center gap-2 text-xs py-3 w-full sm:w-auto shadow-md"
+          >
+            <Plus className="w-4 h-4" /> Añadir Nuevo Juego
+          </Button>
+        </div>
       </div>
 
       {/* GAMES CMS DATA TABLE */}

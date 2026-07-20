@@ -85,6 +85,7 @@ interface AdminState {
   updateGame: (id: string, updated: Partial<Game>) => void;
   togglePremiumGame: (id: string) => void;
   deleteGame: (id: string) => void;
+  resetGamesToDefaults: () => void;
 
   // Users
   users: User[];
@@ -121,28 +122,34 @@ interface AdminState {
   resetPagesToDefaults: () => void;
 }
 
-// Initial Mock Games
+// Initial Default Games
 const initialGames: Game[] = [
   {
     id: 'imposter',
-    title: 'Who is the Imposter?',
-    description: 'Our flagship social deduction game. One player receives a secret identity while the rest try to identify them through subtle questioning. High interaction, zero screen staring.',
+    title: '¿Quién es el Impostor?',
+    titleEn: 'Who is the Imposter?',
+    description: 'Nuestro juego insignia de deducción social. Un jugador recibe una identidad secreta mientras los demás intentan descubrirlo mediante preguntas sutiles. Alta interacción cara a cara.',
+    descriptionEn: 'Our flagship social deduction game. One player receives a secret identity while the rest try to identify them through subtle questioning. High interaction, zero screen staring.',
     category: 'logic',
     minPlayers: 3,
     maxPlayers: 8,
     isPremium: false,
     status: 'active',
     emoji: '🕵️‍♀️',
+    coverImage: '/images/imposter-logo.png',
+    logoUrl: '/images/imposter-logo.png',
     variables: JSON.stringify({
-      topics: ['Animals', 'Food', 'Cities', 'Sports'],
+      topics: ['Animales Salvajes', 'Gastronomía', 'Ciudades del Mundo', 'Deportes'],
       timeLimit: 120,
       imposterCount: 1
     }, null, 2)
   },
   {
     id: 'pattern-path',
-    title: 'Pattern Path',
-    description: 'A cooperative memory game. The device shows a path of colors and sounds. Pass the phone and recreate the sequence together. Great for cognitive bonding.',
+    title: 'Camino de Patrones',
+    titleEn: 'Pattern Path',
+    description: 'Un juego cooperativo de memoria visual. El dispositivo muestra una secuencia de colores y sonidos. Pasa el teléfono y recreen el patrón juntos.',
+    descriptionEn: 'A cooperative memory game. The device shows a path of colors and sounds. Pass the phone and recreate the sequence together. Great for cognitive bonding.',
     category: 'memory',
     minPlayers: 2,
     maxPlayers: 4,
@@ -157,8 +164,10 @@ const initialGames: Game[] = [
   },
   {
     id: 'reaction-rush',
-    title: 'Reaction Rush',
-    description: 'Put the phone flat on the table. When your color flashes, be the first to tap your corner of the screen. Fast, chaotic, and incredibly fun for kids.',
+    title: 'Reacción Veloz',
+    titleEn: 'Reaction Rush',
+    description: 'Pon el teléfono plano sobre la mesa. Cuando tu color parpadee, sé el primero en tocar tu esquina de la pantalla. Rápido, caótico y divertido.',
+    descriptionEn: 'Put the phone flat on the table. When your color flashes, be the first to tap your corner of the screen. Fast, chaotic, and incredibly fun for kids.',
     category: 'speed',
     minPlayers: 2,
     maxPlayers: 6,
@@ -169,6 +178,23 @@ const initialGames: Game[] = [
       rounds: 5,
       randomDelayMax: 4000,
       penaltyForFalseStart: true
+    }, null, 2)
+  },
+  {
+    id: 'speed-match',
+    title: 'Encuentro Veloz (Dobble P2P)',
+    titleEn: 'Speed Match (Dobble P2P)',
+    description: 'El clásico juego de emparejar. ¡Conéctate por WebRTC y sé el primero en encontrar el símbolo coincidente entre tu carta y la del centro!',
+    descriptionEn: 'The classic matching game. Connect via serverless WebRTC and be the first to find the matching symbol between your card and the center card!',
+    category: 'speed',
+    minPlayers: 1,
+    maxPlayers: 2,
+    isPremium: false,
+    status: 'active',
+    emoji: '🃏',
+    variables: JSON.stringify({
+      cardsPerDeck: 31,
+      symbolsPerCard: 6
     }, null, 2)
   }
 ];
@@ -313,6 +339,22 @@ export const useAdminStore = create<AdminState>()(
       deleteGame: (id) => set((state) => ({
         games: state.games.filter((g) => g.id !== id)
       })),
+      resetGamesToDefaults: () => set((state) => {
+        const nextSiteTranslations = {
+          es: { ...state.siteTranslations.es },
+          en: { ...state.siteTranslations.en },
+        };
+        initialGames.forEach((g) => {
+          nextSiteTranslations.es[`game.${g.id}.title`] = g.title;
+          nextSiteTranslations.es[`game.${g.id}.desc`] = g.description;
+          if (g.titleEn) nextSiteTranslations.en[`game.${g.id}.title`] = g.titleEn;
+          if (g.descriptionEn) nextSiteTranslations.en[`game.${g.id}.desc`] = g.descriptionEn;
+        });
+        return {
+          games: initialGames,
+          siteTranslations: nextSiteTranslations
+        };
+      }),
 
       // Users Management
       users: initialUsers,
