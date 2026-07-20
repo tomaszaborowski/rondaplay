@@ -7,6 +7,7 @@ import { useAdminStore } from '@/store/adminStore';
 import type { ContentBlock } from '@/store/adminStore';
 import { useLanguage } from '@/context/LanguageContext';
 import { useParams } from 'next/navigation';
+import { Footer } from '@/components/Footer';
 
 function BlockRenderer({ block }: { block: ContentBlock }) {
   switch (block.type) {
@@ -63,11 +64,16 @@ function BlockRenderer({ block }: { block: ContentBlock }) {
 
 export default function PublicPageRenderer() {
   const params = useParams();
-  const slug = params.slug as string;
+  const rawSlug = (params.slug as string) || '';
   const pages = useAdminStore((s) => s.pages);
   const { t } = useLanguage();
 
-  const page = pages.find((p) => p.slug === slug && p.status === 'published');
+  const targetSlug = rawSlug.replace(/^\/?(pages\/)?/, '').toLowerCase();
+
+  const page = pages.find((p) => {
+    const cleanPageSlug = (p.slug || '').replace(/^\/?(pages\/)?/, '').toLowerCase();
+    return cleanPageSlug === targetSlug && p.status === 'published';
+  });
 
   if (!page) {
     return (
@@ -86,11 +92,7 @@ export default function PublicPageRenderer() {
             ← Volver al inicio
           </Link>
         </div>
-        <footer className="bg-ronda-slate text-white/60 py-10 border-t-8 border-ronda-teal">
-          <div className="max-w-7xl mx-auto px-6 text-center text-sm font-body">
-            {t('footer.copy')}
-          </div>
-        </footer>
+        <Footer />
       </div>
     );
   }
@@ -155,29 +157,7 @@ export default function PublicPageRenderer() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-ronda-slate text-white/60 py-12 border-t-8 border-ronda-teal">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <Link href="/" className="flex items-center gap-3">
-            <Image
-              src="/logo.png"
-              alt="Ronda Play Logo"
-              width={120}
-              height={40}
-              className="h-8 md:h-10 w-auto opacity-90 hover:opacity-100 transition-opacity"
-            />
-          </Link>
-          <div className="text-sm font-body">{t('footer.copy')}</div>
-          <div className="flex gap-6 text-sm font-body font-semibold">
-            <Link href="/pages/politica-de-privacidad" className="hover:text-white transition-colors">
-              {t('footer.privacy')}
-            </Link>
-            <Link href="/pages/terminos-y-condiciones" className="hover:text-white transition-colors">
-              {t('footer.terms')}
-            </Link>
-            <Link href="/contact" className="hover:text-white transition-colors">{t('footer.contact')}</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

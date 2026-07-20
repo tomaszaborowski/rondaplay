@@ -39,9 +39,26 @@ export const GameCard: React.FC<GameCardProps> = ({
 }) => {
   const { t } = useLanguage();
 
-  const title       = titleKey   ? t(titleKey)   : (titleProp   ?? '');
-  const description = descKey    ? t(descKey)    : (descProp    ?? '');
-  const players     = playersKey ? t(playersKey) : (playersProp ?? '');
+  // Inferred translation keys based on slug / game id
+  const inferredTitleKey   = titleKey   || (slug ? `game.${slug}.title`   : undefined);
+  const inferredDescKey    = descKey    || (slug ? `game.${slug}.desc`    : undefined);
+  const inferredPlayersKey = playersKey || (slug ? `game.${slug}.players` : undefined);
+
+  const translatedTitle   = inferredTitleKey   ? t(inferredTitleKey)   : undefined;
+  const translatedDesc    = inferredDescKey    ? t(inferredDescKey)    : undefined;
+  const translatedPlayers = inferredPlayersKey ? t(inferredPlayersKey) : undefined;
+
+  const title = (translatedTitle && translatedTitle !== inferredTitleKey)
+    ? translatedTitle
+    : (titleProp ?? '');
+
+  const description = (translatedDesc && translatedDesc !== inferredDescKey)
+    ? translatedDesc
+    : (descProp ?? '');
+
+  const players = (translatedPlayers && translatedPlayers !== inferredPlayersKey)
+    ? translatedPlayers
+    : (playersProp ?? '');
 
   let headerBg = 'bg-ronda-purple';
   let tagBg = 'text-ronda-purple';

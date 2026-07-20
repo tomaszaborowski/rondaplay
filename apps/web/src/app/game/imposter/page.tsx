@@ -478,31 +478,36 @@ export default function ImposterGame() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] text-[#1A1A1A] font-montserrat pt-8 pb-12 px-4 relative overflow-hidden flex flex-col items-center select-none">
+    <div className="min-h-screen bg-[#F9FAFB] text-[#2B2D42] font-body pt-6 pb-16 px-4 relative overflow-hidden flex flex-col items-center select-none">
+      {/* Ambient Glow Bubbles */}
+      <div className="absolute top-10 left-5 w-48 h-48 bg-[#34c2b2] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float pointer-events-none" />
+      <div className="absolute bottom-10 right-5 w-60 h-60 bg-[#ff75a0] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float pointer-events-none" />
       
       {/* ── HEADER NAVIGATION ── */}
       <header className="w-full max-w-md px-2 flex justify-between items-center mb-6 z-10 shrink-0">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button 
             onClick={() => window.location.href = '/'}
-            className="p-2 bg-white/80 hover:bg-white border border-black/10 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer"
+            className="p-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer text-slate-700"
             title="Volver al Inicio"
           >
-            <ArrowRight className="w-4 h-4 text-black rotate-180" />
+            <ArrowRight className="w-4 h-4 rotate-180" />
           </button>
-          <h1 className="text-lg font-black tracking-tighter uppercase text-[#1A1A1A]">
-            ¿Quién es el Impostor?
-          </h1>
+          <img 
+            src="/images/imposter-logo.png" 
+            alt="Impostor Logo" 
+            className="h-9 w-auto object-contain drop-shadow-sm" 
+          />
         </div>
         {isPremium && (
-          <span className="bg-[#D4FF33] text-[#1A1A1A] text-[10px] font-black px-2.5 py-1 rounded-full uppercase shadow-sm">
+          <span className="bg-gradient-to-r from-[#006a61] to-[#34c2b2] text-white text-[10px] font-fredoka font-bold px-3 py-1 rounded-full uppercase shadow-sm">
             Premium ⭐
           </span>
         )}
       </header>
 
       {/* ── MAIN CONTENT LAYOUT ── */}
-      <main className="flex-1 w-full max-w-md px-6 flex flex-col justify-center relative z-0">
+      <main className="flex-1 w-full max-w-md px-2 flex flex-col justify-center relative z-10">
         <AnimatePresence mode="wait">
 
           {/* ──────────────────────────────────────────────────────── */}
@@ -514,60 +519,60 @@ export default function ImposterGame() {
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 100 }}
-              className="absolute inset-0 bg-[#F5F5F5] z-50 p-6 flex flex-col justify-between"
+              className="absolute inset-0 bg-[#F9FAFB] z-50 p-6 flex flex-col justify-between rounded-3xl"
             >
               <div className="flex justify-between items-center">
-                <span className="text-sm font-bold uppercase tracking-widest text-[#FF4C4C]">RondaPlay Pro</span>
-                <button onClick={() => setShowPaywall(false)} className="p-2 hover:bg-black/5 rounded-full">
+                <span className="text-xs font-fredoka font-bold uppercase tracking-widest text-[#d95a82]">RondaPlay Pro</span>
+                <button onClick={() => setShowPaywall(false)} className="p-2 hover:bg-slate-100 rounded-full text-slate-500">
                   <X className="w-6 h-6" />
                 </button>
               </div>
 
               {purchaseSuccess ? (
                 <div className="flex-grow flex flex-col items-center justify-center space-y-4">
-                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-500 text-4xl animate-bounce">
+                  <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-500 text-4xl animate-bounce">
                     ✓
                   </div>
-                  <h2 className="text-2xl font-black text-center">¡Compra Completada!</h2>
-                  <p className="text-sm text-gray-500">Ya eres miembro Premium de RondaPlay.</p>
+                  <h2 className="text-2xl font-fredoka font-bold text-center text-[#431c5d]">¡Compra Completada!</h2>
+                  <p className="text-sm text-slate-500 font-body">Ya eres miembro Premium de RondaPlay.</p>
                 </div>
               ) : (
                 <div className="flex-grow flex flex-col justify-center space-y-8 my-6">
                   <div className="text-center space-y-3">
-                    <div className="w-20 h-20 bg-[#D4FF33] rounded-3xl flex items-center justify-center mx-auto text-4xl shadow-md rotate-3">
+                    <div className="w-20 h-20 bg-gradient-to-tr from-[#006a61] to-[#34c2b2] rounded-3xl flex items-center justify-center mx-auto text-4xl shadow-md rotate-3 text-white">
                       ⭐
                     </div>
-                    <h2 className="text-3xl font-black tracking-tight">Desbloquea RondaPlay Premium</h2>
-                    <p className="text-sm text-gray-600 max-w-xs mx-auto">
+                    <h2 className="text-3xl font-fredoka font-extrabold tracking-tight text-[#431c5d]">Desbloquea RondaPlay Premium</h2>
+                    <p className="text-sm text-slate-600 font-body max-w-xs mx-auto">
                       Accede a todas las categorías exclusivas, elimina todos los anuncios y juega partidas online ilimitadas con amigos.
                     </p>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="bg-white rounded-3xl p-5 border-2 border-[#1A1A1A] shadow-md flex justify-between items-center relative overflow-hidden">
-                      <div className="absolute top-0 right-0 bg-[#D4FF33] text-[9px] font-black uppercase px-3 py-1 rounded-bl-xl border-l border-b border-[#1A1A1A]">
+                    <div className="bg-white rounded-3xl p-5 border-2 border-[#006a61] shadow-md flex justify-between items-center relative overflow-hidden">
+                      <div className="absolute top-0 right-0 bg-[#006a61] text-white text-[9px] font-fredoka font-bold uppercase px-3 py-1 rounded-bl-xl">
                         3 Días Gratis
                       </div>
                       <div className="space-y-1">
-                        <span className="text-sm font-black uppercase">Plan Anual</span>
-                        <p className="text-xs text-gray-500">Paga una vez al año. Cancela cuando quieras.</p>
+                        <span className="text-sm font-fredoka font-bold uppercase text-[#431c5d]">Plan Anual</span>
+                        <p className="text-xs text-slate-500 font-body">Paga una vez al año. Cancela cuando quieras.</p>
                       </div>
                       <button 
                         onClick={() => handleSimulatePurchase('annual')}
-                        className="py-2.5 px-4 bg-[#D4FF33] hover:bg-[#bce62b] border border-[#1A1A1A] rounded-full font-black text-xs shadow"
+                        className="py-2.5 px-4 bg-[#006a61] hover:bg-[#00524b] text-white rounded-full font-fredoka font-bold text-xs shadow cursor-pointer transition-all"
                       >
                         $9.99 / año
                       </button>
                     </div>
 
-                    <div className="bg-white rounded-3xl p-5 border border-black/10 shadow flex justify-between items-center">
+                    <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex justify-between items-center">
                       <div className="space-y-1">
-                        <span className="text-sm font-black uppercase">Plan Semanal</span>
-                        <p className="text-xs text-gray-500">Suscripción recurrente semanal.</p>
+                        <span className="text-sm font-fredoka font-bold uppercase text-[#431c5d]">Plan Semanal</span>
+                        <p className="text-xs text-slate-500 font-body">Suscripción recurrente semanal.</p>
                       </div>
                       <button 
                         onClick={() => handleSimulatePurchase('weekly')}
-                        className="py-2.5 px-4 bg-[#1A1A1A] hover:bg-[#2d2d2d] text-white rounded-full font-black text-xs shadow"
+                        className="py-2.5 px-4 bg-[#431c5d] hover:bg-[#341549] text-white rounded-full font-fredoka font-bold text-xs shadow cursor-pointer transition-all"
                       >
                         $1.99 / sem
                       </button>
@@ -577,12 +582,12 @@ export default function ImposterGame() {
               )}
 
               <div className="text-center space-y-4">
-                <span className="text-[10px] text-gray-400 block max-w-xs mx-auto">
+                <span className="text-[10px] text-slate-400 block max-w-xs mx-auto font-body">
                   La facturación se realiza a través de su cuenta de Apple App Store o Google Play Store. Puede cancelar en cualquier momento en los ajustes de su cuenta.
                 </span>
                 <button 
                   onClick={() => handleSimulatePurchase('annual')}
-                  className="text-xs font-black underline tracking-wide block mx-auto"
+                  className="text-xs font-bold text-[#d95a82] hover:underline tracking-wide block mx-auto font-body cursor-pointer"
                 >
                   Restaurar Compras
                 </button>
@@ -599,31 +604,31 @@ export default function ImposterGame() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/90 z-50 p-6 flex flex-col justify-between text-white"
+              className="absolute inset-0 bg-[#2C0247]/95 z-50 p-6 flex flex-col justify-between text-white rounded-3xl"
             >
               <div className="flex justify-between items-center">
-                <span className="text-xs font-bold text-gray-400 tracking-wider">ANUNCIO SPONSOR</span>
+                <span className="text-xs font-fredoka font-bold text-white/60 tracking-wider">ANUNCIO SPONSOR</span>
                 {adCountdown === 0 ? (
                   <button 
                     onClick={() => setShowAd(false)}
-                    className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center font-bold"
+                    className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center font-bold text-white cursor-pointer"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 ) : (
-                  <span className="text-xs bg-white/10 px-3 py-1.5 rounded-full font-bold">
+                  <span className="text-xs bg-white/20 px-3 py-1.5 rounded-full font-bold">
                     Cerrar en {adCountdown}s
                   </span>
                 )}
               </div>
 
               <div className="flex-grow flex flex-col items-center justify-center space-y-4">
-                <div className="text-7xl">🎮</div>
-                <h3 className="text-2xl font-black text-center uppercase tracking-tighter text-[#D4FF33]">Al Toque Games</h3>
-                <p className="text-sm text-gray-300 text-center max-w-xs">
+                <div className="text-7xl animate-bounce">🎮</div>
+                <h3 className="text-3xl font-fredoka font-extrabold text-center uppercase tracking-tight text-[#34c2b2]">RondaPlay Games</h3>
+                <p className="text-sm text-white/80 text-center max-w-xs font-body leading-relaxed">
                   Prueba nuestros otros juegos de cartas y mesa en la app de RondaPlay. ¡Diversión garantizada!
                 </p>
-                <button className="py-3 px-6 bg-[#D4FF33] text-black font-black rounded-full uppercase text-xs tracking-wider border-b-4 border-[#A3CC00]">
+                <button className="tactile-button-teal bg-[#006a61] text-white py-3.5 px-8 rounded-full font-fredoka font-bold uppercase text-sm tracking-wider shadow-lg cursor-pointer">
                   Descargar Gratis
                 </button>
               </div>
@@ -634,7 +639,7 @@ export default function ImposterGame() {
                     setShowAd(false);
                     setShowPaywall(true);
                   }}
-                  className="text-xs text-gray-400 underline"
+                  className="text-xs text-white/70 hover:text-white underline font-body cursor-pointer"
                 >
                   Eliminar Anuncios con Premium ⭐
                 </button>
@@ -654,32 +659,32 @@ export default function ImposterGame() {
               className="space-y-6"
             >
               <div className="text-center space-y-2">
-                <span className="bg-red-100 text-red-500 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                  Modo Online
+                <span className="bg-red-50 text-[#d95a82] border border-red-200 px-4 py-1 rounded-full text-xs font-fredoka font-bold uppercase tracking-wider">
+                  Modo Online 🌐
                 </span>
-                <h2 className="text-3xl font-black uppercase">Únete a la Sala</h2>
-                <p className="text-gray-500 text-sm">
+                <h2 className="text-3xl font-fredoka font-extrabold text-[#431c5d] uppercase">Únete a la Sala</h2>
+                <p className="text-slate-500 text-sm font-body">
                   {isHost ? "Ingresa tu nombre para crear la sala de juego." : "Ingresa tu nombre para unirte al juego de tu amigo."}
                 </p>
               </div>
 
-              <div className="bg-white rounded-3xl p-6 shadow-md border border-gray-100 space-y-6">
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-6">
                 <div className="space-y-2">
-                  <label className="text-xs font-black uppercase text-gray-400">Tu Apodo / Nombre</label>
+                  <label className="text-xs font-fredoka font-bold uppercase text-slate-400">Tu Apodo / Nombre</label>
                   <input
                     type="text"
                     maxLength={12}
                     placeholder="Ej. Tomas"
                     value={onlinePlayerName}
                     onChange={(e) => setOnlinePlayerName(e.target.value)}
-                    className="w-full bg-[#F5F5F5] rounded-2xl border border-black/10 px-4 py-3 text-lg font-bold outline-none focus:border-[#D4FF33]"
+                    className="w-full bg-slate-50 rounded-2xl border border-slate-200 px-4 py-3 text-lg font-bold outline-none focus:border-[#006a61] text-[#2B2D42]"
                   />
                 </div>
 
                 <button
                   onClick={isHost ? handleCreateOnlineLobby : handleJoinOnlineLobby}
                   disabled={!onlinePlayerName.trim()}
-                  className="w-full py-4 bg-[#D4FF33] disabled:opacity-50 text-[#1A1A1A] font-black rounded-2xl uppercase tracking-wider text-base shadow border-b-4 border-[#A3CC00] active:translate-y-1 active:border-b-0 transition-all"
+                  className="tactile-button-teal w-full py-4 bg-[#006a61] disabled:opacity-50 text-white font-fredoka font-bold rounded-full uppercase tracking-wider text-base shadow-md cursor-pointer transition-all"
                 >
                   {isHost ? "Crear Sala de Juego" : "Entrar a la Partida"}
                 </button>
@@ -689,7 +694,7 @@ export default function ImposterGame() {
                     setGameMode('local');
                     setLobbyId(null);
                   }}
-                  className="w-full text-center text-xs font-bold text-gray-400 underline"
+                  className="w-full text-center text-xs font-bold text-slate-400 hover:text-slate-600 underline font-body cursor-pointer"
                 >
                   Volver al Modo Local
                 </button>
@@ -706,7 +711,7 @@ export default function ImposterGame() {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
-              className="space-y-6 flex flex-col h-full justify-between"
+              className="space-y-5 flex flex-col h-full justify-between"
             >
               
               {/* Stacked Config Cards */}
@@ -714,12 +719,12 @@ export default function ImposterGame() {
                 
                 {/* Mode Selector pills */}
                 {gameMode === 'local' && (
-                  <div className="bg-white p-1 rounded-full border border-black/10 flex shadow-sm">
+                  <div className="bg-slate-200/70 p-1.5 rounded-full border border-slate-200 flex shadow-inner">
                     <button
                       onClick={() => setGameMode('local')}
-                      className="flex-1 py-2 text-center rounded-full font-black text-xs uppercase bg-[#1A1A1A] text-white shadow-sm"
+                      className="flex-1 py-2.5 text-center rounded-full font-fredoka text-xs font-bold uppercase bg-[#006a61] text-white shadow-md transition-all cursor-pointer"
                     >
-                      Pasa y Juega (Local)
+                      📱 Pasa y Juega (Local)
                     </button>
                     <button
                       onClick={() => {
@@ -727,32 +732,32 @@ export default function ImposterGame() {
                         setIsHost(true);
                         setHasJoinedOnline(false);
                       }}
-                      className="flex-1 py-2 text-center rounded-full font-black text-xs uppercase text-gray-400 hover:text-black"
+                      className="flex-1 py-2.5 text-center rounded-full font-fredoka text-xs font-bold uppercase text-slate-500 hover:text-slate-800 transition-all cursor-pointer"
                     >
-                      Multijugador Online
+                      🌐 Multijugador Online
                     </button>
                   </div>
                 )}
 
                 {/* Online Lobby Status Details */}
                 {gameMode === 'online' && (
-                  <div className="bg-[#1A1A1A] text-white p-5 rounded-3xl space-y-3 shadow-md border-b-4 border-black">
+                  <div className="bg-[#431c5d] text-white p-5 rounded-3xl space-y-3 shadow-md border-b-4 border-[#2c0247]">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-black uppercase text-[#D4FF33] tracking-widest">Sala Online Activa</span>
+                      <span className="text-[10px] font-fredoka font-bold uppercase text-[#34c2b2] tracking-widest">Sala Online Activa</span>
                       <button 
                         onClick={handleShareSession}
-                        className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white"
+                        className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white cursor-pointer"
                       >
                         <Share2 className="w-4 h-4" />
                       </button>
                     </div>
-                    <h3 className="text-xl font-black">CÓDIGO: {lobbyId}</h3>
-                    <p className="text-xs text-white/60">
+                    <h3 className="text-xl font-fredoka font-bold tracking-wider">CÓDIGO: {lobbyId}</h3>
+                    <p className="text-xs text-white/80 font-body">
                       Comparte el enlace de abajo con tus amigos para que se unan desde sus celulares.
                     </p>
                     <button 
                       onClick={handleShareSession}
-                      className="w-full py-2.5 bg-white/10 rounded-xl text-xs font-black uppercase flex items-center justify-center gap-1 border border-white/20"
+                      className="w-full py-2.5 bg-white/15 hover:bg-white/25 rounded-xl text-xs font-fredoka font-bold uppercase flex items-center justify-center gap-1.5 border border-white/20 cursor-pointer transition-colors"
                     >
                       Copiar Enlace de Invitación
                     </button>
@@ -768,20 +773,20 @@ export default function ImposterGame() {
                       alert("Solo el Anfitrión puede editar jugadores.");
                     }
                   }}
-                  className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 hover:border-black/10 cursor-pointer transition-all flex justify-between items-center"
+                  className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 hover:border-[#006a61]/30 cursor-pointer transition-all flex justify-between items-center card-shadow"
                 >
                   <div className="space-y-2 flex-1">
-                    <span className="text-xs uppercase tracking-wider text-gray-400 font-black">1. Jugadores ({players.length})</span>
+                    <span className="text-xs uppercase tracking-wider text-slate-400 font-fredoka font-bold">1. Jugadores ({players.length})</span>
                     <div className="flex flex-wrap gap-1.5 max-h-16 overflow-hidden">
                       {players.map((p, i) => (
-                        <span key={i} className="bg-[#F5F5F5] text-xs font-bold px-2.5 py-1 rounded-full">
+                        <span key={i} className="bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1 rounded-full font-body">
                           {p}
                         </span>
                       ))}
                     </div>
                   </div>
                   {(gameMode === 'local' || isHost) && (
-                    <Edit2 className="w-5 h-5 text-gray-300" />
+                    <Edit2 className="w-5 h-5 text-slate-300 ml-2" />
                   )}
                 </div>
 
@@ -794,21 +799,21 @@ export default function ImposterGame() {
                       alert("Solo el Anfitrión puede cambiar de categoría.");
                     }
                   }}
-                  className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 hover:border-black/10 cursor-pointer transition-all flex justify-between items-center"
+                  className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 hover:border-[#006a61]/30 cursor-pointer transition-all flex justify-between items-center card-shadow"
                 >
                   <div className="space-y-1 flex-grow">
-                    <span className="text-xs uppercase tracking-wider text-gray-400 font-black">2. Temas Seleccionados</span>
-                    <h3 className="text-lg font-black uppercase flex flex-wrap gap-1.5 pt-1">
+                    <span className="text-xs uppercase tracking-wider text-slate-400 font-fredoka font-bold">2. Temas Seleccionados</span>
+                    <h3 className="text-lg font-fredoka font-bold uppercase flex flex-wrap gap-1.5 pt-1">
                       {categories.map((cat) => (
-                        <span key={cat} className="flex items-center gap-1 bg-black/5 text-[#1A1A1A] text-[10px] px-2.5 py-1 rounded-full font-bold">
+                        <span key={cat} className="flex items-center gap-1 bg-teal-50 text-[#006a61] border border-teal-200 text-[11px] px-3 py-1 rounded-full font-bold">
                           {cat}
-                          {!CATEGORIES_DB[cat]?.free && <Lock className="w-3 h-3 text-[#FF4C4C] inline ml-0.5" />}
+                          {!CATEGORIES_DB[cat]?.free && <Lock className="w-3 h-3 text-[#d95a82] inline ml-0.5" />}
                         </span>
                       ))}
                     </h3>
                   </div>
                   {(gameMode === 'local' || isHost) && (
-                    <Edit2 className="w-5 h-5 text-gray-300 ml-2" />
+                    <Edit2 className="w-5 h-5 text-slate-300 ml-2" />
                   )}
                 </div>
 
@@ -821,14 +826,14 @@ export default function ImposterGame() {
                       alert("Solo el Anfitrión puede cambiar el número de impostores.");
                     }
                   }}
-                  className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 hover:border-black/10 cursor-pointer transition-all flex justify-between items-center"
+                  className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 hover:border-[#006a61]/30 cursor-pointer transition-all flex justify-between items-center card-shadow"
                 >
                   <div className="space-y-1">
-                    <span className="text-xs uppercase tracking-wider text-gray-400 font-black">3. Número de Impostores</span>
-                    <h3 className="text-lg font-black uppercase">{imposterCount} {imposterCount === 1 ? 'Impostor' : 'Impostores'}</h3>
+                    <span className="text-xs uppercase tracking-wider text-slate-400 font-fredoka font-bold">3. Número de Impostores</span>
+                    <h3 className="text-lg font-fredoka font-bold uppercase text-[#431c5d]">{imposterCount} {imposterCount === 1 ? 'Impostor' : 'Impostores'}</h3>
                   </div>
                   {(gameMode === 'local' || isHost) && (
-                    <Edit2 className="w-5 h-5 text-gray-300" />
+                    <Edit2 className="w-5 h-5 text-slate-300" />
                   )}
                 </div>
 
@@ -846,52 +851,52 @@ export default function ImposterGame() {
                       alert("Solo el Anfitrión puede cambiar la opción de pistas.");
                     }
                   }}
-                  className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 hover:border-black/10 cursor-pointer transition-all flex justify-between items-center"
+                  className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 hover:border-[#006a61]/30 cursor-pointer transition-all flex justify-between items-center card-shadow"
                 >
                   <div className="space-y-1">
-                    <span className="text-xs uppercase tracking-wider text-gray-400 font-black">4. Pista para el Impostor</span>
-                    <h3 className="text-sm font-black uppercase flex items-center gap-2 pt-0.5">
+                    <span className="text-xs uppercase tracking-wider text-slate-400 font-fredoka font-bold">4. Pista para el Impostor</span>
+                    <h3 className="text-sm font-fredoka font-bold uppercase flex items-center gap-2 pt-0.5">
                       {showHint ? (
-                        <span className="text-green-600 flex items-center gap-1 font-bold">💡 Activada <span className="text-[11px] text-gray-400 font-normal lowercase">(ve una pista)</span></span>
+                        <span className="text-emerald-600 flex items-center gap-1 font-bold">💡 Activada <span className="text-[11px] text-slate-400 font-normal font-body lowercase">(ve una pista)</span></span>
                       ) : (
-                        <span className="text-gray-400 flex items-center gap-1 font-bold">🚫 Desactivada <span className="text-[11px] text-gray-400 font-normal lowercase">(sin pistas)</span></span>
+                        <span className="text-slate-400 flex items-center gap-1 font-bold">🚫 Desactivada <span className="text-[11px] text-slate-400 font-normal font-body lowercase">(sin pistas)</span></span>
                       )}
                     </h3>
                   </div>
                   {(gameMode === 'local' || isHost) && (
-                    <div className={`w-12 h-7 rounded-full p-1 transition-colors ${showHint ? 'bg-[#D4FF33]' : 'bg-gray-200'}`}>
-                      <div className={`w-5 h-5 rounded-full bg-black shadow-md transform transition-transform ${showHint ? 'translate-x-5' : 'translate-x-0'}`} />
+                    <div className={`w-12 h-7 rounded-full p-1 transition-colors ${showHint ? 'bg-[#006a61]' : 'bg-slate-200'}`}>
+                      <div className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform ${showHint ? 'translate-x-5' : 'translate-x-0'}`} />
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Bottom Sticky Action Buttons */}
-              <div className="space-y-3 pt-6 border-t border-black/5 z-10 bg-[#F5F5F5] shrink-0">
+              <div className="space-y-3 pt-4 border-t border-slate-200 z-10 shrink-0">
                 <div className="flex gap-3">
                   <button 
                     onClick={handleShareSession}
-                    className="flex-1 py-3 bg-white border border-black/10 font-black rounded-2xl uppercase text-xs tracking-wider shadow-sm flex items-center justify-center gap-1"
+                    className="flex-1 py-3 bg-white border border-slate-200 font-fredoka font-bold text-slate-700 rounded-2xl uppercase text-xs tracking-wider shadow-sm flex items-center justify-center gap-1.5 hover:bg-slate-50 cursor-pointer"
                   >
-                    <Share2 className="w-3.5 h-3.5" /> Compartir
+                    <Share2 className="w-3.5 h-3.5 text-[#006a61]" /> Compartir
                   </button>
                   <button 
                     onClick={() => alert("¡Gracias por calificar RondaPlay!")}
-                    className="flex-1 py-3 bg-white border border-black/10 font-black rounded-2xl uppercase text-xs tracking-wider shadow-sm flex items-center justify-center gap-1"
+                    className="flex-1 py-3 bg-white border border-slate-200 font-fredoka font-bold text-slate-700 rounded-2xl uppercase text-xs tracking-wider shadow-sm flex items-center justify-center gap-1.5 hover:bg-slate-50 cursor-pointer"
                   >
                     ⭐ Reseñar
                   </button>
                 </div>
 
                 {gameMode === 'online' && !isHost ? (
-                  <div className="p-4 bg-white rounded-2xl text-center text-xs font-bold text-gray-400 border border-gray-200">
+                  <div className="p-4 bg-white rounded-2xl text-center text-xs font-bold text-slate-400 border border-slate-200 font-body">
                     Esperando a que el Anfitrión comience la partida...
                   </div>
                 ) : (
                   <button
                     onClick={gameMode === 'online' ? handleStartOnlineGame : startGame}
                     disabled={players.length < 3}
-                    className="w-full py-5 bg-[#D4FF33] disabled:opacity-50 text-[#1A1A1A] font-black rounded-2xl uppercase tracking-wider text-lg shadow border-b-4 border-[#A3CC00] active:translate-y-1 active:border-b-0 transition-all flex items-center justify-center gap-2"
+                    className="tactile-button-teal w-full py-4 bg-[#006a61] disabled:opacity-50 text-white font-fredoka font-bold rounded-full uppercase tracking-wider text-base shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
                   >
                     <Play className="w-5 h-5 fill-current" /> Comenzar Juego
                   </button>
@@ -911,12 +916,12 @@ export default function ImposterGame() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="space-y-6 text-center"
             >
-              <div className="space-y-2">
-                <span className="bg-[#FF4C4C]/10 text-[#FF4C4C] px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider">
-                  Fase de Revelación
+              <div className="flex flex-col items-center gap-3 mb-2">
+                <span className="bg-red-50 text-[#d95a82] border border-red-200 px-4 py-1.5 rounded-full text-xs font-fredoka font-bold uppercase tracking-wider inline-block shadow-xs">
+                  Fase de Revelación 🕵️‍♂️
                 </span>
-                <h2 className="text-3xl font-black uppercase">¿Quién eres?</h2>
-                <p className="text-gray-500 text-sm">
+                <h2 className="text-3xl font-fredoka font-extrabold text-[#431c5d] uppercase tracking-tight mt-1">¿Quién eres?</h2>
+                <p className="text-slate-500 text-sm font-body max-w-xs leading-relaxed">
                   {gameMode === 'online' && players[currentPlayerIndex] !== onlinePlayerName
                     ? `Esperando que ${players[currentPlayerIndex]} vea su carta...`
                     : "Pasa el dispositivo y mantén presionado para revelar tu palabra secreta."}
@@ -924,10 +929,10 @@ export default function ImposterGame() {
               </div>
 
               {(gameMode === 'local' || players[currentPlayerIndex] === onlinePlayerName) ? (
-                <div className="bg-white rounded-3xl p-6 shadow-md border border-gray-100 flex flex-col items-center space-y-6">
+                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col items-center space-y-6 card-shadow">
                   <div className="space-y-1">
-                    <span className="text-xs font-black uppercase text-gray-400">Turno de</span>
-                    <h3 className="text-3xl font-black tracking-tight">{players[currentPlayerIndex]}</h3>
+                    <span className="text-xs font-fredoka font-bold uppercase text-slate-400">Turno de</span>
+                    <h3 className="text-3xl font-fredoka font-extrabold text-[#431c5d] tracking-tight">{players[currentPlayerIndex]}</h3>
                   </div>
 
                   {/* Press and Hold Reveal Box */}
@@ -943,10 +948,10 @@ export default function ImposterGame() {
                       setIsHolding(false);
                       setRevealDone(true);
                     }}
-                    className={`w-full min-h-[180px] rounded-2xl border-4 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer select-none transition-all ${
+                    className={`w-full min-h-[190px] rounded-3xl border-4 border-dashed flex flex-col items-center justify-center cursor-pointer select-none transition-all p-4 ${
                       isHolding 
-                        ? 'bg-[#1A1A1A] border-transparent text-[#D4FF33]' 
-                        : 'bg-[#F5F5F5] hover:bg-black/5'
+                        ? 'bg-[#431c5d] border-transparent text-white shadow-xl scale-[1.02]' 
+                        : 'bg-slate-50 border-slate-200 hover:bg-slate-100/80'
                     }`}
                   >
                     {isHolding ? (
@@ -958,28 +963,28 @@ export default function ImposterGame() {
                         <span className="text-5xl block">
                           {imposters.includes(players[currentPlayerIndex]) ? '🕵️‍♂️' : '📦'}
                         </span>
-                        <h4 className="text-2xl font-black uppercase tracking-wide">
+                        <h4 className="text-2xl font-fredoka font-extrabold uppercase tracking-wide">
                           {imposters.includes(players[currentPlayerIndex]) ? "Eres el Impostor" : wordPair?.innocent}
                         </h4>
                         {!imposters.includes(players[currentPlayerIndex]) && (
-                          <span className="text-xs text-white/50 block">Eres un Ciudadano</span>
+                          <span className="text-xs text-white/80 font-body block">Eres un Ciudadano</span>
                         )}
                         {imposters.includes(players[currentPlayerIndex]) && (
                           <div className="space-y-1">
                             {showHint && wordPair?.hint && (
-                              <div className="mt-2 py-1.5 px-4 bg-white/10 rounded-xl border border-[#D4FF33]/30">
-                                <span className="text-[10px] text-[#D4FF33] font-bold uppercase tracking-wider block">💡 Tu Pista</span>
-                                <span className="text-base font-black text-white capitalize">{wordPair.hint}</span>
+                              <div className="mt-2 py-1.5 px-4 bg-white/15 rounded-2xl border border-white/20">
+                                <span className="text-[10px] text-[#34c2b2] font-fredoka font-bold uppercase tracking-wider block">💡 Tu Pista</span>
+                                <span className="text-base font-fredoka font-bold text-white capitalize">{wordPair.hint}</span>
                               </div>
                             )}
-                            <span className="text-xs text-[#FF4C4C] block font-black pt-1">Pasa desapercibido</span>
+                            <span className="text-xs text-[#ff75a0] block font-fredoka font-bold pt-1">Pasa desapercibido</span>
                           </div>
                         )}
                       </motion.div>
                     ) : (
                       <div className="space-y-3 p-4">
-                        <HelpCircle className="w-12 h-12 text-gray-300 mx-auto animate-pulse" />
-                        <p className="text-xs font-black uppercase tracking-wider text-gray-400">
+                        <HelpCircle className="w-12 h-12 text-slate-300 mx-auto animate-pulse" />
+                        <p className="text-xs font-fredoka font-bold uppercase tracking-wider text-slate-400">
                           Presiona y Mantén pulsado para revelar
                         </p>
                       </div>
@@ -990,24 +995,24 @@ export default function ImposterGame() {
                     {revealDone && !isHolding ? (
                       <button
                         onClick={handleRevealNext}
-                        className="w-full py-4 bg-[#D4FF33] text-black font-black rounded-2xl uppercase tracking-wider text-sm shadow border-b-4 border-[#A3CC00] active:translate-y-1 active:border-b-0 transition-all flex items-center justify-center gap-1"
+                        className="tactile-button-teal w-full py-4 bg-[#006a61] text-white font-fredoka font-bold rounded-full uppercase tracking-wider text-sm shadow-md flex items-center justify-center gap-1.5 cursor-pointer transition-all"
                       >
                         Siguiente Jugador <ArrowRight className="w-4 h-4" />
                       </button>
                     ) : (
-                      <div className="py-4 text-center text-xs text-gray-400 font-bold">
+                      <div className="py-3 text-center text-xs text-slate-400 font-bold font-body">
                         Debes ver tu palabra antes de continuar.
                       </div>
                     )}
                   </div>
                 </div>
               ) : (
-                <div className="bg-white rounded-3xl p-10 shadow-md border border-gray-100 flex flex-col items-center justify-center space-y-6">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ronda-teal"></div>
-                  <h3 className="text-lg font-black uppercase tracking-wide text-gray-400">
+                <div className="bg-white rounded-3xl p-10 shadow-sm border border-slate-100 flex flex-col items-center justify-center space-y-6 card-shadow">
+                  <div className="animate-spin rounded-full h-12 w-12 border-4 border-ronda-teal border-t-transparent"></div>
+                  <h3 className="text-lg font-fredoka font-bold uppercase tracking-wide text-slate-400">
                     Revelación en Curso
                   </h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-slate-500 font-body">
                     {players[currentPlayerIndex]} está viendo su palabra secreta en su celular.
                   </p>
                 </div>
@@ -1026,17 +1031,17 @@ export default function ImposterGame() {
               exit={{ opacity: 0, x: -50 }}
               className="space-y-6 text-center"
             >
-              <div className="space-y-2">
-                <span className="bg-[#D4FF33]/20 text-gray-700 px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider">
-                  Fase de Debate
+              <div className="flex flex-col items-center gap-3 mb-2">
+                <span className="bg-teal-50 text-[#006a61] border border-teal-200 px-4 py-1.5 rounded-full text-xs font-fredoka font-bold uppercase tracking-wider inline-block shadow-xs">
+                  Fase de Debate 🗣️
                 </span>
-                <h2 className="text-3xl font-black uppercase">¡Debatan!</h2>
-                <p className="text-gray-500 text-sm">
+                <h2 className="text-3xl font-fredoka font-extrabold text-[#431c5d] uppercase tracking-tight mt-1">¡Debatan!</h2>
+                <p className="text-slate-500 text-sm font-body max-w-xs leading-relaxed">
                   Hagan preguntas cortas para descubrir al impostor sin revelar su palabra secreta.
                 </p>
               </div>
 
-              <div className="bg-white rounded-3xl p-6 shadow-md border border-gray-100 flex flex-col items-center space-y-8">
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col items-center space-y-6 card-shadow">
                 
                 {/* Circular Countdown Timer */}
                 <div className="relative w-44 h-44 flex items-center justify-center">
@@ -1045,28 +1050,28 @@ export default function ImposterGame() {
                       cx="88"
                       cy="88"
                       r="76"
-                      stroke="#E5E5E5"
-                      strokeWidth="8"
+                      stroke="#F1F5F9"
+                      strokeWidth="10"
                       fill="transparent"
                     />
                     <circle
                       cx="88"
                       cy="88"
                       r="76"
-                      stroke={timeLeft <= 10 ? '#FF4C4C' : '#D4FF33'}
-                      strokeWidth="8"
+                      stroke={timeLeft <= 10 ? '#d95a82' : '#006a61'}
+                      strokeWidth="10"
                       fill="transparent"
                       strokeDasharray={2 * Math.PI * 76}
                       strokeDashoffset={2 * Math.PI * 76 * (1 - timeLeft / timerMax)}
-                      className="transition-all duration-1000"
+                      className="transition-all duration-1000 stroke-round"
                     />
                   </svg>
                   
                   <div className="text-center space-y-1">
-                    <span className="text-4xl font-black tracking-tight block">
+                    <span className="text-4xl font-fredoka font-extrabold tracking-tight block text-[#431c5d]">
                       {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
                     </span>
-                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Segundos</span>
+                    <span className="text-[10px] text-slate-400 font-fredoka font-bold uppercase tracking-wider">Segundos</span>
                   </div>
                 </div>
 
@@ -1076,30 +1081,30 @@ export default function ImposterGame() {
                     {isTimerRunning ? (
                       <button
                         onClick={handlePauseTimer}
-                        className="py-3 px-6 bg-[#1A1A1A] hover:bg-[#2d2d2d] text-white font-black rounded-xl uppercase text-xs tracking-wider shadow"
+                        className="py-3 px-6 bg-[#431c5d] hover:bg-[#341549] text-white font-fredoka font-bold rounded-full uppercase text-xs tracking-wider shadow cursor-pointer transition-all"
                       >
                         Pausar
                       </button>
                     ) : (
                       <button
                         onClick={handleStartTimer}
-                        className="py-3 px-6 bg-[#D4FF33] hover:bg-[#bce62b] text-black font-black rounded-xl uppercase text-xs tracking-wider shadow"
+                        className="py-3 px-6 bg-[#006a61] hover:bg-[#00524b] text-white font-fredoka font-bold rounded-full uppercase text-xs tracking-wider shadow cursor-pointer transition-all"
                       >
                         Iniciar
                       </button>
                     )}
                     <button
                       onClick={handleResetTimer}
-                      className="py-3 px-6 bg-white border border-black/10 font-black rounded-xl uppercase text-xs tracking-wider shadow-sm"
+                      className="py-3 px-6 bg-white border border-slate-200 font-fredoka font-bold text-slate-700 hover:bg-slate-50 rounded-full uppercase text-xs tracking-wider shadow-sm cursor-pointer transition-all"
                     >
                       Reiniciar
                     </button>
                   </div>
                 )}
 
-                <div className="w-full pt-4 border-t border-gray-100">
+                <div className="w-full pt-4 border-t border-slate-100">
                   {gameMode === 'online' && !isHost ? (
-                    <div className="p-4 bg-gray-50 rounded-2xl text-center text-xs font-bold text-gray-400">
+                    <div className="p-4 bg-slate-50 rounded-2xl text-center text-xs font-bold text-slate-400 font-body">
                       Esperando que el Anfitrión inicie la votación...
                     </div>
                   ) : (
@@ -1112,7 +1117,7 @@ export default function ImposterGame() {
                           useGameStore.setState({ gamePhase: 'vote', selectedVotes: {} });
                         }
                       }}
-                      className="w-full py-4 bg-[#D4FF33] text-black font-black rounded-2xl uppercase tracking-wider text-sm shadow border-b-4 border-[#A3CC00] active:translate-y-1 active:border-b-0 transition-all flex items-center justify-center gap-1.5"
+                      className="tactile-button-pink w-full py-4 bg-[#d95a82] text-white font-fredoka font-bold rounded-full uppercase tracking-wider text-sm shadow-md flex items-center justify-center gap-1.5 cursor-pointer transition-all"
                     >
                       <Vote className="w-4 h-4" /> Iniciar Votación
                     </button>
@@ -1133,12 +1138,12 @@ export default function ImposterGame() {
               exit={{ opacity: 0, x: -50 }}
               className="space-y-6"
             >
-              <div className="text-center space-y-2">
-                <span className="bg-[#FF4C4C]/10 text-[#FF4C4C] px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider">
-                  Fase de Votación
+              <div className="flex flex-col items-center gap-3 mb-2">
+                <span className="bg-red-50 text-[#d95a82] border border-red-200 px-4 py-1.5 rounded-full text-xs font-fredoka font-bold uppercase tracking-wider inline-block shadow-xs">
+                  Fase de Votación 🗳️
                 </span>
-                <h2 className="text-3xl font-black uppercase">¿Quién es sospechoso?</h2>
-                <p className="text-gray-500 text-sm">
+                <h2 className="text-3xl font-fredoka font-extrabold text-[#431c5d] uppercase tracking-tight mt-1">¿Quién es sospechoso?</h2>
+                <p className="text-slate-500 text-sm font-body max-w-xs leading-relaxed">
                   {gameMode === 'online' && players[voteIndex] !== onlinePlayerName
                     ? `Esperando que ${players[voteIndex]} elija su sospechoso...`
                     : "Cada jugador debe votar en secreto por quien cree que es el Impostor."}
@@ -1146,14 +1151,14 @@ export default function ImposterGame() {
               </div>
 
               {(gameMode === 'local' || players[voteIndex] === onlinePlayerName) ? (
-                <div className="bg-white rounded-3xl p-6 shadow-md border border-gray-100 space-y-6">
+                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-6 card-shadow">
                   <div className="text-center space-y-1">
-                    <span className="text-xs font-black uppercase text-gray-400">Vota ahora</span>
-                    <h3 className="text-3xl font-black tracking-tight">{players[voteIndex]}</h3>
+                    <span className="text-xs font-fredoka font-bold uppercase text-slate-400">Vota ahora</span>
+                    <h3 className="text-3xl font-fredoka font-extrabold text-[#431c5d] tracking-tight">{players[voteIndex]}</h3>
                   </div>
 
                   <div className="space-y-3">
-                    <p className="text-xs font-black uppercase text-gray-400 mb-2">Selecciona a un jugador:</p>
+                    <p className="text-xs font-fredoka font-bold uppercase text-slate-400 mb-2">Selecciona a un jugador:</p>
                     <div className="grid grid-cols-2 gap-3">
                       {players.map((suspect, idx) => {
                         if (suspect === players[voteIndex]) return null;
@@ -1163,10 +1168,10 @@ export default function ImposterGame() {
                             key={idx}
                             type="button"
                             onClick={() => handleVoteSubmit(players[voteIndex], suspect)}
-                            className={`py-4 px-4 rounded-2xl font-black text-sm transition-all border ${
+                            className={`py-4 px-4 rounded-2xl font-fredoka font-bold text-sm transition-all border cursor-pointer ${
                               isSelected
-                                ? 'bg-[#D4FF33] border-transparent text-[#1A1A1A] scale-105 shadow-md'
-                                : 'bg-[#F5F5F5] border-black/5 hover:bg-black/5 text-[#1A1A1A]'
+                                ? 'bg-[#d95a82] border-transparent text-white scale-105 shadow-md'
+                                : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-[#2B2D42]'
                             }`}
                           >
                             {suspect}
@@ -1176,8 +1181,8 @@ export default function ImposterGame() {
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
-                    <span className="text-xs font-bold text-gray-400">
+                  <div className="pt-4 border-t border-slate-100 flex justify-between items-center">
+                    <span className="text-xs font-bold text-slate-400 font-body">
                       Voto {voteIndex + 1} de {players.length}
                     </span>
                     
@@ -1185,30 +1190,30 @@ export default function ImposterGame() {
                       voteIndex + 1 < players.length ? (
                         <button
                           onClick={() => setVoteIndex(voteIndex + 1)}
-                          className="py-2.5 px-5 bg-[#1A1A1A] hover:bg-[#2d2d2d] text-white rounded-xl text-xs font-black uppercase flex items-center gap-1 shadow"
+                          className="py-2.5 px-5 bg-[#006a61] hover:bg-[#00524b] text-white rounded-full text-xs font-fredoka font-bold uppercase flex items-center gap-1.5 shadow cursor-pointer transition-all"
                         >
                           Siguiente Voto <ArrowRight className="w-4 h-4" />
                         </button>
                       ) : (
                         <button
                           onClick={gameMode === 'online' ? handleTallyVotesOnline : tallyVotes}
-                          className="py-2.5 px-5 bg-[#FF4C4C] hover:bg-[#d43f3f] text-white rounded-xl text-xs font-black uppercase flex items-center gap-1 shadow"
+                          className="py-2.5 px-5 bg-[#d95a82] hover:bg-[#c4496f] text-white rounded-full text-xs font-fredoka font-bold uppercase flex items-center gap-1.5 shadow cursor-pointer transition-all"
                         >
                           Mostrar Resultados <CheckCircle2 className="w-4 h-4" />
                         </button>
                       )
                     ) : (
-                      <span className="text-xs text-[#FF4C4C] font-black">Selecciona sospechoso</span>
+                      <span className="text-xs text-[#d95a82] font-fredoka font-bold">Selecciona sospechoso</span>
                     )}
                   </div>
                 </div>
               ) : (
-                <div className="bg-white rounded-3xl p-10 shadow-md border border-gray-100 flex flex-col items-center justify-center space-y-6">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF4C4C]"></div>
-                  <h3 className="text-lg font-black uppercase tracking-wide text-gray-400">
+                <div className="bg-white rounded-3xl p-10 shadow-sm border border-slate-100 flex flex-col items-center justify-center space-y-6 card-shadow">
+                  <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#d95a82] border-t-transparent"></div>
+                  <h3 className="text-lg font-fredoka font-bold uppercase tracking-wide text-slate-400">
                     Votando
                   </h3>
-                  <p className="text-sm text-gray-500 text-center">
+                  <p className="text-sm text-slate-500 text-center font-body">
                     {players[voteIndex]} está votando en su propio teléfono. ¡Espera un momento!
                   </p>
                 </div>
@@ -1227,39 +1232,39 @@ export default function ImposterGame() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="space-y-6"
             >
-              <div className="text-center space-y-2">
-                <span className="bg-[#D4FF33]/20 text-gray-700 px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider">
-                  Resultados de Ronda
+              <div className="flex flex-col items-center gap-3 mb-2">
+                <span className="bg-teal-50 text-[#006a61] border border-teal-200 px-4 py-1.5 rounded-full text-xs font-fredoka font-bold uppercase tracking-wider inline-block shadow-xs">
+                  Resultados de Ronda 🏆
                 </span>
-                <h2 className="text-3xl font-black uppercase text-[#1A1A1A]">Fin de la Partida</h2>
+                <h2 className="text-3xl font-fredoka font-extrabold uppercase text-[#431c5d] tracking-tight mt-1">Fin de la Partida</h2>
               </div>
 
-              <div className="bg-white rounded-3xl p-6 shadow-md border border-gray-100 flex flex-col items-center space-y-6">
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col items-center space-y-6 card-shadow">
                 <div className="text-center space-y-3">
-                  <div className="w-20 h-20 bg-[#D4FF33] rounded-full flex items-center justify-center mx-auto text-5xl animate-bounce">
+                  <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto text-5xl animate-bounce">
                     🏆
                   </div>
-                  <h3 className="text-3xl font-black uppercase tracking-tight">
+                  <h3 className="text-3xl font-fredoka font-extrabold uppercase tracking-tight text-[#431c5d]">
                     {winner === 'innocents' ? "Ganaron los Ciudadanos" : "Ganó el Impostor"}
                   </h3>
                 </div>
 
-                <div className="w-full space-y-3 text-sm border-t border-b border-gray-100 py-4 font-bold">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400 uppercase text-xs">Palabra Ciudadanos:</span>
-                    <span className="text-[#1A1A1A]">{wordPair?.innocent}</span>
+                <div className="w-full space-y-3 text-sm border-t border-b border-slate-100 py-4 font-bold font-body">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-400 uppercase text-xs">Palabra Ciudadanos:</span>
+                    <span className="text-[#2B2D42] font-fredoka text-base">{wordPair?.innocent}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400 uppercase text-xs">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-400 uppercase text-xs">
                       {wordPair?.hint ? "Pista del Impostor:" : "Palabra Impostor:"}
                     </span>
-                    <span className="text-[#FF4C4C]">{wordPair?.hint || wordPair?.imposter || "Ninguna"}</span>
+                    <span className="text-[#d95a82] font-fredoka text-base">{wordPair?.hint || wordPair?.imposter || "Ninguna"}</span>
                   </div>
-                  <div className="flex justify-between items-start">
-                    <span className="text-gray-400 uppercase text-xs">Impostores:</span>
+                  <div className="flex justify-between items-start pt-1">
+                    <span className="text-slate-400 uppercase text-xs">Impostores:</span>
                     <div className="flex flex-wrap gap-1.5 justify-end max-w-xs">
                       {imposters.map((imp, idx) => (
-                        <span key={idx} className="bg-red-50 text-[#FF4C4C] text-[10px] px-2 py-0.5 rounded-full uppercase">
+                        <span key={idx} className="bg-red-50 text-[#d95a82] border border-red-200 text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase">
                           {imp}
                         </span>
                       ))}
@@ -1269,18 +1274,18 @@ export default function ImposterGame() {
 
                 {/* Scoreboard History */}
                 <div className="w-full space-y-3">
-                  <h4 className="text-xs font-black uppercase tracking-wider text-gray-400">Tabla de Puntuaciones Acumuladas</h4>
-                  <div className="bg-[#F5F5F5] rounded-2xl p-4 space-y-2 border border-black/5">
+                  <h4 className="text-xs font-fredoka font-bold uppercase tracking-wider text-slate-400">Tabla de Puntuaciones Acumuladas</h4>
+                  <div className="bg-slate-50 rounded-2xl p-4 space-y-2 border border-slate-100">
                     {players.map((player, idx) => {
                       const scoreVal = scoreboard[player] || 0;
                       const isImp = imposters.includes(player);
                       return (
-                        <div key={idx} className="flex justify-between items-center text-sm">
+                        <div key={idx} className="flex justify-between items-center text-sm font-body">
                           <div className="flex items-center gap-1.5">
-                            <span className="font-bold">{player}</span>
-                            {isImp && <span className="text-gray-400 text-[10px] uppercase font-bold">(Impostor)</span>}
+                            <span className="font-bold text-[#2B2D42]">{player}</span>
+                            {isImp && <span className="text-slate-400 text-[10px] uppercase font-bold">(Impostor)</span>}
                           </div>
-                          <span className="font-black text-[#1A1A1A] bg-white px-3 py-1 rounded-full text-xs border border-black/5 shadow-sm">
+                          <span className="font-fredoka font-bold text-[#006a61] bg-white px-3 py-1 rounded-full text-xs border border-slate-200 shadow-sm">
                             {scoreVal} Pts
                           </span>
                         </div>
@@ -1289,7 +1294,7 @@ export default function ImposterGame() {
                   </div>
                 </div>
 
-                <div className="w-full flex gap-3 pt-4 border-t border-gray-100">
+                <div className="w-full flex gap-3 pt-4 border-t border-slate-100">
                   <button
                     onClick={() => {
                       if (gameMode === 'online') {
@@ -1302,7 +1307,7 @@ export default function ImposterGame() {
                         resetGame();
                       }
                     }}
-                    className="flex-1 py-4 bg-[#D4FF33] text-black font-black rounded-2xl uppercase tracking-wider text-xs shadow border-b-4 border-[#A3CC00] active:translate-y-1 active:border-b-0 transition-all flex items-center justify-center gap-1"
+                    className="tactile-button-teal flex-1 py-4 bg-[#006a61] text-white font-fredoka font-bold rounded-full uppercase tracking-wider text-xs shadow-md flex items-center justify-center gap-1.5 cursor-pointer transition-all"
                   >
                     <RotateCcw className="w-4 h-4" /> Siguiente Ronda
                   </button>
@@ -1312,7 +1317,7 @@ export default function ImposterGame() {
                       resetGame();
                       resetScoreboard();
                     }}
-                    className="py-4 px-6 bg-white border border-black/10 text-gray-400 font-black rounded-2xl uppercase text-xs tracking-wider shadow-sm"
+                    className="py-4 px-5 bg-white border border-slate-200 text-slate-500 font-fredoka font-bold rounded-full uppercase text-xs tracking-wider shadow-sm hover:bg-slate-50 cursor-pointer transition-all"
                   >
                     Menú Principal
                   </button>
@@ -1329,7 +1334,7 @@ export default function ImposterGame() {
       {/* ──────────────────────────────────────────────────────── */}
       <AnimatePresence>
         {activeModal && (
-          <div className="fixed inset-0 bg-black/60 z-40 flex items-end justify-center select-none">
+          <div className="fixed inset-0 bg-black/60 z-40 flex items-end justify-center select-none backdrop-blur-xs">
             <div className="fixed inset-0" onClick={() => setActiveModal(null)} />
             
             <motion.div
@@ -1337,22 +1342,22 @@ export default function ImposterGame() {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="bg-white w-full max-w-md rounded-t-[2.5rem] p-6 space-y-6 z-50 border-t border-black/10 shadow-2xl relative"
+              className="bg-white w-full max-w-md rounded-t-[2.5rem] p-6 space-y-6 z-50 border-t border-slate-200 shadow-2xl relative"
             >
-              <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-2" />
+              <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-2" />
 
               {/* Modal header */}
               <div className="flex justify-between items-center">
-                <h3 className="text-xl font-black uppercase tracking-tight">
+                <h3 className="text-xl font-fredoka font-bold uppercase tracking-tight text-[#431c5d]">
                   {activeModal === 'players' && "Administrar Jugadores"}
                   {activeModal === 'categories' && "Seleccionar Temas"}
                   {activeModal === 'impostors' && "Número de Impostores"}
                 </h3>
                 <button 
                   onClick={() => setActiveModal(null)}
-                  className="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-full"
+                  className="p-1.5 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-500 cursor-pointer"
                 >
-                  <X className="w-4 h-4 text-gray-500" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
@@ -1366,19 +1371,19 @@ export default function ImposterGame() {
                       placeholder="Nombre del jugador"
                       value={newPlayerName}
                       onChange={(e) => setNewPlayerName(e.target.value)}
-                      className="flex-grow bg-[#F5F5F5] rounded-2xl border border-black/10 px-4 py-3 font-bold text-sm outline-none focus:border-[#D4FF33]"
+                      className="flex-grow bg-slate-50 rounded-2xl border border-slate-200 px-4 py-3 font-bold text-sm outline-none focus:border-[#006a61] font-body"
                     />
                     <button 
                       type="submit" 
-                      className="p-4 bg-[#D4FF33] border border-black/15 shadow rounded-2xl active:translate-y-1"
+                      className="p-4 bg-[#006a61] text-white shadow rounded-2xl hover:bg-[#00524b] cursor-pointer transition-all"
                     >
-                      <UserPlus className="w-5 h-5 text-black" />
+                      <UserPlus className="w-5 h-5" />
                     </button>
                   </form>
 
                   <div className="space-y-2">
                     {players.map((player, idx) => (
-                      <div key={idx} className="flex justify-between items-center bg-[#F5F5F5] rounded-2xl px-4 py-3.5 border border-black/5">
+                      <div key={idx} className="flex justify-between items-center bg-slate-50 rounded-2xl px-4 py-3.5 border border-slate-100 font-body">
                         {editingIndex === idx ? (
                           <input
                             type="text"
@@ -1389,12 +1394,12 @@ export default function ImposterGame() {
                               renamePlayer(idx, editingName);
                               setEditingIndex(null);
                             }}
-                            className="bg-white px-2 py-0.5 rounded font-bold outline-none"
+                            className="bg-white px-2 py-0.5 rounded font-bold outline-none border border-slate-300"
                             autoFocus
                           />
                         ) : (
                           <span 
-                            className="font-bold text-sm cursor-pointer"
+                            className="font-bold text-sm cursor-pointer text-[#2B2D42]"
                             onClick={() => {
                               setEditingIndex(idx);
                               setEditingName(player);
@@ -1410,14 +1415,14 @@ export default function ImposterGame() {
                               setEditingIndex(idx);
                               setEditingName(player);
                             }}
-                            className="text-gray-300 hover:text-black"
+                            className="text-slate-300 hover:text-slate-700 cursor-pointer"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           {players.length > 3 && (
                             <button 
                               onClick={() => removePlayer(idx)}
-                              className="text-gray-300 hover:text-[#FF4C4C]"
+                              className="text-slate-300 hover:text-[#d95a82] cursor-pointer"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -1468,21 +1473,21 @@ export default function ImposterGame() {
                         }}
                         className={`p-4 rounded-2xl border flex justify-between items-center cursor-pointer transition-all ${
                           isSelected
-                            ? 'bg-[#D4FF33]/15 border-[#D4FF33] text-[#1A1A1A]'
-                            : 'bg-[#F5F5F5] border-black/5 hover:bg-black/5 text-[#1A1A1A]'
+                            ? 'bg-teal-50/70 border-[#006a61] text-[#006a61]'
+                            : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-[#2B2D42]'
                         }`}
                       >
                         <div className="space-y-0.5">
-                          <span className="font-black text-sm uppercase">{catKey}</span>
-                          <p className="text-[10px] text-gray-500">
+                          <span className="font-fredoka font-bold text-sm uppercase">{catKey}</span>
+                          <p className="text-[10px] text-slate-500 font-body">
                             {catVal.pairs.length} pares de palabras disponibles
                           </p>
                         </div>
 
                         {catVal.free || isPremium ? (
-                          isSelected && <CheckCircle2 className="w-5 h-5 text-green-500" />
+                          isSelected && <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                         ) : (
-                          <Lock className="w-4 h-4 text-[#FF4C4C]" />
+                          <Lock className="w-4 h-4 text-[#d95a82]" />
                         )}
                       </div>
                     );
@@ -1493,7 +1498,7 @@ export default function ImposterGame() {
               {/* Modal Body: IMPOSTORS COUNT */}
               {activeModal === 'impostors' && (
                 <div className="space-y-4">
-                  <p className="text-xs font-bold text-gray-400 uppercase">
+                  <p className="text-xs font-bold text-slate-400 uppercase font-fredoka">
                     Selecciona cuántos impostores se asignarán (límite basado en la cantidad de jugadores).
                   </p>
 
@@ -1510,10 +1515,10 @@ export default function ImposterGame() {
                             setImposterCount(num);
                             setActiveModal(null);
                           }}
-                          className={`w-16 h-16 rounded-full font-black text-lg transition-all border ${
+                          className={`w-16 h-16 rounded-full font-fredoka font-extrabold text-xl transition-all border cursor-pointer ${
                             isSelected
-                              ? 'bg-[#D4FF33] border-transparent text-[#1A1A1A] scale-110 shadow-lg'
-                              : 'bg-[#F5F5F5] border-black/5 hover:bg-black/5 text-[#1A1A1A] disabled:opacity-30 disabled:pointer-events-none'
+                              ? 'bg-[#006a61] border-transparent text-white scale-110 shadow-lg'
+                              : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-[#2B2D42] disabled:opacity-30 disabled:pointer-events-none'
                           }`}
                         >
                           {num}

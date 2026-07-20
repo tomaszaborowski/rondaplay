@@ -7,9 +7,13 @@ import { Button } from '@/components/Button';
 import { GlassCard } from '@/components/GlassCard';
 import { GameCard } from '@/components/GameCard';
 import { useLanguage } from '@/context/LanguageContext';
+import { useAdminStore } from '@/store/adminStore';
+import { Footer } from '@/components/Footer';
 
 export default function Home() {
   const { t } = useLanguage();
+  const cmsGames = useAdminStore((state) => state.games);
+  const featuredGames = cmsGames.filter((g) => g.status === 'active').slice(0, 3);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -122,31 +126,20 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <GameCard
-              titleKey="game.imposter.title"
-              descKey="game.imposter.desc"
-              playersKey="game.imposter.players"
-              type="logic"
-              emoji="🕵️‍♀️"
-              slug="imposter"
-            />
-            <GameCard
-              titleKey="game.pattern.title"
-              descKey="game.pattern.desc"
-              playersKey="game.pattern.players"
-              type="memory"
-              emoji="🧠"
-              slug="pattern-path"
-              isPremium={true}
-            />
-            <GameCard
-              titleKey="game.speed-match.title"
-              descKey="game.speed-match.desc"
-              playersKey="game.speed-match.players"
-              type="speed"
-              emoji="⚡"
-              slug="speed-match"
-            />
+            {featuredGames.map((game) => (
+              <GameCard
+                key={game.id}
+                title={game.title}
+                description={game.description}
+                players={`${game.minPlayers}-${game.maxPlayers} Jugadores`}
+                type={game.category}
+                emoji={game.emoji}
+                slug={game.id}
+                coverImage={game.coverImage}
+                logoUrl={game.logoUrl}
+                isPremium={game.isPremium}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -228,25 +221,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-ronda-slate text-white/60 py-12 border-t-8 border-ronda-teal">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <Link href="/" className="flex items-center gap-3">
-            <Image
-              src="/logo.png"
-              alt="Ronda Play Logo"
-              width={120}
-              height={40}
-              className="h-8 md:h-10 w-auto opacity-90 hover:opacity-100 transition-opacity"
-            />
-          </Link>
-          <div className="text-sm font-body">{t('footer.copy')}</div>
-          <div className="flex gap-6 text-sm font-body font-semibold">
-            <Link href="/pages/politica-de-privacidad" className="hover:text-white transition-colors">{t('footer.privacy')}</Link>
-            <Link href="/pages/terminos-y-condiciones" className="hover:text-white transition-colors">{t('footer.terms')}</Link>
-            <Link href="/contact" className="hover:text-white transition-colors">{t('footer.contact')}</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

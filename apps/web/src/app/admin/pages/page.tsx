@@ -13,6 +13,7 @@ import {
   ExternalLink,
   FileText,
   CheckCircle,
+  RotateCcw,
 } from 'lucide-react';
 
 function slugify(str: string) {
@@ -29,6 +30,7 @@ export default function AdminPagesListPage() {
   const addPage = useAdminStore((s) => s.addPage);
   const deletePage = useAdminStore((s) => s.deletePage);
   const togglePageStatus = useAdminStore((s) => s.togglePageStatus);
+  const resetPagesToDefaults = useAdminStore((s) => s.resetPagesToDefaults);
 
   const [showNewModal, setShowNewModal] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -76,13 +78,27 @@ export default function AdminPagesListPage() {
             Create and manage modular content pages (Terms, Privacy, FAQ…)
           </p>
         </div>
-        <button
-          onClick={() => setShowNewModal(true)}
-          className="flex items-center gap-2 bg-ronda-teal hover:bg-ronda-tealDark text-white font-bold px-5 py-3 rounded-xl transition-colors text-sm cursor-pointer shadow-md"
-        >
-          <Plus className="w-4 h-4" />
-          New Page
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              if (window.confirm('¿Deseas restaurar las páginas por defecto (Términos y Privacidad)?')) {
+                resetPagesToDefaults();
+              }
+            }}
+            className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-ronda-slate font-bold px-4 py-3 rounded-xl transition-colors text-sm cursor-pointer"
+            title="Restaurar páginas de ejemplo y valores por defecto"
+          >
+            <RotateCcw className="w-4 h-4 text-slate-500" />
+            Restaurar Por Defecto
+          </button>
+          <button
+            onClick={() => setShowNewModal(true)}
+            className="flex items-center gap-2 bg-ronda-teal hover:bg-ronda-tealDark text-white font-bold px-5 py-3 rounded-xl transition-colors text-sm cursor-pointer shadow-md"
+          >
+            <Plus className="w-4 h-4" />
+            New Page
+          </button>
+        </div>
       </div>
 
       {/* Stats row */}

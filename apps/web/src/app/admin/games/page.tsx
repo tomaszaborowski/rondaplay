@@ -20,6 +20,7 @@ import {
 
 export default function GameCMSManager() {
   const games = useAdminStore((state) => state.games);
+  const siteTranslations = useAdminStore((state) => state.siteTranslations);
   const addGame = useAdminStore((state) => state.addGame);
   const updateGame = useAdminStore((state) => state.updateGame);
   const deleteGame = useAdminStore((state) => state.deleteGame);
@@ -33,8 +34,9 @@ export default function GameCMSManager() {
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
-  // Form Fields
+  // Form Fields (ES & EN)
   const [title, setTitle] = useState('');
+  const [titleEn, setTitleEn] = useState('');
   const [emoji, setEmoji] = useState('');
   const [coverImage, setCoverImage] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
@@ -44,6 +46,7 @@ export default function GameCMSManager() {
   const [isPremium, setIsPremium] = useState(false);
   const [status, setStatus] = useState<'active' | 'draft'>('active');
   const [description, setDescription] = useState('');
+  const [descriptionEn, setDescriptionEn] = useState('');
   const [variables, setVariables] = useState('{}');
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
@@ -55,6 +58,7 @@ export default function GameCMSManager() {
   const handleOpenAddModal = () => {
     setEditingGame(null);
     setTitle('');
+    setTitleEn('');
     setEmoji('🎮');
     setCoverImage('');
     setLogoUrl('');
@@ -64,13 +68,18 @@ export default function GameCMSManager() {
     setIsPremium(false);
     setStatus('active');
     setDescription('');
+    setDescriptionEn('');
     setVariables('{\n  "timeLimit": 60\n}');
     setIsModalOpen(true);
   };
 
   const handleOpenEditModal = (game: Game) => {
     setEditingGame(game);
+    const existingEnTitle = siteTranslations.en[`game.${game.id}.title`];
+    const existingEnDesc  = siteTranslations.en[`game.${game.id}.desc`];
+
     setTitle(game.title);
+    setTitleEn(game.titleEn || (existingEnTitle && existingEnTitle !== `game.${game.id}.title` ? existingEnTitle : game.title));
     setEmoji(game.emoji);
     setCoverImage(game.coverImage || '');
     setLogoUrl(game.logoUrl || '');
@@ -80,6 +89,7 @@ export default function GameCMSManager() {
     setIsPremium(game.isPremium);
     setStatus(game.status);
     setDescription(game.description);
+    setDescriptionEn(game.descriptionEn || (existingEnDesc && existingEnDesc !== `game.${game.id}.desc` ? existingEnDesc : game.description));
     setVariables(game.variables || '{}');
     setIsModalOpen(true);
   };
@@ -116,6 +126,7 @@ export default function GameCMSManager() {
 
     const payload = {
       title,
+      titleEn,
       emoji,
       coverImage,
       logoUrl,
@@ -125,6 +136,7 @@ export default function GameCMSManager() {
       isPremium,
       status,
       description,
+      descriptionEn,
       variables
     };
 
@@ -299,15 +311,26 @@ export default function GameCMSManager() {
               </h2>
 
               <form onSubmit={handleSave} className="space-y-4">
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="col-span-2">
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Título</label>
+                {/* Bilingual Titles & Emoji */}
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-bold text-ronda-pink uppercase tracking-wider mb-1">🇪🇸 Título (Español)</label>
                     <input
                       type="text"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       required
-                      placeholder="Ej. El Impostor"
+                      placeholder="Ej. ¿Quién es el Impostor?"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-ronda-pink outline-none text-sm font-semibold"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-bold text-ronda-teal uppercase tracking-wider mb-1">🇬🇧 Title (English)</label>
+                    <input
+                      type="text"
+                      value={titleEn}
+                      onChange={(e) => setTitleEn(e.target.value)}
+                      placeholder="e.g. Who is the Imposter?"
                       className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-ronda-teal outline-none text-sm font-semibold"
                     />
                   </div>
@@ -373,15 +396,27 @@ export default function GameCMSManager() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Descripción Corta</label>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                    rows={2}
-                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:border-ronda-teal outline-none text-xs font-semibold resize-none"
-                  />
+                {/* Bilingual Descriptions */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-ronda-pink uppercase tracking-wider mb-1">🇪🇸 Descripción Corta (Español)</label>
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      required
+                      rows={2}
+                      className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:border-ronda-pink outline-none text-xs font-semibold resize-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-ronda-teal uppercase tracking-wider mb-1">🇬🇧 Short Description (English)</label>
+                    <textarea
+                      value={descriptionEn}
+                      onChange={(e) => setDescriptionEn(e.target.value)}
+                      rows={2}
+                      className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:border-ronda-teal outline-none text-xs font-semibold resize-none"
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">

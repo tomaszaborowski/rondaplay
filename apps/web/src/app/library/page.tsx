@@ -5,84 +5,20 @@ import { GameCard } from '@/components/GameCard';
 import { Button } from '@/components/Button';
 import { Search, Gamepad2, Brain, Zap, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
-
-interface GameData {
-  titleKey: string;
-  descKey: string;
-  playersKey: string;
-  type: 'logic' | 'memory' | 'speed';
-  emoji: string;
-  slug: string;
-  isPremium: boolean;
-}
-
-const GAMES: GameData[] = [
-  {
-    titleKey: "game.imposter.title",
-    descKey: "game.imposter.desc",
-    playersKey: "game.imposter.players",
-    type: "logic",
-    emoji: "🕵️‍♀️",
-    slug: "imposter",
-    isPremium: false,
-  },
-  {
-    titleKey: "game.pattern.title",
-    descKey: "game.pattern.desc",
-    playersKey: "game.pattern.players",
-    type: "memory",
-    emoji: "🧠",
-    slug: "pattern-path",
-    isPremium: true,
-  },
-  {
-    titleKey: "game.speed-match.title",
-    descKey: "game.speed-match.desc",
-    playersKey: "game.speed-match.players",
-    type: "speed",
-    emoji: "⚡",
-    slug: "speed-match",
-    isPremium: false,
-  },
-  {
-    titleKey: "game.wordWheel.title",
-    descKey: "game.wordWheel.desc",
-    playersKey: "game.wordWheel.players",
-    type: "logic",
-    emoji: "🎡",
-    slug: "word-wheel",
-    isPremium: true,
-  },
-  {
-    titleKey: "game.colorBlind.title",
-    descKey: "game.colorBlind.desc",
-    playersKey: "game.colorBlind.players",
-    type: "memory",
-    emoji: "🎨",
-    slug: "color-blind",
-    isPremium: true,
-  },
-  {
-    titleKey: "game.reaction.title",
-    descKey: "game.reaction.desc",
-    playersKey: "game.reaction.players",
-    type: "speed",
-    emoji: "💥",
-    slug: "tap-attack",
-    isPremium: false,
-  },
-];
+import { useAdminStore } from '@/store/adminStore';
 
 export default function Library() {
   const { t } = useLanguage();
+  const cmsGames = useAdminStore((state) => state.games);
   const [selectedType, setSelectedType] = useState<'all' | 'logic' | 'memory' | 'speed'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredGames = GAMES.filter((game) => {
-    const matchesType = selectedType === 'all' || game.type === selectedType;
-    // Search against translated title/desc
-    const titleStr = t(game.titleKey).toLowerCase();
-    const descStr  = t(game.descKey).toLowerCase();
+  const activeGames = cmsGames.filter((g) => g.status === 'active');
+
+  const filteredGames = activeGames.filter((game) => {
+    const matchesType = selectedType === 'all' || game.category === selectedType;
+    const titleStr = game.title.toLowerCase();
+    const descStr  = game.description.toLowerCase();
     const matchesSearch = titleStr.includes(searchQuery.toLowerCase()) ||
                           descStr.includes(searchQuery.toLowerCase());
     return matchesType && matchesSearch;
@@ -166,15 +102,17 @@ export default function Library() {
         {/* Games Grid */}
         {filteredGames.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredGames.map((game, idx) => (
+            {filteredGames.map((game) => (
               <GameCard
-                key={idx}
-                titleKey={game.titleKey}
-                descKey={game.descKey}
-                playersKey={game.playersKey}
-                type={game.type}
+                key={game.id}
+                title={game.title}
+                description={game.description}
+                players={`${game.minPlayers}-${game.maxPlayers} Jugadores`}
+                type={game.category}
                 emoji={game.emoji}
-                slug={game.slug}
+                slug={game.id}
+                coverImage={game.coverImage}
+                logoUrl={game.logoUrl}
                 isPremium={game.isPremium}
               />
             ))}

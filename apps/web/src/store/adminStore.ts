@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { translations as defaultTranslations } from '@/translations';
 
 // ─── Content Page (CMS) ───────────────────────────────────────────────────────
@@ -24,6 +25,8 @@ export interface Game {
   id: string;
   title: string;
   description: string;
+  titleEn?: string;
+  descriptionEn?: string;
   category: 'logic' | 'memory' | 'speed';
   minPlayers: number;
   maxPlayers: number;
@@ -115,6 +118,7 @@ interface AdminState {
   updateBlock: (pageId: string, blockId: string, updated: Partial<Omit<ContentBlock, 'id'>>) => void;
   removeBlock: (pageId: string, blockId: string) => void;
   moveBlock: (pageId: string, blockId: string, direction: 'up' | 'down') => void;
+  resetPagesToDefaults: () => void;
 }
 
 // Initial Mock Games
@@ -213,7 +217,7 @@ const initialPages: ContentPage[] = [
     id: 'page-terms',
     title: 'Términos y Condiciones',
     slug: 'terminos-y-condiciones',
-    status: 'draft',
+    status: 'published',
     createdAt: '2026-07-11',
     updatedAt: '2026-07-11',
     blocks: [
@@ -232,7 +236,7 @@ const initialPages: ContentPage[] = [
     id: 'page-privacy',
     title: 'Política de Privacidad',
     slug: 'politica-de-privacidad',
-    status: 'draft',
+    status: 'published',
     createdAt: '2026-07-11',
     updatedAt: '2026-07-11',
     blocks: [
@@ -245,209 +249,254 @@ const initialPages: ContentPage[] = [
   }
 ];
 
-export const useAdminStore = create<AdminState>((set) => ({
-  // Auth
-  isLoggedIn: false,
-  login: (email, password) => {
-    if (email === 'admin@rondaplay.com' && password === 'admin') {
-      set({ isLoggedIn: true });
-      return true;
-    }
-    return false;
-  },
-  logout: () => set({ isLoggedIn: false }),
+export const useAdminStore = create<AdminState>()(
+  persist(
+    (set) => ({
+      // Auth
+      isLoggedIn: false,
+      login: (email, password) => {
+        if (email === 'admin@rondaplay.com' && password === 'admin') {
+          set({ isLoggedIn: true });
+          return true;
+        }
+        return false;
+      },
+      logout: () => set({ isLoggedIn: false }),
 
-  // Games CRUD
-  games: initialGames,
-  addGame: (newGame) => set((state) => ({
-    games: [...state.games, { ...newGame, id: `game-${Date.now()}` }]
-  })),
-  updateGame: (id, updated) => set((state) => ({
-    games: state.games.map((g) => g.id === id ? { ...g, ...updated } : g)
-  })),
-  togglePremiumGame: (id) => set((state) => ({
-    games: state.games.map((g) => g.id === id ? { ...g, isPremium: !g.isPremium } : g)
-  })),
-  deleteGame: (id) => set((state) => ({
-    games: state.games.filter((g) => g.id !== id)
-  })),
-
-  // Users Management
-  users: initialUsers,
-  togglePremiumUser: (id) => set((state) => {
-    const updatedUsers: User[] = state.users.map((u) => {
-      if (u.id === id) {
-        const isPremium = !u.isPremium;
-        return {
-          ...u,
-          isPremium,
-          premiumSource: isPremium ? ('web' as const) : null
+      // Games CRUD
+      games: initialGames,
+      addGame: (newGame) => set((state) => {
+        const id = `game-${Date.now()}`;
+        const slug = id;
+        const nextSiteTranslations = {
+          es: { ...state.siteTranslations.es },
+          en: { ...state.siteTranslations.en },
         };
-      }
-      return u;
-    });
+        if (newGame.title) {
+          nextSiteTranslations.es[`game.${slug}.title`] = newGame.title;
+          nextSiteTranslations.en[`game.${slug}.title`] = newGame.titleEn || newGame.title;
+        }
+        if (newGame.description) {
+          nextSiteTranslations.es[`game.${slug}.desc`] = newGame.description;
+          nextSiteTranslations.en[`game.${slug}.desc`] = newGame.descriptionEn || newGame.description;
+        }
+        return {
+          games: [...state.games, { ...newGame, id: slug }],
+          siteTranslations: nextSiteTranslations,
+        };
+      }),
+      updateGame: (id, updated) => set((state) => {
+        const nextSiteTranslations = {
+          es: { ...state.siteTranslations.es },
+          en: { ...state.siteTranslations.en },
+        };
+        if (updated.title) {
+          nextSiteTranslations.es[`game.${id}.title`] = updated.title;
+          if (updated.titleEn) {
+            nextSiteTranslations.en[`game.${id}.title`] = updated.titleEn;
+          }
+        }
+        if (updated.description) {
+          nextSiteTranslations.es[`game.${id}.desc`] = updated.description;
+          if (updated.descriptionEn) {
+            nextSiteTranslations.en[`game.${id}.desc`] = updated.descriptionEn;
+          }
+        }
+        return {
+          games: state.games.map((g) => g.id === id ? { ...g, ...updated } : g),
+          siteTranslations: nextSiteTranslations,
+        };
+      }),
+      togglePremiumGame: (id) => set((state) => ({
+        games: state.games.map((g) => g.id === id ? { ...g, isPremium: !g.isPremium } : g)
+      })),
+      deleteGame: (id) => set((state) => ({
+        games: state.games.filter((g) => g.id !== id)
+      })),
 
-    // Also insert a mock transaction if premium is granted
-    const targetUser = state.users.find((u) => u.id === id);
-    let updatedTransactions = state.transactions;
-    if (targetUser && !targetUser.isPremium) {
-      const newTx: Transaction = {
-        id: `tx-${Date.now()}`,
-        userId: id,
-        email: targetUser.email,
-        amount: 14.99,
-        platform: 'Stripe',
-        status: 'completed',
-        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16)
-      };
-      updatedTransactions = [newTx, ...state.transactions];
-    }
+      // Users Management
+      users: initialUsers,
+      togglePremiumUser: (id) => set((state) => {
+        const updatedUsers: User[] = state.users.map((u) => {
+          if (u.id === id) {
+            const isPremium = !u.isPremium;
+            return {
+              ...u,
+              isPremium,
+              premiumSource: isPremium ? ('web' as const) : null
+            };
+          }
+          return u;
+        });
 
-    return {
-      users: updatedUsers,
-      transactions: updatedTransactions
-    };
-  }),
-  toggleBanUser: (id) => set((state) => ({
-    users: state.users.map((u) => u.id === id ? { ...u, status: u.status === 'active' ? 'banned' : 'active' } : u)
-  })),
+        // Also insert a mock transaction if premium is granted
+        const targetUser = state.users.find((u) => u.id === id);
+        let updatedTransactions = state.transactions;
+        if (targetUser && !targetUser.isPremium) {
+          const newTx: Transaction = {
+            id: `tx-${Date.now()}`,
+            userId: id,
+            email: targetUser.email,
+            amount: 14.99,
+            platform: 'Stripe',
+            status: 'completed',
+            timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16)
+          };
+          updatedTransactions = [newTx, ...state.transactions];
+        }
 
-  // Transactions
-  transactions: initialTransactions,
+        return {
+          users: updatedUsers,
+          transactions: updatedTransactions
+        };
+      }),
+      toggleBanUser: (id) => set((state) => ({
+        users: state.users.map((u) => u.id === id ? { ...u, status: u.status === 'active' ? 'banned' : 'active' } : u)
+      })),
 
-  // Content Moderation
-  blockedTerms: initialBlockedTerms,
-  addBlockedTerm: (term) => set((state) => {
-    const normalized = term.trim().toLowerCase();
-    if (normalized && !state.blockedTerms.includes(normalized)) {
-      return { blockedTerms: [...state.blockedTerms, normalized] };
-    }
-    return {};
-  }),
-  removeBlockedTerm: (term) => set((state) => ({
-    blockedTerms: state.blockedTerms.filter((t) => t !== term.toLowerCase())
-  })),
+      // Transactions
+      transactions: initialTransactions,
 
-  // Settings
-  settings: {
-    appName: 'Ronda Play',
-    supportEmail: 'support@rondaplay.com',
-    maintenanceMode: false,
-    googleAnalyticsId: 'G-74X9VPE89B',
-    instagramUrl: 'https://instagram.com/rondaplay'
-  },
-  updateSettings: (updated) => set((state) => ({
-    settings: { ...state.settings, ...updated }
-  })),
+      // Content Moderation
+      blockedTerms: initialBlockedTerms,
+      addBlockedTerm: (term) => set((state) => {
+        const normalized = term.trim().toLowerCase();
+        if (normalized && !state.blockedTerms.includes(normalized)) {
+          return { blockedTerms: [...state.blockedTerms, normalized] };
+        }
+        return {};
+      }),
+      removeBlockedTerm: (term) => set((state) => ({
+        blockedTerms: state.blockedTerms.filter((t) => t !== term.toLowerCase())
+      })),
 
-  // Site Translations — seeded from static defaults, editable from Admin
-  siteTranslations: (() => {
-    const es: Record<string, string> = {};
-    const en: Record<string, string> = {};
-    for (const [key, val] of Object.entries(defaultTranslations)) {
-      es[key] = val.es;
-      en[key] = val.en;
-    }
-    return { es, en };
-  })(),
-  updateTranslation: (lang, key, value) => set((state) => ({
-    siteTranslations: {
-      ...state.siteTranslations,
-      [lang]: { ...state.siteTranslations[lang], [key]: value }
-    }
-  })),
-  resetTranslations: () => set(() => {
-    const es: Record<string, string> = {};
-    const en: Record<string, string> = {};
-    for (const [key, val] of Object.entries(defaultTranslations)) {
-      es[key] = val.es;
-      en[key] = val.en;
-    }
-    return { siteTranslations: { es, en } };
-  }),
+      // Settings
+      settings: {
+        appName: 'Ronda Play',
+        supportEmail: 'support@rondaplay.com',
+        maintenanceMode: false,
+        googleAnalyticsId: 'G-74X9VPE89B',
+        instagramUrl: 'https://instagram.com/rondaplay'
+      },
+      updateSettings: (updated) => set((state) => ({
+        settings: { ...state.settings, ...updated }
+      })),
 
-  // Content Pages CRUD
-  pages: initialPages,
+      // Site Translations — seeded from static defaults, editable from Admin
+      siteTranslations: (() => {
+        const es: Record<string, string> = {};
+        const en: Record<string, string> = {};
+        for (const [key, val] of Object.entries(defaultTranslations)) {
+          es[key] = val.es;
+          en[key] = val.en;
+        }
+        return { es, en };
+      })(),
+      updateTranslation: (lang, key, value) => set((state) => ({
+        siteTranslations: {
+          ...state.siteTranslations,
+          [lang]: { ...state.siteTranslations[lang], [key]: value }
+        }
+      })),
+      resetTranslations: () => set(() => {
+        const es: Record<string, string> = {};
+        const en: Record<string, string> = {};
+        for (const [key, val] of Object.entries(defaultTranslations)) {
+          es[key] = val.es;
+          en[key] = val.en;
+        }
+        return { siteTranslations: { es, en } };
+      }),
 
-  addPage: (page) => set((state) => ({
-    pages: [
-      ...state.pages,
-      {
-        ...page,
-        id: `page-${Date.now()}`,
-        createdAt: new Date().toISOString().split('T')[0],
-        updatedAt: new Date().toISOString().split('T')[0],
-      }
-    ]
-  })),
+      // Content Pages CRUD
+      pages: initialPages,
+      resetPagesToDefaults: () => set({ pages: initialPages }),
 
-  updatePage: (id, updated) => set((state) => ({
-    pages: state.pages.map((p) =>
-      p.id === id
-        ? { ...p, ...updated, updatedAt: new Date().toISOString().split('T')[0] }
-        : p
-    )
-  })),
-
-  deletePage: (id) => set((state) => ({
-    pages: state.pages.filter((p) => p.id !== id)
-  })),
-
-  togglePageStatus: (id) => set((state) => ({
-    pages: state.pages.map((p) =>
-      p.id === id
-        ? { ...p, status: p.status === 'published' ? 'draft' : 'published', updatedAt: new Date().toISOString().split('T')[0] }
-        : p
-    )
-  })),
-
-  addBlock: (pageId, block) => set((state) => ({
-    pages: state.pages.map((p) =>
-      p.id === pageId
-        ? {
-            ...p,
-            blocks: [...p.blocks, { ...block, id: `blk-${Date.now()}-${Math.random().toString(36).slice(2, 6)}` }],
+      addPage: (page) => set((state) => ({
+        pages: [
+          ...state.pages,
+          {
+            ...page,
+            id: `page-${Date.now()}`,
+            createdAt: new Date().toISOString().split('T')[0],
             updatedAt: new Date().toISOString().split('T')[0],
           }
-        : p
-    )
-  })),
+        ]
+      })),
 
-  updateBlock: (pageId, blockId, updated) => set((state) => ({
-    pages: state.pages.map((p) =>
-      p.id === pageId
-        ? {
-            ...p,
-            blocks: p.blocks.map((b) => b.id === blockId ? { ...b, ...updated } : b),
-            updatedAt: new Date().toISOString().split('T')[0],
-          }
-        : p
-    )
-  })),
+      updatePage: (id, updated) => set((state) => ({
+        pages: state.pages.map((p) =>
+          p.id === id
+            ? { ...p, ...updated, updatedAt: new Date().toISOString().split('T')[0] }
+            : p
+        )
+      })),
 
-  removeBlock: (pageId, blockId) => set((state) => ({
-    pages: state.pages.map((p) =>
-      p.id === pageId
-        ? {
-            ...p,
-            blocks: p.blocks.filter((b) => b.id !== blockId),
-            updatedAt: new Date().toISOString().split('T')[0],
-          }
-        : p
-    )
-  })),
+      deletePage: (id) => set((state) => ({
+        pages: state.pages.filter((p) => p.id !== id)
+      })),
 
-  moveBlock: (pageId, blockId, direction) => set((state) => ({
-    pages: state.pages.map((p) => {
-      if (p.id !== pageId) return p;
-      const idx = p.blocks.findIndex((b) => b.id === blockId);
-      if (idx === -1) return p;
-      const newBlocks = [...p.blocks];
-      const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
-      if (targetIdx < 0 || targetIdx >= newBlocks.length) return p;
-      [newBlocks[idx], newBlocks[targetIdx]] = [newBlocks[targetIdx], newBlocks[idx]];
-      return { ...p, blocks: newBlocks, updatedAt: new Date().toISOString().split('T')[0] };
-    })
-  })),
-}));
+      togglePageStatus: (id) => set((state) => ({
+        pages: state.pages.map((p) =>
+          p.id === id
+            ? { ...p, status: p.status === 'published' ? 'draft' : 'published', updatedAt: new Date().toISOString().split('T')[0] }
+            : p
+        )
+      })),
+
+      addBlock: (pageId, block) => set((state) => ({
+        pages: state.pages.map((p) =>
+          p.id === pageId
+            ? {
+                ...p,
+                blocks: [...p.blocks, { ...block, id: `blk-${Date.now()}-${Math.random().toString(36).slice(2, 6)}` }],
+                updatedAt: new Date().toISOString().split('T')[0],
+              }
+            : p
+        )
+      })),
+
+      updateBlock: (pageId, blockId, updated) => set((state) => ({
+        pages: state.pages.map((p) =>
+          p.id === pageId
+            ? {
+                ...p,
+                blocks: p.blocks.map((b) => b.id === blockId ? { ...b, ...updated } : b),
+                updatedAt: new Date().toISOString().split('T')[0],
+              }
+            : p
+        )
+      })),
+
+      removeBlock: (pageId, blockId) => set((state) => ({
+        pages: state.pages.map((p) =>
+          p.id === pageId
+            ? {
+                ...p,
+                blocks: p.blocks.filter((b) => b.id !== blockId),
+                updatedAt: new Date().toISOString().split('T')[0],
+              }
+            : p
+        )
+      })),
+
+      moveBlock: (pageId, blockId, direction) => set((state) => ({
+        pages: state.pages.map((p) => {
+          if (p.id !== pageId) return p;
+          const idx = p.blocks.findIndex((b) => b.id === blockId);
+          if (idx === -1) return p;
+          const newBlocks = [...p.blocks];
+          const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+          if (targetIdx < 0 || targetIdx >= newBlocks.length) return p;
+          [newBlocks[idx], newBlocks[targetIdx]] = [newBlocks[targetIdx], newBlocks[idx]];
+          return { ...p, blocks: newBlocks, updatedAt: new Date().toISOString().split('T')[0] };
+        })
+      })),
+    }),
+    {
+      name: 'rondaplay_admin_store',
+    }
+  )
+);
+
 

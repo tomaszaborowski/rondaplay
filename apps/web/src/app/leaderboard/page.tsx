@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { getLeaderboardUsers } from '@/lib/userProfile';
 import { UserProfile } from '@/types/user';
 import { Trophy, Star, Award, Share2, Play, Home, Gamepad2, User } from 'lucide-react';
+import { Footer } from '@/components/Footer';
 
 export default function LeaderboardPage() {
   const { userProfile } = useAuth();
@@ -229,19 +230,7 @@ export default function LeaderboardPage() {
       </nav>
 
       {/* Website Footer (Desktop & standard web view) */}
-      <footer className="bg-ronda-slate text-white/60 py-12 border-t-8 border-ronda-teal mt-12 hidden md:block">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <Link className="flex items-center gap-3" href="/">
-            <Image src="/logo.png" alt="Ronda Play Logo" width={120} height={40} className="h-8 md:h-10 w-auto opacity-90 hover:opacity-100 transition-opacity" />
-          </Link>
-          <div className="text-sm font-body">© 2026 Ronda Play. Redefiniendo el tiempo muerto.</div>
-          <div className="flex gap-6 text-sm font-body font-semibold">
-            <Link className="hover:text-white transition-colors" href="/pages/politica-de-privacidad">Privacidad</Link>
-            <Link className="hover:text-white transition-colors" href="/pages/terminos-y-condiciones">Términos</Link>
-            <Link className="hover:text-white transition-colors" href="/contact">Contacto</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
