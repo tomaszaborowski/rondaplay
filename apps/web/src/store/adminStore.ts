@@ -30,8 +30,11 @@ export interface Game {
   isPremium: boolean;
   status: 'active' | 'draft';
   emoji: string;
+  coverImage?: string;
+  logoUrl?: string;
   variables?: string; // JSON string for game settings
 }
+
 
 export interface User {
   id: string;

@@ -9,6 +9,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from "@/lib/firebase";
 import { doc, setDoc, onSnapshot, getDoc, updateDoc } from "firebase/firestore";
+import { recordGameVictory } from "@/lib/userProfile";
 
 export default function ImposterGame() {
   const {
@@ -400,14 +401,20 @@ export default function ImposterGame() {
       roundWinner = isImposter ? 'innocents' : 'imposters';
     }
 
-    // Update scoreboard
+    // Update scoreboard & record Firestore track records for registered @usernames
     const nextScoreboard = { ...scoreboard };
     players.forEach((p) => {
       if (nextScoreboard[p] === undefined) nextScoreboard[p] = 0;
       const isImposter = imposters.includes(p);
-      if (roundWinner === 'innocents' && !isImposter) nextScoreboard[p] += 1;
-      else if (roundWinner === 'imposters' && isImposter) nextScoreboard[p] += 2;
+      const won = (roundWinner === 'innocents' && !isImposter) || (roundWinner === 'imposters' && isImposter);
+      if (won) {
+        nextScoreboard[p] += isImposter ? 2 : 1;
+        recordGameVictory(p, 'impostor', isImposter ? 250 : 100).catch((err) =>
+          console.warn('Could not record victory for', p, err)
+        );
+      }
     });
+
 
     if (!lobbyId) return;
     const docRef = doc(db, 'imposter_lobbies', lobbyId);

@@ -115,3 +115,35 @@ h1, h2, h3, h4, .font-brand {
   }
 }
 
+/* Google Stitch Leaderboard Styles */
+.tactile-button-teal {
+  box-shadow: 0 4px 0 #005048;
+  transition: all 0.1s ease;
+  cursor: pointer;
+}
+.tactile-button-teal:active {
+  transform: translateY(4px);
+  box-shadow: 0 0px 0 #005048;
+}
+.tactile-button-pink {
+  box-shadow: 0 4px 0 #c24b74;
+  transition: all 0.1s ease;
+  cursor: pointer;
+}
+.tactile-button-pink:active {
+  transform: translateY(4px);
+  box-shadow: 0 0px 0 #c24b74;
+}
+.glass-nav {
+  background: rgba(67, 28, 93, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.card-shadow {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.curved-border-left {
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;
+}
+
