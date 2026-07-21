@@ -21,8 +21,11 @@ import {
   Shield,
   HelpCircle,
   Video,
-  X
+  X,
+  ChevronRight,
+  Star
 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 // Character images representing symbols for Al Toque game
 const symbolsAssets = [
@@ -268,13 +271,26 @@ export default function SpeedMatchGame() {
   const [symbolsPerCard, setSymbolsPerCard] = useState<6 | 8>(8);
   const [matchesToWin, setMatchesToWin] = useState<3 | 6 | 10>(10);
   
-  // User profiles & stats
-  const [totalPoints, setTotalPoints] = useState(12800);
+  // User profiles & stats from RondaPlay context
+  const { userProfile } = useAuth();
+  const [totalPoints, setTotalPoints] = useState(11500); // 11500 default points = 65% to Legend
   const [winStreak, setWinStreak] = useState(3);
-  const [username, setUsername] = useState("CozyViola73");
+  const [username, setUsername] = useState("lali_martinez");
   const [player2Name, setPlayer2Name] = useState("Player 2");
   const [player2Avatar, setPlayer2Avatar] = useState(avatarOptions[0]);
   const [player1Avatar, setPlayer1Avatar] = useState(avatarOptions[2]); // Moon default
+
+  // Synchronize stats with RondaPlay profile context
+  useEffect(() => {
+    if (userProfile) {
+      if (userProfile.username) {
+        setUsername(userProfile.username);
+      }
+      if (userProfile.stats && typeof userProfile.stats.totalPoints === "number") {
+        setTotalPoints(userProfile.stats.totalPoints);
+      }
+    }
+  }, [userProfile]);
   
   // Game scores
   const [score, setScore] = useState(0);
@@ -937,168 +953,222 @@ export default function SpeedMatchGame() {
       {/* ───────────────────────────────────────────────────────────────── */}
 
       {/* MAIN MENU */}
-      {gameState === "menu" && (
-        <div className="w-full flex-1 flex flex-col bg-[#F9F7F3] max-w-md shadow-2xl relative">
-          
-          {/* Header Bar */}
-          <div className="bg-[#431C5D] text-white px-4 py-3 flex justify-between items-center rounded-b-[2rem] shadow-lg">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-teal-400 rounded-2xl border-2 border-white flex items-center justify-center overflow-hidden shadow-inner relative">
-                <img src={player1Avatar.src} alt="avatar" className="w-9 h-9 object-contain" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] text-teal-200 font-bold uppercase tracking-wider">Perfil</span>
-                <span className="text-sm font-Fredoka font-extrabold">{username}</span>
-              </div>
-            </div>
-            
-            {/* Total Points */}
-            <div className="flex items-center gap-2">
-              <div className="bg-black/20 rounded-full py-1.5 px-3.5 flex items-center gap-1.5 border border-white/10 text-xs font-Fredoka font-bold text-yellow-300">
-                <span>⭐</span>
-                <span>{totalPoints} Pts</span>
+      {gameState === "menu" && (() => {
+        const getExpertiseLevel = (points: number) => {
+          if (points < 1000) {
+            return {
+              levelName: "Rookie",
+              nextLevelName: "Pro",
+              progress: Math.floor((points / 1000) * 100),
+              activeLevels: ["Rookie"]
+            };
+          } else if (points < 5000) {
+            return {
+              levelName: "Pro",
+              nextLevelName: "Expert",
+              progress: Math.floor(((points - 1000) / 4000) * 100),
+              activeLevels: ["Rookie", "Pro"]
+            };
+          } else if (points < 15000) {
+            return {
+              levelName: "Expert",
+              nextLevelName: "Legend",
+              progress: Math.floor(((points - 5000) / 10000) * 100),
+              activeLevels: ["Rookie", "Pro", "Expert"]
+            };
+          } else {
+            return {
+              levelName: "Legend",
+              nextLevelName: "Legend",
+              progress: 100,
+              activeLevels: ["Rookie", "Pro", "Expert", "Legend"]
+            };
+          }
+        };
+        const levelInfo = getExpertiseLevel(totalPoints);
+
+        return (
+          <div 
+            className="w-full flex-1 flex flex-col bg-cover bg-center max-w-md shadow-2xl relative overflow-y-auto overflow-x-hidden text-white"
+            style={{ 
+              backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuDyXMHPIeHS1eKVAEadbKhiIq9ZF7m0MEP-t-3Phy4Cu9Fl9CUroG2aDYmISC_p6vVeYK6bJZemdV3lcwGWWIfLmSO_aAvpyGLH-20Od5TtxWLj07CU5O8mN-MhTT4ssPw866df31Ogi81HRH9T8pZt2Ble4N0EZ-0eqEYSmZL6srLzlZzPHAbk_afazDudaQu7GKcKPDMZ6JKqp0ZIzFyzHH8C0T32koQYsvmh3F6R8AdED5ByZ1rf-f3MRTyBxi_0JbIagcdDbUEDlw")`,
+              minHeight: "100%"
+            }}
+          >
+            {/* Ambient Background Elements */}
+            <div className="absolute top-[-10%] left-[-10%] w-64 h-64 rounded-full bg-[#59decd]/20 blur-[80px] pointer-events-none" />
+            <div className="absolute bottom-[20%] right-[-10%] w-72 h-72 rounded-full bg-[#d95a82]/20 blur-[100px] pointer-events-none" />
+
+            {/* Header Content */}
+            <header className="flex flex-col px-6 pt-8 pb-4 z-10 w-full gap-5 shrink-0">
+              <div className="flex justify-center mb-2">
+                <img 
+                  alt="Al Toque!" 
+                  className="h-20 w-auto object-contain drop-shadow-md" 
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmcurKePAVb5wZogHI0PL9iPn7qn8fK3CKFMOCVn8XIoT8erCs2LLc1DYO60w9VFZFiIQICPQAEsN4djhP0Djn4vIjNQNIwZ0tfAU0rfUD-8cgKZANCQ0b0-1PemtYdv07VLWsffqgJvGfvIv9dpgeLkYqMFYtRYaSdfHQoQzEv5jhhMkP3_lfcfy9RUCMzPiBhKXr6TU9nylICf7rtstFd7MbFb8f7R_3zAUh2cSp-GPjVTSDrDg4dR7MgT1ebU0vvA" 
+                />
               </div>
 
+              <div className="flex justify-between items-center w-full">
+                {/* Avatar & Username */}
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setIsSettingsOpen(true)}
+                    className="relative group active:scale-95 transition-transform"
+                  >
+                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#59decd] shadow-[0_0_15px_rgba(89,222,205,0.3)] bg-[#1c1e32]">
+                      <img 
+                        className="w-full h-full object-cover" 
+                        src={userProfile?.avatarUrl || "https://lh3.googleusercontent.com/aida-public/AB6AXuAFOrhF_BtswQsx_T0I6eSf_QlIElYvIPYBM4fWuUFOhYq8uorPMdUzOiU7YifMVoIevcABMJqqvul9KTNpmybSJGSoYh8yE662NcVafXo5k8DtrF5TMSYA2dCDMpOUMjL-ZU2r_BMpzQeTkcDC50F1K24WGCxUeXEyJahP0rnKjGUBFPsOJ6V1qODVS0rR1p-rKpPp6jUKl43xPPgDAZj6f-81QmkyPtV7QrnrMS1iAoOgG_i0npu4u48VtyFfYWdydg"} 
+                        alt="avatar" 
+                      />
+                    </div>
+                    <div className="absolute -bottom-2 -right-2 bg-[#ffb1c4] text-[#65002e] w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] border-2 border-[#101225] shadow">
+                      <Star className="w-3.5 h-3.5 fill-current" />
+                    </div>
+                  </button>
+                  <div className="flex flex-col items-start text-left">
+                    <span className="text-[10px] font-bold text-[#75f7e6] uppercase tracking-widest mb-0.5 font-Poppins">My Profile</span>
+                    <span className="text-md font-bold text-white drop-shadow-md font-Fredoka">@{username}</span>
+                  </div>
+                </div>
+
+                {/* Points count (Glassmorphic Pill) */}
+                <div className="flex items-center gap-2 bg-[#313349]/60 backdrop-blur-md border border-white/10 rounded-full px-4 py-2 shadow-sm">
+                  <Star className="w-5 h-5 text-[#75f7e6] fill-current" />
+                  <span className="font-bold text-sm text-[#75f7e6] tracking-wide font-Poppins">
+                    {totalPoints.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Scoring Timeline Progress bar */}
+              <div className="w-full bg-[#1c1e32]/60 backdrop-blur-md rounded-2xl p-4 border border-white/10 shadow-sm text-left">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="font-bold text-xs text-white uppercase tracking-wider font-Fredoka">
+                    {levelInfo.levelName} Level
+                  </span>
+                  <span className="text-xs font-bold text-[#75f7e6] font-Poppins">
+                    {levelInfo.progress}% to {levelInfo.nextLevelName}
+                  </span>
+                </div>
+                <div className="relative w-full h-3 bg-[#313349] rounded-full overflow-hidden mb-2 shadow-inner">
+                  <div 
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#59decd] to-[#75f7e6] rounded-full transition-all duration-500" 
+                    style={{ width: `${levelInfo.progress}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest mt-1.5 font-Poppins">
+                  <span className={levelInfo.activeLevels.includes("Rookie") ? "text-[#75f7e6] drop-shadow-sm" : "text-[#bbcac6] opacity-50"}>Rookie</span>
+                  <span className={levelInfo.activeLevels.includes("Pro") ? "text-[#75f7e6] drop-shadow-sm" : "text-[#bbcac6] opacity-50"}>Pro</span>
+                  <span className={levelInfo.activeLevels.includes("Expert") ? "text-[#75f7e6] drop-shadow-sm" : "text-[#bbcac6] opacity-50"}>Expert</span>
+                  <span className={levelInfo.activeLevels.includes("Legend") ? "text-[#75f7e6] drop-shadow-sm" : "text-[#bbcac6] opacity-50"}>Legend</span>
+                </div>
+              </div>
+            </header>
+
+            {/* Menu Buttons Stack */}
+            <main className="flex-1 flex flex-col justify-end px-6 pb-[100px] w-full gap-5 z-10">
+              {/* Classic Mode (Primary Teal) */}
               <button 
-                onClick={() => setIsSettingsOpen(true)}
-                className="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-colors"
+                onClick={() => {
+                  setSymbolsPerCard(8);
+                  setGameState("playing-classic");
+                  startSinglePlayer();
+                }}
+                className="btn-tactile group relative w-full bg-[#59decd] text-[#003732] border-b-[6px] border-[#006a61] rounded-2xl p-5 flex items-center justify-between shadow-[0_15px_35px_rgba(0,0,0,0.2)] overflow-hidden"
               >
-                <Settings className="w-5 h-5 text-white" />
+                <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
+                <div className="flex items-center gap-4 relative z-10">
+                  <div className="w-12 h-12 rounded-full bg-[#003732]/10 flex items-center justify-center backdrop-blur-sm">
+                    <Play className="w-6 h-6 text-[#003732] fill-current" />
+                  </div>
+                  <div className="flex flex-col items-start text-left">
+                    <span className="font-bold text-lg uppercase tracking-tight font-Fredoka">Classic</span>
+                    <span className="text-[10px] font-bold opacity-85 uppercase tracking-widest mt-0.5 font-Poppins">Play Solo</span>
+                  </div>
+                </div>
+                <ChevronRight className="w-8 h-8 text-[#003732]/50 group-hover:translate-x-1 transition-transform relative z-10" />
+              </button>
+
+              {/* Same Screen Mode (Secondary Pink) */}
+              <button 
+                onClick={() => setGameState("setup-local")}
+                className="btn-tactile group relative w-full bg-[#d95a82] text-white border-b-[6px] border-[#881644] rounded-2xl p-5 flex items-center justify-between shadow-[0_15px_35px_rgba(0,0,0,0.2)] overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
+                <div className="flex items-center gap-4 relative z-10">
+                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm">
+                    <Smartphone className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex flex-col items-start text-left">
+                    <span className="font-bold text-lg uppercase tracking-tight font-Fredoka">Versus</span>
+                    <span className="text-[10px] font-bold opacity-85 uppercase tracking-widest mt-0.5 font-Poppins">Same Screen</span>
+                  </div>
+                </div>
+                <ChevronRight className="w-8 h-8 text-white/50 group-hover:translate-x-1 transition-transform relative z-10" />
+              </button>
+
+              {/* Friends Mode (Glassmorphic) */}
+              <button 
+                onClick={() => {
+                  setGameMode("host");
+                  setGameState("lobby-friends");
+                  initializeWebRTC("host");
+                }}
+                className="btn-tactile group relative w-full bg-[#1c1e32]/50 backdrop-blur-xl text-white border border-white/10 border-b-[6px] border-b-[#313349] rounded-2xl p-5 flex items-center justify-between shadow-[0_15px_35px_rgba(0,0,0,0.3)] overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 transition-colors" />
+                <div className="flex items-center gap-4 relative z-10">
+                  <div className="w-12 h-12 rounded-full bg-[#313349]/50 flex items-center justify-center border border-white/5">
+                    <Users className="w-6 h-6 text-[#e3b5ff]" />
+                  </div>
+                  <div className="flex flex-col items-start text-left">
+                    <span className="font-bold text-lg uppercase tracking-tight text-[#e3b5ff] font-Fredoka">Friends</span>
+                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-0.5 font-Poppins">Online Match</span>
+                  </div>
+                </div>
+                <ChevronRight className="w-8 h-8 text-slate-400 group-hover:translate-x-1 transition-transform relative z-10" />
+              </button>
+            </main>
+
+            {/* Bottom Tabs Nav Bar */}
+            <div className="fixed bottom-0 w-full z-50 rounded-t-xl bg-[#313349] shadow-[0_-4px_10px_rgba(0,0,0,0.1)] flex justify-around items-center px-4 py-3 pb-safe max-w-md mx-auto">
+              {/* Home */}
+              <button className="flex flex-col items-center justify-center bg-[#34c2b2] text-[#004b43] rounded-xl px-5 py-2 active:scale-95 transition-all duration-150 ease-out min-w-[64px]">
+                <span className="text-xl">🏠</span>
+                <span className="text-[10px] uppercase font-bold mt-1 font-Poppins">Home</span>
+              </button>
+              {/* Arena / Versus */}
+              <button 
+                onClick={() => {
+                  setGameMode("client");
+                  setGameState("lobby-friends");
+                  initializeWebRTC("client");
+                }}
+                className="flex flex-col items-center justify-center text-[#bbcac6] hover:text-white rounded-xl px-5 py-2 active:scale-95 transition-all duration-150 ease-out min-w-[64px]"
+              >
+                <span className="text-xl">🌐</span>
+                <span className="text-[10px] uppercase font-bold mt-1 font-Poppins">Arena</span>
+              </button>
+              {/* Collections */}
+              <button className="flex flex-col items-center justify-center text-[#bbcac6] hover:text-white rounded-xl px-5 py-2 active:scale-95 transition-all duration-150 ease-out min-w-[64px]">
+                <span className="text-xl">📚</span>
+                <span className="text-[10px] uppercase font-bold mt-1 font-Poppins">Vault</span>
+              </button>
+              {/* Shop */}
+              <button 
+                onClick={() => setIsAdsOpen(true)}
+                className="flex flex-col items-center justify-center text-[#bbcac6] hover:text-white rounded-xl px-5 py-2 active:scale-95 transition-all duration-150 ease-out min-w-[64px] relative"
+              >
+                <span className="text-xl">🛍️</span>
+                <span className="text-[10px] uppercase font-bold mt-1 font-Poppins">Shop</span>
+                <span className="absolute top-2 right-4 w-2 h-2 bg-[#ffb4ab] rounded-full border-2 border-[#313349]" />
               </button>
             </div>
           </div>
-
-          {/* Wins Bonus Tracks */}
-          <div className="px-6 py-4 bg-white/80 border-b border-slate-100 flex flex-col gap-2 shadow-sm">
-            <div className="flex justify-between items-center">
-              <span className="text-[11px] font-bold font-Fredoka text-purple-600 tracking-wider uppercase flex items-center gap-1">
-                🏆 Racha de Victorias
-              </span>
-              <span className="text-xs font-bold text-slate-500">{winStreak}/5 Juegos</span>
-            </div>
-            
-            {/* Timeline track */}
-            <div className="flex justify-between items-center relative py-2 px-1">
-              <div className="absolute left-0 right-0 h-1.5 bg-slate-200 top-1/2 -translate-y-1/2 rounded-full" />
-              <div 
-                className="absolute left-0 h-1.5 bg-gradient-to-r from-teal-400 to-[#FF75A0] top-1/2 -translate-y-1/2 rounded-full transition-all duration-500" 
-                style={{ width: `${(winStreak / 5) * 100}%` }}
-              />
-              {[0, 1, 2, 3, 4, 5].map(step => (
-                <div 
-                  key={step} 
-                  className={`w-6 h-6 rounded-full flex items-center justify-center relative z-10 text-[9px] font-extrabold border-2 transition-all ${
-                    step <= winStreak 
-                      ? 'bg-teal-400 border-white text-white scale-110 shadow-md' 
-                      : 'bg-white border-slate-300 text-slate-400'
-                  }`}
-                >
-                  {step === 3 ? "+50" : step === 5 ? "+200" : step}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Scrollable Modes Selector */}
-          <div className="flex-1 overflow-y-auto px-5 py-6 space-y-4">
-            
-            {/* Branding Header */}
-            <div className="text-center mb-6">
-              <img src="/images/imposter-logo.png" alt="RondaPlay Logo" className="h-16 mx-auto object-contain mb-1 drop-shadow-md" />
-              <h2 className="text-2xl font-Fredoka font-black tracking-wide text-purple-900 uppercase">
-                Al Toque!
-              </h2>
-              <p className="text-xs font-semibold text-slate-400 font-Nunito uppercase tracking-widest">Speed Match Arena</p>
-            </div>
-
-            {/* CLASSIC CARD */}
-            <button
-              onClick={() => {
-                setSymbolsPerCard(8);
-                setGameState("playing-classic");
-                startSinglePlayer();
-              }}
-              className="w-full text-left bg-gradient-to-r from-[#34C2B2] to-[#209C95] text-white p-5 rounded-[2rem] shadow-xl hover:translate-y-[-2px] transition-all flex justify-between items-center border-b-4 border-teal-800"
-            >
-              <div className="space-y-1 max-w-[65%]">
-                <h3 className="text-xl font-Fredoka font-extrabold uppercase tracking-wide">Clásico</h3>
-                <p className="text-xs text-teal-100 font-medium font-Nunito">
-                  Entrena tu mente en solitario. ¡Sé el primero en detectar la pareja!
-                </p>
-              </div>
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-4xl shadow-inner relative">
-                🎮
-              </div>
-            </button>
-
-            {/* SAME SCREEN CARD */}
-            <button
-              onClick={() => setGameState("setup-local")}
-              className="w-full text-left bg-gradient-to-r from-[#FF75A0] to-[#D95A82] text-white p-5 rounded-[2rem] shadow-xl hover:translate-y-[-2px] transition-all flex justify-between items-center border-b-4 border-rose-800"
-            >
-              <div className="space-y-1 max-w-[65%]">
-                <h3 className="text-xl font-Fredoka font-extrabold uppercase tracking-wide">Misma Pantalla</h3>
-                <p className="text-xs text-rose-100 font-medium font-Nunito">
-                  Enfréntate en vivo en un duelo local de pantalla dividida.
-                </p>
-              </div>
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-4xl shadow-inner">
-                📱
-              </div>
-            </button>
-
-            {/* ONLINE FRIENDS CARD */}
-            <button
-              onClick={() => {
-                setGameMode("host");
-                setGameState("lobby-friends");
-                initializeWebRTC("host");
-              }}
-              className="w-full text-left bg-[#431C5D] text-white p-5 rounded-[2rem] shadow-xl hover:translate-y-[-2px] transition-all flex justify-between items-center border-b-4 border-indigo-950"
-            >
-              <div className="space-y-1 max-w-[65%]">
-                <h3 className="text-xl font-Fredoka font-extrabold uppercase tracking-wide">Con Amigos</h3>
-                <p className="text-xs text-indigo-200 font-medium font-Nunito">
-                  Sala remota multijugador WebRTC en tiempo real.
-                </p>
-              </div>
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-4xl shadow-inner">
-                👥
-              </div>
-            </button>
-          </div>
-
-          {/* Bottom Tabs Nav Bar */}
-          <div className="bg-white border-t border-slate-100 py-3 px-6 flex justify-around items-center rounded-t-3xl shadow-2xl shrink-0">
-            <button className="flex flex-col items-center gap-1 text-teal-600 font-bold">
-              <span className="text-xl">🏠</span>
-              <span className="text-[10px] uppercase font-Fredoka">Home</span>
-            </button>
-            <button 
-              onClick={() => {
-                setGameMode("client");
-                setGameState("lobby-friends");
-                initializeWebRTC("client");
-              }}
-              className="flex flex-col items-center gap-1 text-slate-400 hover:text-teal-600"
-            >
-              <span className="text-xl">🌐</span>
-              <span className="text-[10px] uppercase font-Fredoka">Arena</span>
-            </button>
-            <button className="flex flex-col items-center gap-1 text-slate-400 hover:text-teal-600">
-              <span className="text-xl">📚</span>
-              <span className="text-[10px] uppercase font-Fredoka">Colección</span>
-            </button>
-            <button 
-              onClick={() => setIsAdsOpen(true)}
-              className="flex flex-col items-center gap-1 text-slate-400 hover:text-teal-600"
-            >
-              <span className="text-xl">🛍️</span>
-              <span className="text-[10px] uppercase font-Fredoka">Tienda</span>
-            </button>
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ───────────────────────────────────────────────────────────────── */}
       {/* LOCAL SHOWDOWN SETUP */}
