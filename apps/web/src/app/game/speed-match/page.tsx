@@ -26,6 +26,8 @@ import {
   Star
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { recordGameVictory } from "@/lib/userProfile";
+import { useRouter } from "next/navigation";
 
 // Character images representing symbols for Al Toque game
 const symbolsAssets = [
@@ -259,6 +261,7 @@ function generateParticles(x: number, y: number, type: 'star' | 'cross'): Partic
 }
 
 export default function SpeedMatchGame() {
+  const router = useRouter();
   // Global View Navigation State
   const [gameState, setGameState] = useState<
     "menu" | "setup-local" | "playing-classic" | "playing-samescreen" | "gameover-classic" | "gameover-samescreen" | "lobby-friends" | "playing-friends" | "gameover-friends"
@@ -291,6 +294,25 @@ export default function SpeedMatchGame() {
       }
     }
   }, [userProfile]);
+
+  // Synchronize game outcome with RondaPlay Firestore database
+  useEffect(() => {
+    if (gameState === "gameover-classic") {
+      if (userProfile?.username) {
+        recordGameVictory(userProfile.username, 'speed-match', score * 10).catch(console.error);
+      }
+    } else if (gameState === "gameover-samescreen") {
+      // Local Versus mode: Player 1 (us) score is state `score`
+      if (score >= matchesToWin && userProfile?.username) {
+        recordGameVictory(userProfile.username, 'speed-match', 150).catch(console.error);
+      }
+    } else if (gameState === "gameover-friends") {
+      // Online match mode: Player 1 (us) score is state `score`
+      if (score >= matchesToWin && userProfile?.username) {
+        recordGameVictory(userProfile.username, 'speed-match', 250).catch(console.error);
+      }
+    }
+  }, [gameState]);
   
   // Game scores
   const [score, setScore] = useState(0);
@@ -1135,7 +1157,10 @@ export default function SpeedMatchGame() {
             {/* Bottom Tabs Nav Bar */}
             <div className="fixed bottom-0 w-full z-50 rounded-t-xl bg-[#313349] shadow-[0_-4px_10px_rgba(0,0,0,0.1)] flex justify-around items-center px-4 py-3 pb-safe max-w-md mx-auto">
               {/* Home */}
-              <button className="flex flex-col items-center justify-center bg-[#34c2b2] text-[#004b43] rounded-xl px-5 py-2 active:scale-95 transition-all duration-150 ease-out min-w-[64px]">
+              <button 
+                onClick={() => router.push("/")}
+                className="flex flex-col items-center justify-center bg-[#34c2b2] text-[#004b43] rounded-xl px-5 py-2 active:scale-95 transition-all duration-150 ease-out min-w-[64px]"
+              >
                 <span className="text-xl">🏠</span>
                 <span className="text-[10px] uppercase font-bold mt-1 font-Poppins">Home</span>
               </button>
