@@ -1286,10 +1286,10 @@ export default function SpeedMatchGame() {
                            style={{
                             left: `${slot.x}%`,
                             top: `${slot.y}%`,
-                            width: "36%",
-                            height: "36%",
-                            marginLeft: "-18%",
-                            marginTop: "-18%",
+                            width: "27%",
+                            height: "27%",
+                            marginLeft: "-13.5%",
+                            marginTop: "-13.5%",
                             transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
                             transformOrigin: "center center",
                             filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
@@ -1346,10 +1346,10 @@ export default function SpeedMatchGame() {
                            style={{
                             left: `${slot.x}%`,
                             top: `${slot.y}%`,
-                            width: "36%",
-                            height: "36%",
-                            marginLeft: "-18%",
-                            marginTop: "-18%",
+                            width: "27%",
+                            height: "27%",
+                            marginLeft: "-13.5%",
+                            marginTop: "-13.5%",
                             transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
                             transformOrigin: "center center",
                             filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
@@ -1430,10 +1430,10 @@ export default function SpeedMatchGame() {
                         style={{
                           left: `${slot.x}%`,
                           top: `${slot.y}%`,
-                          width: "36%",
-                          height: "36%",
-                          marginLeft: "-18%",
-                          marginTop: "-18%",
+                          width: "27%",
+                          height: "27%",
+                          marginLeft: "-13.5%",
+                          marginTop: "-13.5%",
                           transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
                           transformOrigin: "center center",
                           filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
@@ -1497,10 +1497,10 @@ export default function SpeedMatchGame() {
                         style={{
                           left: `${slot.x}%`,
                           top: `${slot.y}%`,
-                          width: "36%",
-                          height: "36%",
-                          marginLeft: "-18%",
-                          marginTop: "-18%",
+                          width: "27%",
+                          height: "27%",
+                          marginLeft: "-13.5%",
+                          marginTop: "-13.5%",
                           transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
                           transformOrigin: "center center",
                           filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
@@ -1778,10 +1778,10 @@ export default function SpeedMatchGame() {
                           style={{
                             left: `${slot.x}%`,
                             top: `${slot.y}%`,
-                            width: "36%",
-                            height: "36%",
-                            marginLeft: "-18%",
-                            marginTop: "-18%",
+                            width: "27%",
+                            height: "27%",
+                            marginLeft: "-13.5%",
+                            marginTop: "-13.5%",
                             transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
                             transformOrigin: "center center",
                             filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
@@ -1837,10 +1837,10 @@ export default function SpeedMatchGame() {
                           style={{
                             left: `${slot.x}%`,
                             top: `${slot.y}%`,
-                            width: "36%",
-                            height: "36%",
-                            marginLeft: "-18%",
-                            marginTop: "-18%",
+                            width: "27%",
+                            height: "27%",
+                            marginLeft: "-13.5%",
+                            marginTop: "-13.5%",
                             transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
                             transformOrigin: "center center",
                             filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
