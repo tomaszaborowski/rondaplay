@@ -115,11 +115,11 @@ function generateCardSlots(numSymbols = 8): LayoutSlot[] {
   const startAngle = Math.random() * Math.PI * 2;
   for (let i = 0; i < numOuter; i++) {
     const angle = startAngle + (i * Math.PI * 2) / numOuter + (Math.random() * 0.3 - 0.15);
-    const radius = 26 + (Math.random() * 6 - 3); // 23% to 29% to remain safe inside borders
+    const radius = 31 + (Math.random() * 4 - 2); // Pushed outward to prevent overlaps
     slots.push({
       x: 50 + radius * Math.cos(angle),
       y: 50 + radius * Math.sin(angle),
-      scale: 0.5 + Math.random() * 0.4, // 50% to 90%
+      scale: 0.7 + Math.random() * 0.3, // 70% to 100% (bigger symbols)
       rot: Math.random() * 90 - 45      // -45 to +45 deg
     });
   }
@@ -1262,7 +1262,7 @@ export default function SpeedMatchGame() {
               <div className="text-[10px] text-teal-300 font-Fredoka font-bold uppercase tracking-widest mb-1.5">Carta del Centro</div>
               
               <div 
-                className="w-48 h-48 sm:w-56 sm:h-56 bg-[#FF75A0] p-[2.5px] relative shadow-2xl flex items-center justify-center animate-pop"
+                className="w-72 h-72 sm:w-84 sm:h-84 bg-[#FF75A0] p-[3.5px] relative shadow-2xl flex items-center justify-center animate-pop"
                 style={{ clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)" }}
               >
                 <div 
@@ -1282,13 +1282,13 @@ export default function SpeedMatchGame() {
                           className={`absolute flex items-center justify-center transition-all ${
                             isMatchingCorrect ? "animate-scale-pulse" : ""
                           }`}
-                          style={{
+                           style={{
                             left: `${slot.x}%`,
                             top: `${slot.y}%`,
-                            width: "25%",
-                            height: "25%",
-                            marginLeft: "-12.5%",
-                            marginTop: "-12.5%",
+                            width: "36%",
+                            height: "36%",
+                            marginLeft: "-18%",
+                            marginTop: "-18%",
                             transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
                             transformOrigin: "center center",
                             filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
@@ -1318,7 +1318,7 @@ export default function SpeedMatchGame() {
             <div className="flex flex-col items-center w-full">
               <div
                 id="playerCardContainer"
-                className={`w-52 h-52 sm:w-60 sm:h-60 bg-[#FF75A0] p-[2.5px] relative shadow-2xl flex items-center justify-center animate-pop ${
+                className={`w-76 h-76 sm:w-90 sm:h-90 bg-[#FF75A0] p-[3.5px] relative shadow-2xl flex items-center justify-center animate-pop ${
                   isShaking ? "animate-card-shake" : ""
                 }`}
                 style={{ clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)" }}
@@ -1342,13 +1342,13 @@ export default function SpeedMatchGame() {
                           className={`absolute flex items-center justify-center active:scale-95 transition-all outline-none cursor-pointer ${
                             isMatchingCorrect ? "animate-scale-pulse" : ""
                           }`}
-                          style={{
+                           style={{
                             left: `${slot.x}%`,
                             top: `${slot.y}%`,
-                            width: "25%",
-                            height: "25%",
-                            marginLeft: "-12.5%",
-                            marginTop: "-12.5%",
+                            width: "36%",
+                            height: "36%",
+                            marginLeft: "-18%",
+                            marginTop: "-18%",
                             transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
                             transformOrigin: "center center",
                             filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
@@ -1402,7 +1402,7 @@ export default function SpeedMatchGame() {
             {/* Player 2 Card */}
             <div
               id="player2CardContainer"
-              className={`w-44 h-44 sm:w-52 sm:h-52 bg-[#FF75A0] p-[2px] relative shadow-2xl flex items-center justify-center animate-pop ${
+              className={`w-64 h-64 sm:w-76 sm:h-76 bg-[#FF75A0] p-[3px] relative shadow-2xl flex items-center justify-center animate-pop ${
                 isShakingP2 ? "animate-card-shake" : ""
               }`}
               style={{ clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)" }}
@@ -1429,10 +1429,10 @@ export default function SpeedMatchGame() {
                         style={{
                           left: `${slot.x}%`,
                           top: `${slot.y}%`,
-                          width: "25%",
-                          height: "25%",
-                          marginLeft: "-12.5%",
-                          marginTop: "-12.5%",
+                          width: "36%",
+                          height: "36%",
+                          marginLeft: "-18%",
+                          marginTop: "-18%",
                           transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
                           transformOrigin: "center center",
                           filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
@@ -1469,7 +1469,7 @@ export default function SpeedMatchGame() {
             {/* Player 1 Card */}
             <div
               id="player1CardContainer"
-              className={`w-44 h-44 sm:w-52 sm:h-52 bg-[#FF75A0] p-[2px] relative shadow-2xl flex items-center justify-center animate-pop ${
+              className={`w-64 h-64 sm:w-76 sm:h-76 bg-[#FF75A0] p-[3px] relative shadow-2xl flex items-center justify-center animate-pop ${
                 isShaking ? "animate-card-shake" : ""
               }`}
               style={{ clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)" }}
@@ -1496,10 +1496,10 @@ export default function SpeedMatchGame() {
                         style={{
                           left: `${slot.x}%`,
                           top: `${slot.y}%`,
-                          width: "25%",
-                          height: "25%",
-                          marginLeft: "-12.5%",
-                          marginTop: "-12.5%",
+                          width: "36%",
+                          height: "36%",
+                          marginLeft: "-18%",
+                          marginTop: "-18%",
                           transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
                           transformOrigin: "center center",
                           filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
@@ -1754,7 +1754,7 @@ export default function SpeedMatchGame() {
               <div className="text-[10px] text-teal-300 font-Fredoka font-bold uppercase tracking-widest mb-1">Carta Central</div>
               
               <div 
-                className="w-44 h-44 sm:w-52 sm:h-52 bg-[#FF75A0] p-[2px] relative shadow-2xl flex items-center justify-center animate-pop"
+                className="w-64 h-64 sm:w-76 sm:h-76 bg-[#FF75A0] p-[3px] relative shadow-2xl flex items-center justify-center animate-pop"
                 style={{ clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)" }}
               >
                 <div 
@@ -1777,10 +1777,10 @@ export default function SpeedMatchGame() {
                           style={{
                             left: `${slot.x}%`,
                             top: `${slot.y}%`,
-                            width: "25%",
-                            height: "25%",
-                            marginLeft: "-12.5%",
-                            marginTop: "-12.5%",
+                            width: "36%",
+                            height: "36%",
+                            marginLeft: "-18%",
+                            marginTop: "-18%",
                             transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
                             transformOrigin: "center center",
                             filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
@@ -1809,7 +1809,7 @@ export default function SpeedMatchGame() {
             <div className="flex flex-col items-center w-full">
               <div
                 id="playerCardContainer"
-                className={`w-48 h-48 sm:w-56 sm:h-56 bg-[#FF75A0] p-[2px] relative shadow-2xl flex items-center justify-center animate-pop ${
+                className={`w-72 h-72 sm:w-84 sm:h-84 bg-[#FF75A0] p-[3px] relative shadow-2xl flex items-center justify-center animate-pop ${
                   isShaking ? "animate-card-shake" : ""
                 }`}
                 style={{ clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)" }}
@@ -1836,10 +1836,10 @@ export default function SpeedMatchGame() {
                           style={{
                             left: `${slot.x}%`,
                             top: `${slot.y}%`,
-                            width: "25%",
-                            height: "25%",
-                            marginLeft: "-12.5%",
-                            marginTop: "-12.5%",
+                            width: "36%",
+                            height: "36%",
+                            marginLeft: "-18%",
+                            marginTop: "-18%",
                             transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
                             transformOrigin: "center center",
                             filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
