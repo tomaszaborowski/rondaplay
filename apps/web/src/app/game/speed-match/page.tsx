@@ -606,11 +606,44 @@ export default function SpeedMatchGame() {
   };
 
   const handleRemoteSDP = async (encodedToken: string) => {
+    setErrorText("");
+    if (!encodedToken || typeof encodedToken !== "string") {
+      setErrorText("Por favor, introduce un token de conexión válido.");
+      return;
+    }
+
+    const trimmed = encodedToken.trim();
+    if (!trimmed) {
+      setErrorText("El token no puede estar vacío.");
+      return;
+    }
+
+    // Base64 pattern validation
+    const base64Regex = /^[A-Za-z0-9+/=]+$/;
+    if (!base64Regex.test(trimmed)) {
+      setErrorText("El formato del token no es válido.");
+      return;
+    }
+
     try {
       const pc = peerConnectionRef.current;
-      if (!pc) return;
+      if (!pc) {
+        setErrorText("Conexión no inicializada.");
+        return;
+      }
 
-      const decoded = JSON.parse(atob(encodedToken));
+      const decodedStr = atob(trimmed);
+      if (!decodedStr || !decodedStr.trim().startsWith("{")) {
+        setErrorText("El token no contiene un formato de datos válido.");
+        return;
+      }
+
+      const decoded = JSON.parse(decodedStr);
+      if (!decoded.sdp || !decoded.type) {
+        setErrorText("El token no contiene la configuración de red requerida.");
+        return;
+      }
+
       const unpackedSdp = unpackSDP(decoded.sdp, decoded.type);
       
       await pc.setRemoteDescription(new RTCSessionDescription({
@@ -627,7 +660,7 @@ export default function SpeedMatchGame() {
       }
     } catch (err) {
       console.error("SDP Token parsing error:", err);
-      setErrorText("Invalid connection token or QR code.");
+      setErrorText("No se pudo descodificar el token de conexión.");
     }
   };
 
