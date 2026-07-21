@@ -79,6 +79,7 @@ export default function AdminLayout({
     { name: 'Content Moderation', path: '/admin/moderation', icon: ShieldAlert },
     { name: 'Translations', path: '/admin/translations', icon: Languages },
     { name: 'Page Manager', path: '/admin/pages', icon: FileText },
+    { name: 'Admins & Avatars', path: '/admin/settings/portal', icon: User },
     { name: 'General Settings', path: '/admin/settings', icon: Settings },
   ];
 

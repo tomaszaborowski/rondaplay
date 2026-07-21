@@ -37,7 +37,18 @@ export interface Game {
   logoUrl?: string;
   variables?: string; // JSON string for game settings
 }
+export interface AdminUser {
+  id: string;
+  email: string;
+  role: 'superadmin' | 'moderator' | 'admin';
+  createdAt: string;
+}
 
+export interface AvatarImage {
+  id: string;
+  url: string;
+  characterName: string;
+}
 
 export interface User {
   id: string;
@@ -78,6 +89,17 @@ interface AdminState {
   isLoggedIn: boolean;
   login: (email: string, password: string) => boolean;
   logout: () => void;
+
+  // Admin User management
+  adminUsers: AdminUser[];
+  addAdminUser: (email: string, role: AdminUser['role']) => void;
+  deleteAdminUser: (id: string) => void;
+
+  // Avatars management
+  avatars: AvatarImage[];
+  addAvatar: (url: string, characterName: string) => void;
+  deleteAvatar: (id: string) => void;
+  updateAvatarName: (id: string, name: string) => void;
 
   // Games
   games: Game[];
@@ -275,6 +297,24 @@ const initialPages: ContentPage[] = [
   }
 ];
 
+const initialAdminUsers: AdminUser[] = [
+  { id: 'adm-1', email: 'admin@rondaplay.com', role: 'superadmin', createdAt: '2026-07-20' },
+  { id: 'adm-2', email: 'moderator@rondaplay.com', role: 'moderator', createdAt: '2026-07-21' }
+];
+
+const initialAvatars: AvatarImage[] = [
+  { id: 'av-1', url: '/images/speed-match/characters/Abeja.png', characterName: 'Abeja' },
+  { id: 'av-2', url: '/images/speed-match/characters/Apple.png', characterName: 'Apple' },
+  { id: 'av-3', url: '/images/speed-match/characters/Brocolli.png', characterName: 'Brócolli' },
+  { id: 'av-4', url: '/images/speed-match/characters/Bunny.png', characterName: 'Bunny' },
+  { id: 'av-5', url: '/images/speed-match/characters/Cangrejo.png', characterName: 'Cangrejo' },
+  { id: 'av-6', url: '/images/speed-match/characters/Dog.png', characterName: 'Perro' },
+  { id: 'av-7', url: '/images/speed-match/characters/Dragon.png', characterName: 'Dragón' },
+  { id: 'av-8', url: '/images/speed-match/characters/Jirafa.png', characterName: 'Jirafa' },
+  { id: 'av-9', url: '/images/speed-match/characters/Lion.png', characterName: 'León' },
+  { id: 'av-10', url: '/images/speed-match/characters/Octopus.png', characterName: 'Pulpo' }
+];
+
 export const useAdminStore = create<AdminState>()(
   persist(
     (set) => ({
@@ -285,9 +325,56 @@ export const useAdminStore = create<AdminState>()(
           set({ isLoggedIn: true });
           return true;
         }
-        return false;
+        let success = false;
+        set((state) => {
+          const found = state.adminUsers?.some(
+            (adm) => adm.email.toLowerCase() === email.trim().toLowerCase()
+          );
+          if (found && password === 'admin') {
+            success = true;
+            return { isLoggedIn: true };
+          }
+          return {};
+        });
+        return success;
       },
       logout: () => set({ isLoggedIn: false }),
+
+      // Admin User management
+      adminUsers: initialAdminUsers,
+      addAdminUser: (email, role) => set((state) => ({
+        adminUsers: [
+          ...state.adminUsers,
+          {
+            id: `adm-${Date.now()}`,
+            email: email.trim().toLowerCase(),
+            role,
+            createdAt: new Date().toISOString().split('T')[0]
+          }
+        ]
+      })),
+      deleteAdminUser: (id) => set((state) => ({
+        adminUsers: state.adminUsers.filter((adm) => adm.id !== id)
+      })),
+
+      // Avatars management
+      avatars: initialAvatars,
+      addAvatar: (url, characterName) => set((state) => ({
+        avatars: [
+          ...state.avatars,
+          {
+            id: `av-${Date.now()}`,
+            url,
+            characterName
+          }
+        ]
+      })),
+      deleteAvatar: (id) => set((state) => ({
+        avatars: state.avatars.filter((av) => av.id !== id)
+      })),
+      updateAvatarName: (id, name) => set((state) => ({
+        avatars: state.avatars.map((av) => av.id === id ? { ...av, characterName: name } : av)
+      })),
 
       // Games CRUD
       games: initialGames,
