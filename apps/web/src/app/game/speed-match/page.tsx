@@ -4,22 +4,102 @@ import React, { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import type { Html5Qrcode } from "html5-qrcode";
 
-// 13 distinct emojis representing symbols for n=3 Dobble algorithm
+// Character images representing symbols for Al Toque game
 const symbolsAssets = [
-  "🦖", "🦊", "🐼", "👻", "🤖", "🦄", "👽", "🦁", "🐸", "🐷", "⭐", "🚀", "🍎"
+  "/images/speed-match/characters/Abeja.png",
+  "/images/speed-match/characters/Apple.png",
+  "/images/speed-match/characters/Asparagus.png",
+  "/images/speed-match/characters/Avellanas.png",
+  "/images/speed-match/characters/Ballena.png",
+  "/images/speed-match/characters/Barolome.png",
+  "/images/speed-match/characters/Brocolli.png",
+  "/images/speed-match/characters/Bunny.png",
+  "/images/speed-match/characters/Caballo.png",
+  "/images/speed-match/characters/Cafe.png",
+  "/images/speed-match/characters/Cake.png",
+  "/images/speed-match/characters/Cangrejo.png",
+  "/images/speed-match/characters/Cappuchino.png",
+  "/images/speed-match/characters/Castle.png",
+  "/images/speed-match/characters/Cherry.png",
+  "/images/speed-match/characters/Cinnamon.png",
+  "/images/speed-match/characters/Cocodrile.png",
+  "/images/speed-match/characters/Coral.png",
+  "/images/speed-match/characters/Corn.png",
+  "/images/speed-match/characters/Croissant.png",
+  "/images/speed-match/characters/Dog.png",
+  "/images/speed-match/characters/Dorit.png",
+  "/images/speed-match/characters/Dragon.png",
+  "/images/speed-match/characters/Duck.png",
+  "/images/speed-match/characters/Edam.png",
+  "/images/speed-match/characters/Esponja.png",
+  "/images/speed-match/characters/Fish.png",
+  "/images/speed-match/characters/GingerbreadMan.png",
+  "/images/speed-match/characters/GymStar.png",
+  "/images/speed-match/characters/Jirafa.png",
+  "/images/speed-match/characters/Lion.png",
+  "/images/speed-match/characters/Macaron.png",
+  "/images/speed-match/characters/Mapache.png",
+  "/images/speed-match/characters/Marshmallows.png",
+  "/images/speed-match/characters/Milka.png",
+  "/images/speed-match/characters/Octopus.png",
+  "/images/speed-match/characters/Oniguiri.png",
+  "/images/speed-match/characters/Peanut.png",
+  "/images/speed-match/characters/Pelota.png",
+  "/images/speed-match/characters/Piggy.png",
+  "/images/speed-match/characters/Plant.png",
+  "/images/speed-match/characters/Preetzel.png",
+  "/images/speed-match/characters/Puppy.png",
+  "/images/speed-match/characters/Rainbow.png",
+  "/images/speed-match/characters/Raton.png",
+  "/images/speed-match/characters/Regadera.png",
+  "/images/speed-match/characters/Roll.png",
+  "/images/speed-match/characters/Rollie.png",
+  "/images/speed-match/characters/Salchicha.png",
+  "/images/speed-match/characters/Sandwich.png",
+  "/images/speed-match/characters/Smores.png",
+  "/images/speed-match/characters/Star.png",
+  "/images/speed-match/characters/Syrup.png",
+  "/images/speed-match/characters/Tennis.png",
+  "/images/speed-match/characters/Tiger.png",
+  "/images/speed-match/characters/Tortuga.png",
+  "/images/speed-match/characters/Unicorn.png",
+  "/images/speed-match/characters/Vase.png",
+  "/images/speed-match/characters/Woods.png"
 ];
 
-// Pre-defined relative layout slots for 4 symbols per card (percentage left, top, scale, rotation)
-const layoutSlots = [
-  { x: 22, y: 22, scale: 1.1, rot: -15 }, // Top Left
-  { x: 62, y: 26, scale: 0.9, rot: 20 },  // Top Right
-  { x: 27, y: 64, scale: 1.0, rot: 10 },  // Bottom Left
-  { x: 58, y: 58, scale: 1.25, rot: -25 }  // Bottom Right
-];
+type LayoutSlot = { x: number; y: number; scale: number; rot: number };
 
-// Finite projective plane deck generator (n=3)
-// Generates 13 cards, each with exactly 4 symbols, sharing exactly 1 symbol with any other card
-function generateDobbleDeck(n = 3): number[][] {
+// Generates beautifully scattered coordinates inside the card octagon
+function generateCardSlots(numSymbols = 8): LayoutSlot[] {
+  const slots: LayoutSlot[] = [];
+  
+  // Center slot with small random offset
+  slots.push({
+    x: 50 + (Math.random() * 6 - 3),
+    y: 50 + (Math.random() * 6 - 3),
+    scale: 0.8 + Math.random() * 0.2, // 80% to 100%
+    rot: Math.random() * 90 - 45      // -45 to +45 deg
+  });
+
+  // Outer ring slots (distributed radially)
+  const numOuter = numSymbols - 1;
+  const startAngle = Math.random() * Math.PI * 2;
+  for (let i = 0; i < numOuter; i++) {
+    const angle = startAngle + (i * Math.PI * 2) / numOuter + (Math.random() * 0.3 - 0.15);
+    const radius = 26 + (Math.random() * 6 - 3); // 23% to 32% to remain safe inside borders
+    slots.push({
+      x: 50 + radius * Math.cos(angle),
+      y: 50 + radius * Math.sin(angle),
+      scale: 0.5 + Math.random() * 0.4, // 50% to 90%
+      rot: Math.random() * 90 - 45      // -45 to +45 deg
+    });
+  }
+  return slots;
+}
+
+// Finite projective plane deck generator (n=7 produces 8 symbols per card)
+// Generates 57 cards sharing exactly 1 symbol with any other card
+function generateDobbleDeck(n = 7): number[][] {
   const deck: number[][] = [];
   
   // Card 1
@@ -110,28 +190,36 @@ function unpackSDP(packedStr: string, type: 'offer' | 'answer'): string {
   return sdp;
 }
 
-type LayoutSlot = { x: number; y: number; scale: number; rot: number };
-
 interface Particle {
   id: number;
   x: number;
   y: number;
   tx: number;
   ty: number;
+  color: string;
+  type: 'star' | 'cross';
 }
 
-function generateParticles(x: number, y: number): Particle[] {
-  const numParticles = 8;
+function generateParticles(x: number, y: number, type: 'star' | 'cross'): Particle[] {
+  const numParticles = type === 'star' ? 12 : 6;
   const newParticles: Particle[] = [];
+  const colors = type === 'star'
+    ? ["#FF75A0", "#34C2B2", "#FFC800", "#8A2BE2", "#FF7A00"]
+    : ["#FF4C4C"];
+    
   for (let i = 0; i < numParticles; i++) {
     const angle = Math.random() * Math.PI * 2;
-    const distance = 40 + Math.random() * 60;
+    const distance = type === 'star'
+      ? 30 + Math.random() * 50
+      : 15 + Math.random() * 20;
     newParticles.push({
       id: Date.now() + Math.random(),
       x,
       y,
       tx: Math.cos(angle) * distance,
-      ty: Math.sin(angle) * distance
+      ty: Math.sin(angle) * distance,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      type
     });
   }
   return newParticles;
@@ -149,6 +237,9 @@ export default function SpeedMatchGame() {
   const [commonCardSlots, setCommonCardSlots] = useState<LayoutSlot[]>([]);
   const [playerCardSlots, setPlayerCardSlots] = useState<LayoutSlot[]>([]);
   
+  // Track symbol ID currently being pulsed on correct match
+  const [correctMatchSymbolId, setCorrectMatchSymbolId] = useState<number | null>(null);
+
   // WebRTC & connection states
   const [connectionStatus, setConnectionStatus] = useState<"disconnected" | "generating" | "scanning" | "connecting" | "connected">("disconnected");
   const [sdpToken, setSdpToken] = useState("");
@@ -219,8 +310,8 @@ export default function SpeedMatchGame() {
 
   // Particles generator
   const [particles, setParticles] = useState<Particle[]>([]);
-  const createParticles = (x: number, y: number) => {
-    const newParticles = generateParticles(x, y);
+  const createParticles = (x: number, y: number, type: 'star' | 'cross') => {
+    const newParticles = generateParticles(x, y, type);
     setParticles(prev => [...prev, ...newParticles]);
     setTimeout(() => {
       setParticles(prev => prev.slice(newParticles.length));
@@ -229,9 +320,12 @@ export default function SpeedMatchGame() {
 
   // Shake state
   const [isShaking, setIsShaking] = useState(false);
-  const triggerShake = () => {
+  const triggerShake = (clientX?: number, clientY?: number) => {
     setIsShaking(true);
     playSound("error");
+    if (clientX !== undefined && clientY !== undefined) {
+      createParticles(clientX, clientY, 'cross');
+    }
     if (navigator.vibrate) navigator.vibrate(80);
     setTimeout(() => setIsShaking(false), 400);
   };
@@ -323,14 +417,15 @@ export default function SpeedMatchGame() {
     channel.onmessage = (e) => {
       const msg = JSON.parse(e.data);
       if (msg.type === "STATE_UPDATE") {
-        // Synchronized cards from Host
+        // Synchronized cards & slots from Host
         setCommonCard(msg.commonCard);
-        setCommonCardSlots(shuffle([...layoutSlots]));
+        setCommonCardSlots(msg.commonCardSlots);
         
         // Client receives cards mapped specifically for them
         const myCard = gameMode === "host" ? msg.hostCard : msg.clientCard;
+        const mySlots = gameMode === "host" ? msg.hostCardSlots : msg.clientCardSlots;
         setPlayerCard(myCard);
-        setPlayerCardSlots(shuffle([...layoutSlots]));
+        setPlayerCardSlots(mySlots);
         
         setScore(msg.scores[gameMode]);
         setOpponentScore(msg.scores[gameMode === "host" ? "client" : "host"]);
@@ -339,8 +434,11 @@ export default function SpeedMatchGame() {
         setGameState("playing");
       } else if (msg.type === "OPPONENT_FEEDBACK") {
         if (msg.result === "correct") {
+          setCorrectMatchSymbolId(msg.symbolId);
           playSound("correct");
+          setTimeout(() => setCorrectMatchSymbolId(null), 500);
         } else {
+          // Wrong selection by opponent (or local guest tap)
           triggerShake();
         }
       } else if (msg.type === "TAP" && gameMode === "host") {
@@ -406,7 +504,7 @@ export default function SpeedMatchGame() {
   // 2. Gameplay Loop Handlers
   const startSinglePlayer = () => {
     setGameMode("single");
-    deckRef.current = generateDobbleDeck(3);
+    deckRef.current = generateDobbleDeck(7);
     availableCardsRef.current = shuffle([...deckRef.current]);
 
     const firstCommon = availableCardsRef.current.pop()!;
@@ -414,15 +512,15 @@ export default function SpeedMatchGame() {
     
     setCommonCard(firstCommon);
     setPlayerCard(firstPlayer);
-    setCommonCardSlots(shuffle([...layoutSlots]));
-    setPlayerCardSlots(shuffle([...layoutSlots]));
+    setCommonCardSlots(generateCardSlots(8));
+    setPlayerCardSlots(generateCardSlots(8));
     
     setScore(0);
     setGameState("playing");
   };
 
   const startMultiplayerGame = () => {
-    deckRef.current = generateDobbleDeck(3);
+    deckRef.current = generateDobbleDeck(7);
     availableCardsRef.current = shuffle([...deckRef.current]);
 
     const firstCommon = availableCardsRef.current.pop()!;
@@ -436,19 +534,27 @@ export default function SpeedMatchGame() {
   };
 
   const broadcastMultiplayerState = (common: number[], host: number[], client: number[], scores: { host: number; client: number }) => {
+    const commonSlots = generateCardSlots(8);
+    const hostSlots = generateCardSlots(8);
+    const clientSlots = generateCardSlots(8);
+
     setCommonCard(common);
-    setCommonCardSlots(shuffle([...layoutSlots]));
+    setCommonCardSlots(commonSlots);
     
     const myCard = gameMode === "host" ? host : client;
+    const mySlots = gameMode === "host" ? hostSlots : clientSlots;
     setPlayerCard(myCard);
-    setPlayerCardSlots(shuffle([...layoutSlots]));
+    setPlayerCardSlots(mySlots);
 
     if (dataChannelRef.current?.readyState === "open") {
       dataChannelRef.current.send(JSON.stringify({
         type: "STATE_UPDATE",
         commonCard: common,
+        commonCardSlots: commonSlots,
         hostCard: host,
+        hostCardSlots: hostSlots,
         clientCard: client,
+        clientCardSlots: clientSlots,
         scores
       }));
     }
@@ -457,6 +563,7 @@ export default function SpeedMatchGame() {
   // Validate Tap interaction
   const handleSymbolTap = (event: React.MouseEvent | React.TouchEvent, symbolId: number) => {
     event.preventDefault();
+    if (correctMatchSymbolId !== null) return; // Prevent double taps during animations
     
     // Fetch screen tap coordinates for particles
     const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
@@ -464,36 +571,41 @@ export default function SpeedMatchGame() {
 
     if (gameMode === "single") {
       if (commonCard.includes(symbolId)) {
-        createParticles(clientX, clientY);
+        setCorrectMatchSymbolId(symbolId);
+        createParticles(clientX, clientY, 'star');
         playSound("correct");
         
         const nextScore = score + 1;
         setScore(nextScore);
 
-        if (nextScore >= 10) {
-          setGameState("gameover");
-          playSound("win");
-          return;
-        }
+        setTimeout(() => {
+          setCorrectMatchSymbolId(null);
+          
+          if (nextScore >= 10) {
+            setGameState("gameover");
+            playSound("win");
+            return;
+          }
 
-        // Next round: player card becomes the new common card
-        const nextCommon = [...playerCard];
-        
-        // Draw new player card
-        if (availableCardsRef.current.length === 0) {
-          availableCardsRef.current = shuffle([...deckRef.current]).filter(
-            card => JSON.stringify(card) !== JSON.stringify(nextCommon)
-          );
-        }
-        
-        const nextPlayer = availableCardsRef.current.pop()!;
-        
-        setCommonCard(nextCommon);
-        setPlayerCard(nextPlayer);
-        setCommonCardSlots(shuffle([...layoutSlots]));
-        setPlayerCardSlots(shuffle([...layoutSlots]));
+          // Next round: player card becomes the new common card
+          const nextCommon = [...playerCard];
+          
+          // Draw new player card
+          if (availableCardsRef.current.length === 0) {
+            availableCardsRef.current = shuffle([...deckRef.current]).filter(
+              card => JSON.stringify(card) !== JSON.stringify(nextCommon)
+            );
+          }
+          
+          const nextPlayer = availableCardsRef.current.pop()!;
+          
+          setCommonCard(nextCommon);
+          setPlayerCard(nextPlayer);
+          setCommonCardSlots(generateCardSlots(8));
+          setPlayerCardSlots(generateCardSlots(8));
+        }, 500);
       } else {
-        triggerShake();
+        triggerShake(clientX, clientY);
       }
     } else if (gameMode === "client") {
       // Client sends tap request to Host
@@ -511,13 +623,11 @@ export default function SpeedMatchGame() {
 
   // Host validation for multiplayer rounds
   const validateMultiplayerTap = (symbolId: number, player: "host" | "client") => {
+    if (correctMatchSymbolId !== null) return; // Prevent double validation during transitions
+
     if (commonCard.includes(symbolId)) {
-      // Sound feedback for correct match
+      setCorrectMatchSymbolId(symbolId);
       playSound("correct");
-      dataChannelRef.current?.send(JSON.stringify({
-        type: "OPPONENT_FEEDBACK",
-        result: "correct"
-      }));
 
       // Calculate scores
       const hostScore = player === "host" ? score + 1 : score;
@@ -525,34 +635,45 @@ export default function SpeedMatchGame() {
       setScore(hostScore);
       setOpponentScore(clientScore);
 
-      // Check if game is complete (first to 10 points wins)
-      if (hostScore >= 10 || clientScore >= 10) {
-        if (dataChannelRef.current?.readyState === "open") {
-          dataChannelRef.current.send(JSON.stringify({
-            type: "GAME_OVER",
-            scores: { host: hostScore, client: clientScore }
-          }));
+      // Notify clients of the correct tap
+      dataChannelRef.current?.send(JSON.stringify({
+        type: "OPPONENT_FEEDBACK",
+        result: "correct",
+        symbolId
+      }));
+
+      setTimeout(() => {
+        setCorrectMatchSymbolId(null);
+
+        // Check if game is complete (first to 10 points wins)
+        if (hostScore >= 10 || clientScore >= 10) {
+          if (dataChannelRef.current?.readyState === "open") {
+            dataChannelRef.current.send(JSON.stringify({
+              type: "GAME_OVER",
+              scores: { host: hostScore, client: clientScore }
+            }));
+          }
+          setGameState("gameover");
+          playSound("win");
+          return;
         }
-        setGameState("gameover");
-        playSound("win");
-        return;
-      }
 
-      // Winning card becomes the new common card
-      const winningCard = player === "host" ? playerCard : (playerCard === commonCard ? commonCard : playerCard); // Fallback reference
-      const nextCommon = [...winningCard];
+        // Winning card becomes the new common card
+        const winningCard = player === "host" ? playerCard : (playerCard === commonCard ? commonCard : playerCard); // Fallback reference
+        const nextCommon = [...winningCard];
 
-      // Draw replacement cards
-      if (availableCardsRef.current.length < 2) {
-        availableCardsRef.current = shuffle([...deckRef.current]).filter(
-          card => JSON.stringify(card) !== JSON.stringify(nextCommon)
-        );
-      }
+        // Draw replacement cards
+        if (availableCardsRef.current.length < 2) {
+          availableCardsRef.current = shuffle([...deckRef.current]).filter(
+            card => JSON.stringify(card) !== JSON.stringify(nextCommon)
+          );
+        }
 
-      const nextHostCard = player === "host" ? availableCardsRef.current.pop()! : playerCard;
-      const nextClientCard = player === "client" ? availableCardsRef.current.pop()! : (player === "host" ? playerCard : playerCard); // Sync client
+        const nextHostCard = player === "host" ? availableCardsRef.current.pop()! : playerCard;
+        const nextClientCard = player === "client" ? availableCardsRef.current.pop()! : (player === "host" ? playerCard : playerCard); // Sync client
 
-      broadcastMultiplayerState(nextCommon, nextHostCard, nextClientCard, { host: hostScore, client: clientScore });
+        broadcastMultiplayerState(nextCommon, nextHostCard, nextClientCard, { host: hostScore, client: clientScore });
+      }, 500);
     } else {
       // Incorrect match shake feedback
       triggerShake();
@@ -574,18 +695,44 @@ export default function SpeedMatchGame() {
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-[#1E112A] via-[#431C5D] to-[#209C95] flex flex-col items-center justify-between py-6 px-4 select-none touch-none text-white font-sans overflow-hidden">
       
+      {/* Custom Styles for animations */}
+      <style>{`
+        @keyframes scalePulse {
+          0% { transform: scale(1); }
+          30% { transform: scale(0.8); }
+          70% { transform: scale(1.3); }
+          100% { transform: scale(1); }
+        }
+        .animate-scale-pulse {
+          animation: scalePulse 0.45s ease-out forwards !important;
+          z-index: 10;
+        }
+        
+        @keyframes cardShake {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-8px); }
+          40%, 80% { transform: translateX(8px); }
+        }
+        .animate-card-shake {
+          animation: cardShake 0.35s ease-in-out !important;
+        }
+      `}</style>
+
       {/* Dynamic particles renderer */}
       {particles.map(p => (
         <span
           key={p.id}
-          className="absolute w-4 h-4 bg-[#FF75A0] rounded-full pointer-events-none z-50 animate-explode"
+          className="absolute text-2xl font-bold pointer-events-none z-50 animate-explode"
           style={{
             left: `${p.x}px`,
             top: `${p.y}px`,
+            color: p.color,
             "--tx": `${p.tx}px`,
             "--ty": `${p.ty}px`
           } as React.CSSProperties}
-        />
+        >
+          {p.type === 'star' ? '★' : '✖'}
+        </span>
       ))}
 
       {/* ── HEADER ── */}
@@ -777,31 +924,50 @@ export default function SpeedMatchGame() {
           <div className="w-full flex flex-col justify-center items-center gap-6">
             {/* Common Card Container */}
             <div className="flex flex-col items-center w-full">
-              <div className="text-center mb-1 text-teal-200 font-bold tracking-wider text-xs uppercase">Common Card</div>
-              <div className="w-48 h-48 sm:w-56 sm:h-56 bg-white rounded-full relative shadow-2xl border-[6px] border-[#34C2B2] overflow-hidden flex items-center justify-center animate-pop">
-                <div className="absolute inset-[5%] rounded-full">
-                  {commonCard.map((symbolId, index) => {
-                    const slot = commonCardSlots[index] || layoutSlots[index];
-                    return (
-                      <div
-                        key={`common-${symbolId}`}
-                        className="absolute text-5xl flex items-center justify-center"
-                        style={{
-                          left: `${slot.x}%`,
-                          top: `${slot.y}%`,
-                          width: "35%",
-                          height: "35%",
-                          marginLeft: "-17.5%",
-                          marginTop: "-17.5%",
-                          transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
-                          transformOrigin: "center center",
-                          filter: "drop-shadow(0px 3px 2px rgba(0,0,0,0.15))"
-                        }}
-                      >
-                        {symbolsAssets[symbolId]}
-                      </div>
-                    );
-                  })}
+              <div className="text-center mb-1 text-teal-200 font-Fredoka font-bold tracking-wider text-xs uppercase">Carta del Centro</div>
+              
+              <div 
+                className="w-48 h-48 sm:w-56 sm:h-56 bg-[#FF75A0] p-[2px] relative shadow-2xl flex items-center justify-center animate-pop"
+                style={{ clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)" }}
+              >
+                <div 
+                  className="w-full h-full bg-white relative flex items-center justify-center"
+                  style={{ clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)" }}
+                >
+                  <div className="absolute inset-[3%] w-[94%] h-[94%]">
+                    {commonCard.map((symbolId, index) => {
+                      const slot = commonCardSlots[index];
+                      if (!slot) return null;
+                      
+                      const isMatchingCorrect = correctMatchSymbolId === symbolId;
+
+                      return (
+                        <div
+                          key={`common-${symbolId}`}
+                          className={`absolute flex items-center justify-center transition-all ${
+                            isMatchingCorrect ? "animate-scale-pulse" : ""
+                          }`}
+                          style={{
+                            left: `${slot.x}%`,
+                            top: `${slot.y}%`,
+                            width: "25%",
+                            height: "25%",
+                            marginLeft: "-12.5%",
+                            marginTop: "-12.5%",
+                            transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
+                            transformOrigin: "center center",
+                            filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
+                          }}
+                        >
+                          <img 
+                            src={symbolsAssets[symbolId]} 
+                            alt="symbol" 
+                            className="w-full h-full object-contain pointer-events-none" 
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
@@ -817,38 +983,54 @@ export default function SpeedMatchGame() {
             <div className="flex flex-col items-center w-full">
               <div
                 id="playerCardContainer"
-                className={`w-52 h-52 sm:w-60 sm:h-60 bg-white rounded-full relative shadow-2xl border-[6px] border-[#FF75A0] overflow-hidden flex items-center justify-center animate-pop ${
-                  isShaking ? "animate-shake border-red-500" : ""
+                className={`w-52 h-52 sm:w-60 sm:h-60 bg-[#FF75A0] p-[2px] relative shadow-2xl flex items-center justify-center animate-pop ${
+                  isShaking ? "animate-card-shake" : ""
                 }`}
+                style={{ clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)" }}
               >
-                <div className="absolute inset-[5%] rounded-full">
-                  {playerCard.map((symbolId, index) => {
-                    const slot = playerCardSlots[index] || layoutSlots[index];
-                    return (
-                      <button
-                        key={`player-${symbolId}`}
-                        onClick={(e) => handleSymbolTap(e, symbolId)}
-                        onTouchStart={(e) => handleSymbolTap(e, symbolId)}
-                        className="absolute text-5xl flex items-center justify-center active:scale-95 transition-all outline-none cursor-pointer"
-                        style={{
-                          left: `${slot.x}%`,
-                          top: `${slot.y}%`,
-                          width: "35%",
-                          height: "35%",
-                          marginLeft: "-17.5%",
-                          marginTop: "-17.5%",
-                          transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
-                          transformOrigin: "center center",
-                          filter: "drop-shadow(0px 3px 2px rgba(0,0,0,0.15))"
-                        }}
-                      >
-                        {symbolsAssets[symbolId]}
-                      </button>
-                    );
-                  })}
+                <div 
+                  className="w-full h-full bg-white relative flex items-center justify-center"
+                  style={{ clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)" }}
+                >
+                  <div className="absolute inset-[3%] w-[94%] h-[94%]">
+                    {playerCard.map((symbolId, index) => {
+                      const slot = playerCardSlots[index];
+                      if (!slot) return null;
+                      
+                      const isMatchingCorrect = correctMatchSymbolId === symbolId;
+
+                      return (
+                        <button
+                          key={`player-${symbolId}`}
+                          onClick={(e) => handleSymbolTap(e, symbolId)}
+                          onTouchStart={(e) => handleSymbolTap(e, symbolId)}
+                          className={`absolute flex items-center justify-center active:scale-95 transition-all outline-none cursor-pointer ${
+                            isMatchingCorrect ? "animate-scale-pulse" : ""
+                          }`}
+                          style={{
+                            left: `${slot.x}%`,
+                            top: `${slot.y}%`,
+                            width: "25%",
+                            height: "25%",
+                            marginLeft: "-12.5%",
+                            marginTop: "-12.5%",
+                            transform: `scale(${slot.scale}) rotate(${slot.rot}deg)`,
+                            transformOrigin: "center center",
+                            filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.15))"
+                          }}
+                        >
+                          <img 
+                            src={symbolsAssets[symbolId]} 
+                            alt="symbol" 
+                            className="w-full h-full object-contain pointer-events-none" 
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-              <div className="text-center mt-2 text-pink-200 font-bold tracking-wider text-xs uppercase">Your Card (Find & Tap Match)</div>
+              <div className="text-center mt-2 text-pink-200 font-bold tracking-wider text-xs uppercase">Tu Carta (Encuentra y Toca la Pareja)</div>
             </div>
           </div>
         )}
