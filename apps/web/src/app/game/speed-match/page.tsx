@@ -220,7 +220,7 @@ function unpackSDP(packedStr: string, type: 'offer' | 'answer'): string {
 }
 
 interface Particle {
-  id: number;
+  id: string;
   x: number;
   y: number;
   tx: number;
@@ -236,13 +236,14 @@ function generateParticles(x: number, y: number, type: 'star' | 'cross'): Partic
     ? ["#FF75A0", "#34C2B2", "#FFC800", "#8A2BE2", "#FF7A00"]
     : ["#FF4C4C"];
     
+  const timestamp = Date.now();
   for (let i = 0; i < numParticles; i++) {
     const angle = Math.random() * Math.PI * 2;
     const distance = type === 'star'
       ? 30 + Math.random() * 50
       : 15 + Math.random() * 20;
     newParticles.push({
-      id: Date.now() + Math.random(),
+      id: `${timestamp}-${i}-${Math.random()}`,
       x,
       y,
       tx: Math.cos(angle) * distance,
