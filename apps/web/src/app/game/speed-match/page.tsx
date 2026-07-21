@@ -268,8 +268,7 @@ export default function SpeedMatchGame() {
   const [matchesToWin, setMatchesToWin] = useState<3 | 6 | 10>(10);
   
   // User profiles & stats
-  const [coins, setCoins] = useState(2300);
-  const [gems, setGems] = useState(55);
+  const [totalPoints, setTotalPoints] = useState(12800);
   const [winStreak, setWinStreak] = useState(3);
   const [username, setUsername] = useState("CozyViola73");
   const [player2Name, setPlayer2Name] = useState("Player 2");
@@ -427,9 +426,6 @@ export default function SpeedMatchGame() {
 
   // 2. Play Actions triggers
   const startSinglePlayer = () => {
-    // Deduct coins if applicable
-    setCoins(prev => Math.max(0, prev - 50));
-    
     const n = symbolsPerCard === 6 ? 5 : 7;
     deckRef.current = generateDobbleDeck(n);
     availableCardsRef.current = shuffle([...deckRef.current]);
@@ -449,9 +445,6 @@ export default function SpeedMatchGame() {
   };
 
   const startSameScreenGame = () => {
-    // Deduct 100 coins
-    setCoins(prev => Math.max(0, prev - 100));
-    
     const n = symbolsPerCard === 6 ? 5 : 7;
     deckRef.current = generateDobbleDeck(n);
     
@@ -510,7 +503,7 @@ export default function SpeedMatchGame() {
           // Increase streak if Player 1 won
           if (nextP1 >= matchesToWin) {
             setWinStreak(prev => Math.min(5, prev + 1));
-            setCoins(prev => prev + 150);
+            setTotalPoints(prev => prev + 150);
           } else {
             setWinStreak(0);
           }
@@ -547,7 +540,7 @@ export default function SpeedMatchGame() {
         setCorrectMatchSymbolId(null);
         
         // Add round score bonus
-        setCoins(prev => prev + 10);
+        setTotalPoints(prev => prev + 10);
         
         const nextCommon = [...playerCard];
         const n = symbolsPerCard === 6 ? 5 : 7;
@@ -925,16 +918,11 @@ export default function SpeedMatchGame() {
               </div>
             </div>
             
-            {/* Points / Coins & Gems */}
+            {/* Total Points */}
             <div className="flex items-center gap-2">
-              <div className="bg-black/20 rounded-full py-1 px-3 flex items-center gap-1.5 border border-white/10">
-                <span className="text-yellow-400 font-bold text-sm">🪙</span>
-                <span className="text-xs font-Fredoka font-bold">{coins}</span>
-              </div>
-              
-              <div className="bg-black/20 rounded-full py-1 px-3 flex items-center gap-1.5 border border-white/10">
-                <span className="text-emerald-400 font-bold text-sm">💎</span>
-                <span className="text-xs font-Fredoka font-bold">{gems}</span>
+              <div className="bg-black/20 rounded-full py-1.5 px-3.5 flex items-center gap-1.5 border border-white/10 text-xs font-Fredoka font-bold text-yellow-300">
+                <span>⭐</span>
+                <span>{totalPoints} Pts</span>
               </div>
 
               <button 
@@ -971,7 +959,7 @@ export default function SpeedMatchGame() {
                       : 'bg-white border-slate-300 text-slate-400'
                   }`}
                 >
-                  {step === 3 ? "🪙" : step === 5 ? "🎁" : step}
+                  {step === 3 ? "+50" : step === 5 ? "+200" : step}
                 </div>
               ))}
             </div>
@@ -1193,10 +1181,9 @@ export default function SpeedMatchGame() {
             {/* CTA action button */}
             <button
               onClick={startSameScreenGame}
-              className="w-full py-4 bg-gradient-to-r from-teal-400 to-emerald-500 hover:from-teal-500 hover:to-emerald-600 text-white font-Fredoka font-extrabold rounded-full text-lg tracking-wide shadow-xl border-b-4 border-emerald-600 active:translate-y-1 transition-all flex flex-col items-center justify-center shrink-0 mt-4"
+              className="w-full py-4 bg-gradient-to-r from-teal-400 to-emerald-500 hover:from-teal-500 hover:to-emerald-600 text-white font-Fredoka font-extrabold rounded-full text-lg tracking-wide shadow-xl border-b-4 border-emerald-600 active:translate-y-1 transition-all flex items-center justify-center shrink-0 mt-4"
             >
               <span>INICIAR DUELO</span>
-              <span className="text-[10px] opacity-90 font-bold uppercase tracking-widest flex items-center gap-1">🪙 100 Monedas</span>
             </button>
 
           </div>
@@ -1533,7 +1520,7 @@ export default function SpeedMatchGame() {
               onClick={startSameScreenGame}
               className="py-3 px-8 bg-gradient-to-r from-teal-400 to-emerald-500 text-white font-Fredoka font-extrabold text-sm rounded-full shadow-lg border-b-4 border-emerald-600 active:translate-y-1 transition-all"
             >
-              JUGAR OTRA VEZ (🪙 100)
+              JUGAR OTRA VEZ
             </button>
           </div>
 
@@ -1557,7 +1544,7 @@ export default function SpeedMatchGame() {
               onClick={startSameScreenGame}
               className="py-3 px-8 bg-gradient-to-r from-teal-400 to-emerald-500 text-white font-Fredoka font-extrabold text-sm rounded-full shadow-lg border-b-4 border-emerald-600 active:translate-y-1 transition-all"
             >
-              JUGAR OTRA VEZ (🪙 100)
+              JUGAR OTRA VEZ
             </button>
           </div>
 
@@ -1922,17 +1909,16 @@ export default function SpeedMatchGame() {
             <span className="text-xs text-slate-400 font-bold uppercase">Parejas Encontradas</span>
             
             <div className="flex gap-2 items-center text-xs font-bold text-yellow-600 bg-yellow-50 px-4 py-1.5 rounded-full border border-yellow-100">
-              <span>🪙 Recompensa: +{score * 10} Monedas</span>
+              <span>⭐ Recompensa: +{score * 10} Puntos</span>
             </div>
           </div>
 
           <div className="w-full flex flex-col space-y-3">
             <button
               onClick={startSinglePlayer}
-              className="w-full py-4 bg-[#34C2B2] text-white font-Fredoka font-extrabold rounded-full text-lg tracking-wide shadow-xl border-b-4 border-teal-700 active:translate-y-1 transition-all flex flex-col items-center"
+              className="w-full py-4 bg-[#34C2B2] text-white font-Fredoka font-extrabold rounded-full text-lg tracking-wide shadow-xl border-b-4 border-teal-700 active:translate-y-1 transition-all flex flex-col items-center justify-center"
             >
               <span>🔄 REPETIR PRÁCTICA</span>
-              <span className="text-[10px] font-bold uppercase tracking-wider opacity-90">🪙 50 Monedas</span>
             </button>
 
             <button
@@ -2028,16 +2014,16 @@ export default function SpeedMatchGame() {
             {/* Account Actions */}
             <div className="space-y-2 pt-2 border-t border-slate-100">
               <button 
-                onClick={() => alert("Compras restauradas con éxito.")}
+                onClick={() => alert("Tu posición actual en RondaPlay es #14. ¡Sigue ganando puntos!")}
                 className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold font-Poppins uppercase transition-colors"
               >
-                Restaurar Compras
+                Ver Clasificación
               </button>
               <button 
-                onClick={() => alert("Código canjeado con éxito.")}
+                onClick={() => alert("Reglas: Encuentra el símbolo coincidente entre tu carta y la del centro (o la de tu oponente) lo más rápido que puedas.")}
                 className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold font-Poppins uppercase transition-colors"
               >
-                Canjear Código
+                Ayuda & Reglas
               </button>
             </div>
           </div>
