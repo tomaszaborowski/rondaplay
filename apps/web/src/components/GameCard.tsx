@@ -12,7 +12,9 @@ interface GameCardProps {
   playersKey?: string;
   // Fallback direct strings
   title?: string;
+  titleEn?: string;
   description?: string;
+  descriptionEn?: string;
   players?: string;
 
   type: 'logic' | 'memory' | 'speed';
@@ -29,7 +31,9 @@ export const GameCard: React.FC<GameCardProps> = ({
   descKey,
   playersKey,
   title: titleProp,
+  titleEn: titleEnProp,
   description: descProp,
+  descriptionEn: descEnProp,
   players: playersProp,
   type,
   emoji,
@@ -39,28 +43,35 @@ export const GameCard: React.FC<GameCardProps> = ({
   isPremium = false,
   url,
 }) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
-  // Inferred translation keys based on slug / game id
-  const inferredTitleKey   = titleKey   || (slug ? `game.${slug}.title`   : undefined);
-  const inferredDescKey    = descKey    || (slug ? `game.${slug}.desc`    : undefined);
-  const inferredPlayersKey = playersKey || (slug ? `game.${slug}.players` : undefined);
+  // Resolve Title
+  let title = '';
+  if (lang === 'en') {
+    title = titleEnProp || titleProp || '';
+  } else {
+    title = titleProp || '';
+  }
+  if (!title && titleKey) {
+    title = t(titleKey);
+  }
 
-  const translatedTitle   = inferredTitleKey   ? t(inferredTitleKey)   : undefined;
-  const translatedDesc    = inferredDescKey    ? t(inferredDescKey)    : undefined;
-  const translatedPlayers = inferredPlayersKey ? t(inferredPlayersKey) : undefined;
+  // Resolve Description
+  let description = '';
+  if (lang === 'en') {
+    description = descEnProp || descProp || '';
+  } else {
+    description = descProp || '';
+  }
+  if (!description && descKey) {
+    description = t(descKey);
+  }
 
-  const title = (translatedTitle && translatedTitle !== inferredTitleKey)
-    ? translatedTitle
-    : (titleProp ?? '');
-
-  const description = (translatedDesc && translatedDesc !== inferredDescKey)
-    ? translatedDesc
-    : (descProp ?? '');
-
-  const players = (translatedPlayers && translatedPlayers !== inferredPlayersKey)
-    ? translatedPlayers
-    : (playersProp ?? '');
+  // Resolve Players
+  let players = playersProp || '';
+  if (!players && playersKey) {
+    players = t(playersKey);
+  }
 
   let headerBg = 'bg-ronda-purple';
   let tagBg = 'text-ronda-purple';

@@ -106,7 +106,9 @@ export default function Library() {
               <GameCard
                 key={game.id}
                 title={game.title}
+                titleEn={game.titleEn}
                 description={game.description}
+                descriptionEn={game.descriptionEn}
                 players={`${game.minPlayers}-${game.maxPlayers} Jugadores`}
                 type={game.category}
                 emoji={game.emoji}
