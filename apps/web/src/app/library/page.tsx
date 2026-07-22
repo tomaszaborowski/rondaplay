@@ -9,17 +9,26 @@ import { useAdminStore } from '@/store/adminStore';
 
 export default function Library() {
   const { t } = useLanguage();
-  const [mounted, setMounted] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // Zustand persist hydration listeners
+    const unsubHydrate = useAdminStore.persist.onHydrate(() => setHydrated(false));
+    const unsubFinishHydrate = useAdminStore.persist.onFinishHydration(() => setHydrated(true));
+
+    setHydrated(useAdminStore.persist.hasHydrated());
+
+    return () => {
+      unsubHydrate();
+      unsubFinishHydrate();
+    };
   }, []);
 
   const cmsGames = useAdminStore((state) => state.games);
   const [selectedType, setSelectedType] = useState<'all' | 'logic' | 'memory' | 'speed'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const activeGames = mounted ? cmsGames.filter((g) => g.status === 'active') : [];
+  const activeGames = hydrated ? cmsGames.filter((g) => g.status === 'active') : [];
 
   const filteredGames = activeGames.filter((game) => {
     const matchesType = selectedType === 'all' || game.category === selectedType;

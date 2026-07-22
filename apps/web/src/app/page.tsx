@@ -12,14 +12,23 @@ import { Footer } from '@/components/Footer';
 
 export default function Home() {
   const { t } = useLanguage();
-  const [mounted, setMounted] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // Zustand persist hydration listeners
+    const unsubHydrate = useAdminStore.persist.onHydrate(() => setHydrated(false));
+    const unsubFinishHydrate = useAdminStore.persist.onFinishHydration(() => setHydrated(true));
+
+    setHydrated(useAdminStore.persist.hasHydrated());
+
+    return () => {
+      unsubHydrate();
+      unsubFinishHydrate();
+    };
   }, []);
 
   const cmsGames = useAdminStore((state) => state.games);
-  const featuredGames = mounted ? cmsGames.filter((g) => g.status === 'active').slice(0, 3) : [];
+  const featuredGames = hydrated ? cmsGames.filter((g) => g.status === 'active') : [];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -131,7 +140,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredGames.map((game) => (
               <GameCard
                 key={game.id}
