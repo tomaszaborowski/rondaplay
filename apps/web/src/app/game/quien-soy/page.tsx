@@ -8,8 +8,21 @@ import { useAuth } from '@/context/AuthContext';
 import { useAdminStore, QuienSoyDeck, QuienSoyWord } from '@/store/adminStore';
 import { 
   ArrowLeft, Heart, Lock, Crown, PlusCircle, Gamepad2, 
-  HelpCircle, Settings, RotateCcw, Volume2, VolumeX, CheckCircle, XCircle 
+  HelpCircle, Settings, RotateCcw, Volume2, VolumeX, CheckCircle, 
+  XCircle, Users, Plus, X, ArrowRight, Trophy, Shield
 } from 'lucide-react';
+
+export interface Team {
+  id: number;
+  name: string;
+  headerBg: string;
+  headerText: string;
+  borderColor: string;
+  accentBg: string;
+  enabled: boolean;
+  players: string[];
+  score: number;
+}
 
 export default function QuienSoyGamePage() {
   const { lang } = useLanguage();
@@ -22,15 +35,71 @@ export default function QuienSoyGamePage() {
   const username = (user as any)?.username || (user?.email ? user.email.split('@')[0] : 'SpeedyCat99');
   const avatarUrl = (user as any)?.avatarUrl || '/avatars/avatar-green.png';
 
-  // Filters & State
+  // Flow State
+  const [viewStep, setViewStep] = useState<'TEAM_SETUP' | 'CATEGORY_SELECT' | 'PLAYING' | 'GAME_OVER'>('TEAM_SETUP');
+
+  // Teams Configuration
+  const [teams, setTeams] = useState<Team[]>([
+    {
+      id: 1,
+      name: 'Equipo 1',
+      headerBg: 'bg-[#72f5e3]',
+      headerText: 'text-[#006f65]',
+      borderColor: 'border-[#006a61]',
+      accentBg: 'bg-[#006f65]',
+      enabled: true,
+      players: [`@${username}`, 'Jugador 2'],
+      score: 0,
+    },
+    {
+      id: 2,
+      name: 'Equipo 2',
+      headerBg: 'bg-[#ffd9e1]',
+      headerText: 'text-[#881644]',
+      borderColor: 'border-[#d95a82]',
+      accentBg: 'bg-[#d95a82]',
+      enabled: true,
+      players: ['Jugador 1', 'Jugador 2'],
+      score: 0,
+    },
+    {
+      id: 3,
+      name: 'Equipo 3',
+      headerBg: 'bg-purple-200',
+      headerText: 'text-purple-900',
+      borderColor: 'border-purple-400',
+      accentBg: 'bg-purple-600',
+      enabled: false,
+      players: ['Jugador 1'],
+      score: 0,
+    },
+    {
+      id: 4,
+      name: 'Equipo 4',
+      headerBg: 'bg-emerald-200',
+      headerText: 'text-emerald-900',
+      borderColor: 'border-emerald-400',
+      accentBg: 'bg-emerald-600',
+      enabled: false,
+      players: ['Jugador 1'],
+      score: 0,
+    },
+  ]);
+
+  // Match Configuration
+  const [totalRounds, setTotalRounds] = useState<number>(4);
+  const [currentRound, setCurrentRound] = useState<number>(1);
+  const [currentTeamIndex, setCurrentTeamIndex] = useState<number>(0);
+
+  // Deck Filters & Favorites
   const [activeFilter, setActiveFilter] = useState<string>('free');
   const [favorites, setFavorites] = useState<Record<string, boolean>>({
     'deck-professions': true,
     'deck-hollywood': true,
   });
 
+  // Gameplay State
   const [selectedDeck, setSelectedDeck] = useState<QuienSoyDeck | null>(null);
-  const [gameState, setGameState] = useState<'IDLE' | 'PLAYING' | 'GAME_OVER'>('IDLE');
   const [wordsList, setWordsList] = useState<QuienSoyWord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [timerSeconds, setTimerSeconds] = useState(60);
@@ -41,12 +110,52 @@ export default function QuienSoyGamePage() {
   // Active Bottom Tab
   const [activeTab, setActiveTab] = useState<'play' | 'how' | 'settings'>('play');
 
+  // Active Enabled Teams List
+  const activeTeams = teams.filter((t) => t.enabled);
+
   // Filter Decks
   const filteredDecks = adminDecks.filter((deck) => {
     if (activeFilter === 'all') return true;
     if (activeFilter === 'free') return deck.categoryType === 'free' || !deck.isPremium;
     return deck.categoryType === activeFilter;
   });
+
+  // Team Setup Handlers
+  const handleToggleTeam = (id: number) => {
+    setTeams((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, enabled: !t.enabled } : t))
+    );
+  };
+
+  const handlePlayerNameChange = (teamId: number, playerIdx: number, val: string) => {
+    setTeams((prev) =>
+      prev.map((t) => {
+        if (t.id !== teamId) return t;
+        const newPlayers = [...t.players];
+        newPlayers[playerIdx] = val;
+        return { ...t, players: newPlayers };
+      })
+    );
+  };
+
+  const handleAddPlayer = (teamId: number) => {
+    setTeams((prev) =>
+      prev.map((t) => {
+        if (t.id !== teamId) return t;
+        return { ...t, players: [...t.players, `Jugador ${t.players.length + 1}`] };
+      })
+    );
+  };
+
+  const handleRemovePlayer = (teamId: number, playerIdx: number) => {
+    setTeams((prev) =>
+      prev.map((t) => {
+        if (t.id !== teamId) return t;
+        if (t.players.length <= 1) return t; // Keep at least 1 player
+        return { ...t, players: t.players.filter((_, idx) => idx !== playerIdx) };
+      })
+    );
+  };
 
   const toggleFavorite = (deckId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -63,7 +172,7 @@ export default function QuienSoyGamePage() {
     return list;
   };
 
-  const handleStartGame = (deck: QuienSoyDeck) => {
+  const handleStartTurn = (deck: QuienSoyDeck) => {
     if (deck.isPremium) return; // Locked deck guard
     setSelectedDeck(deck);
     const shuffled = shuffleWords(deck.words);
@@ -72,17 +181,17 @@ export default function QuienSoyGamePage() {
     setTimerSeconds(60);
     setCorrectCount(0);
     setPassCount(0);
-    setGameState('PLAYING');
+    setViewStep('PLAYING');
   };
 
-  // Timer Tick
+  // Timer Tick & Turn Lifecycle
   useEffect(() => {
     let timer: ReturnType<typeof setInterval> | null = null;
-    if (gameState === 'PLAYING') {
+    if (viewStep === 'PLAYING') {
       timer = setInterval(() => {
         setTimerSeconds((prev) => {
           if (prev <= 1) {
-            setGameState('GAME_OVER');
+            finishTurn();
             return 0;
           }
           return prev - 1;
@@ -92,7 +201,7 @@ export default function QuienSoyGamePage() {
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [gameState]);
+  }, [viewStep]);
 
   const handleWordAction = (status: 'correct' | 'pass') => {
     if (status === 'correct') {
@@ -103,110 +212,270 @@ export default function QuienSoyGamePage() {
 
     const nextIndex = currentIndex + 1;
     if (nextIndex >= wordsList.length) {
-      setGameState('GAME_OVER');
+      finishTurn();
     } else {
       setCurrentIndex(nextIndex);
     }
   };
 
+  const finishTurn = () => {
+    // Add correctCount score to current playing team
+    const activeTeam = activeTeams[currentTeamIndex] || activeTeams[0];
+    if (activeTeam) {
+      setTeams((prev) =>
+        prev.map((t) => (t.id === activeTeam.id ? { ...t, score: t.score + correctCount } : t))
+      );
+    }
+
+    // Determine next team or round transition
+    const nextTeamIdx = (currentTeamIndex + 1) % activeTeams.length;
+    if (nextTeamIdx === 0) {
+      // Completed full rotation for all teams in current round
+      const nextRound = currentRound + 1;
+      if (nextRound > totalRounds) {
+        setViewStep('GAME_OVER');
+        return;
+      } else {
+        setCurrentRound(nextRound);
+      }
+    }
+    setCurrentTeamIndex(nextTeamIdx);
+    setViewStep('CATEGORY_SELECT');
+  };
+
+  const handleResetFullMatch = () => {
+    setTeams((prev) => prev.map((t) => ({ ...t, score: 0 })));
+    setCurrentRound(1);
+    setCurrentTeamIndex(0);
+    setViewStep('TEAM_SETUP');
+  };
+
+  const activePlayingTeam = activeTeams[currentTeamIndex] || activeTeams[0] || teams[0];
   const currentWord = wordsList[currentIndex];
   const activeText = currentWord ? (lang === 'en' ? currentWord.en : currentWord.es) : '';
+
+  // Calculate Winner Team for Scoreboard
+  const sortedTeams = [...activeTeams].sort((a, b) => b.score - a.score);
 
   return (
     <div className="min-h-screen bg-[#fff7fc] text-[#1e1a1f] font-body flex flex-col justify-between pb-28 pt-20">
       
-      {/* TOP BAR WITH HOME BUTTON, LOGO, USERNAME & AVATAR */}
-      <header className="sticky top-0 z-50 bg-[#fff7fc]/90 backdrop-blur-md border-b border-slate-200/60 px-5 py-3 flex justify-between items-center w-full">
-        <div className="flex items-center gap-3">
-          {/* Top Button to return to Homepage */}
-          <Link href="/">
-            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-ronda-purple font-bold text-xs transition-colors">
-              <ArrowLeft className="w-4 h-4 text-ronda-pink" />
-              <span>Inicio</span>
-            </button>
-          </Link>
-
-          {/* Logo */}
-          <div className="relative h-12 w-32">
-            <Image 
-              src="/games/quien-soy/logo.png" 
-              alt="¿Quién Soy? Logo" 
-              fill
-              className="object-contain" 
-            />
-          </div>
-        </div>
-
-        {/* User Profile */}
-        <div className="flex items-center gap-2">
-          <span className="font-extrabold text-sm text-[#2c0247]">@{username}</span>
-          <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#2c0247] shadow-sm relative">
-            <Image 
-              src={avatarUrl} 
-              alt="User Avatar" 
-              fill 
-              className="object-cover" 
-            />
-          </div>
-        </div>
-      </header>
-
-      {/* IDLE MAIN VIEW: CATEGORY SELECTION & DECK GRID */}
-      {gameState === 'IDLE' && (
-        <main className="px-5 mt-4 space-y-6 max-w-4xl mx-auto w-full">
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {/* 1. SCREEN: TEAM MANAGEMENT SETUP                                    */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {viewStep === 'TEAM_SETUP' && (
+        <main className="px-5 max-w-2xl mx-auto w-full space-y-6 pt-2">
           
-          {/* CATEGORIES HORIZONTAL SCROLL FILTER */}
-          <nav className="flex gap-3 overflow-x-auto no-scrollbar py-2 -mx-5 px-5">
-            <button
-              onClick={() => setActiveFilter('free')}
-              className={`px-6 py-2 rounded-full whitespace-nowrap border-2 font-extrabold text-xs transition-all ${
-                activeFilter === 'free'
-                  ? 'bg-[#72f5e3] text-[#006f65] border-[#006a61] shadow-[3px_3px_0px_0px_rgba(0,106,97,1)]'
-                  : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
-              }`}
-            >
-              Gratis (Free)
+          {/* TOP BAR */}
+          <header className="w-full flex items-center justify-between py-2 border-b border-slate-200/60">
+            <Link href="/">
+              <button className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#2c0247] transition-colors">
+                <ArrowLeft className="w-6 h-6 text-ronda-pink" />
+              </button>
+            </Link>
+            <h1 className="text-2xl font-black text-[#2c0247]">¿Quién Soy?</h1>
+            <button className="p-2 rounded-xl text-slate-400 hover:text-slate-600">
+              <HelpCircle className="w-6 h-6" />
             </button>
+          </header>
+
+          {/* TITLE SECTION */}
+          <section className="text-center space-y-1">
+            <h2 className="text-3xl font-extrabold text-[#2c0247]">Formar Equipos</h2>
+            <p className="text-xs font-semibold text-slate-500 max-w-xs mx-auto">
+              Configura tus equipos y personas jugadoras para empezar el juego.
+            </p>
+          </section>
+
+          {/* TEAMS GRID (UP TO 4 TEAMS) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {teams.map((team) => (
+              <div
+                key={team.id}
+                className={`rounded-3xl shadow-sm overflow-hidden border transition-all ${
+                  team.enabled
+                    ? 'bg-white border-slate-200 shadow-md'
+                    : 'bg-slate-100/70 border-slate-200 opacity-60'
+                }`}
+              >
+                {/* Team Color Header */}
+                <div className={`${team.headerBg} px-4 py-3 flex justify-between items-center`}>
+                  <span className={`font-black text-base ${team.headerText}`}>{team.name}</span>
+                  {team.enabled ? (
+                    <div className="flex items-center gap-1.5">
+                      <Users className={`w-5 h-5 ${team.headerText}`} />
+                      {teams.filter((t) => t.enabled).length > 2 && (
+                        <button
+                          onClick={() => handleToggleTeam(team.id)}
+                          className="p-1 hover:bg-black/10 rounded-full text-slate-700"
+                          title="Deshabilitar Equipo"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <Lock className="w-4 h-4 text-slate-500" />
+                  )}
+                </div>
+
+                {/* Team Players List / Enable Button */}
+                <div className="p-4 space-y-3">
+                  {team.enabled ? (
+                    <>
+                      {team.players.map((player, pIdx) => (
+                        <div key={pIdx} className="relative">
+                          <input
+                            type="text"
+                            value={player}
+                            onChange={(e) => handlePlayerNameChange(team.id, pIdx, e.target.value)}
+                            placeholder="Nombre o @usuario"
+                            className="w-full h-12 bg-slate-50 border-2 border-slate-200 rounded-xl px-4 text-xs font-bold outline-none focus:border-ronda-teal transition-colors"
+                          />
+                          {team.players.length > 1 && (
+                            <button
+                              onClick={() => handleRemovePlayer(team.id, pIdx)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 p-1"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+
+                      <button
+                        onClick={() => handleAddPlayer(team.id)}
+                        className="w-full h-11 border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-50 font-bold text-xs gap-1.5 transition-colors"
+                      >
+                        <Plus className="w-4 h-4 text-ronda-pink" />
+                        <span>Añadir Jugador</span>
+                      </button>
+                    </>
+                  ) : (
+                    <div className="py-6 flex flex-col items-center justify-center">
+                      <button
+                        onClick={() => handleToggleTeam(team.id)}
+                        className="px-6 py-2.5 bg-[#2c0247] hover:bg-[#431c5d] text-white rounded-full font-bold text-xs shadow-md transition-all active:scale-95"
+                      >
+                        Habilitar Equipo
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ROUNDS CONFIGURATION (2, 4, OR 6 ROUNDS) */}
+          <div className="bg-white border-2 border-slate-200 rounded-3xl p-5 shadow-sm space-y-3 text-center">
+            <label className="block text-xs font-extrabold text-[#2c0247] uppercase tracking-wider">
+              Rondas por Partida
+            </label>
+            <div className="grid grid-cols-3 gap-3">
+              {[2, 4, 6].map((num) => (
+                <button
+                  key={num}
+                  type="button"
+                  onClick={() => setTotalRounds(num)}
+                  className={`py-3 rounded-2xl font-black text-sm border-2 transition-all ${
+                    totalRounds === num
+                      ? 'bg-[#72f5e3] text-[#006f65] border-[#006a61] shadow-[3px_3px_0px_0px_rgba(0,106,97,1)]'
+                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                  }`}
+                >
+                  {num} Rondas
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* PRIMARY CTA: GO TO CATEGORY SELECTION */}
+          <div className="pt-2">
             <button
-              onClick={() => setActiveFilter('general')}
-              className={`px-6 py-2 rounded-full whitespace-nowrap border-2 font-extrabold text-xs transition-all ${
-                activeFilter === 'general'
-                  ? 'bg-[#72f5e3] text-[#006f65] border-[#006a61] shadow-[3px_3px_0px_0px_rgba(0,106,97,1)]'
-                  : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
-              }`}
+              onClick={() => setViewStep('CATEGORY_SELECT')}
+              className="w-full h-16 bg-[#006a61] hover:bg-[#289689] text-white rounded-2xl font-black text-lg flex items-center justify-center gap-3 shadow-[0_6px_0_0_#00201c] active:translate-y-1 active:shadow-none transition-all"
             >
-              General
+              <span>Seleccionar Categoría</span>
+              <ArrowRight className="w-6 h-6" />
             </button>
-            <button
-              onClick={() => setActiveFilter('movies')}
-              className={`px-6 py-2 rounded-full whitespace-nowrap border-2 font-extrabold text-xs transition-all ${
-                activeFilter === 'movies'
-                  ? 'bg-[#72f5e3] text-[#006f65] border-[#006a61] shadow-[3px_3px_0px_0px_rgba(0,106,97,1)]'
-                  : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
-              }`}
-            >
-              Cine & Series (Movies)
-            </button>
-            <button
-              onClick={() => setActiveFilter('characters')}
-              className={`px-6 py-2 rounded-full whitespace-nowrap border-2 font-extrabold text-xs transition-all ${
-                activeFilter === 'characters'
-                  ? 'bg-[#72f5e3] text-[#006f65] border-[#006a61] shadow-[3px_3px_0px_0px_rgba(0,106,97,1)]'
-                  : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
-              }`}
-            >
-              Personajes (Characters)
-            </button>
-            <button
-              onClick={() => setActiveFilter('all')}
-              className={`px-6 py-2 rounded-full whitespace-nowrap border-2 font-extrabold text-xs transition-all ${
-                activeFilter === 'all'
-                  ? 'bg-[#72f5e3] text-[#006f65] border-[#006a61] shadow-[3px_3px_0px_0px_rgba(0,106,97,1)]'
-                  : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
-              }`}
-            >
-              Todos (All)
-            </button>
+          </div>
+        </main>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {/* 2. SCREEN: CATEGORY SELECTION WITH ACTIVE TEAM TURN INDICATOR       */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {viewStep === 'CATEGORY_SELECT' && (
+        <div className="max-w-4xl mx-auto w-full px-5 space-y-6">
+          
+          {/* HEADER BAR */}
+          <header className="sticky top-0 z-50 bg-[#fff7fc]/95 backdrop-blur-md border-b border-slate-200/60 px-5 py-3 flex justify-between items-center w-full -mx-5">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setViewStep('TEAM_SETUP')}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#2c0247] font-bold text-xs transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4 text-ronda-pink" />
+                <span>Equipos</span>
+              </button>
+
+              <div className="relative h-10 w-28">
+                <Image src="/games/quien-soy/logo.png" alt="¿Quién Soy? Logo" fill className="object-contain" />
+              </div>
+            </div>
+
+            {/* Active User Avatar & Name */}
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold text-xs text-[#2c0247]">@{username}</span>
+              <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-[#2c0247] relative">
+                <Image src={avatarUrl} alt="User Avatar" fill className="object-cover" />
+              </div>
+            </div>
+          </header>
+
+          {/* ACTIVE TEAM TURN BANNER */}
+          <div className="bg-white border-2 border-[#2c0247] rounded-3xl p-5 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className={`px-4 py-2 rounded-2xl font-black text-sm ${activePlayingTeam.headerBg} ${activePlayingTeam.headerText} border-2 ${activePlayingTeam.borderColor}`}>
+                {activePlayingTeam.name}
+              </div>
+              <div>
+                <span className="text-xs font-bold text-slate-400 block uppercase tracking-wider">
+                  Ronda {currentRound} de {totalRounds}
+                </span>
+                <h3 className="text-lg font-black text-[#2c0247]">
+                  ¡Turno de {activePlayingTeam.name}!
+                </h3>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-2xl">
+              <Trophy className="w-4 h-4 text-amber-500" />
+              <span className="text-xs font-black text-[#2c0247]">
+                Puntos: {activePlayingTeam.score} pts
+              </span>
+            </div>
+          </div>
+
+          {/* CATEGORIES HORIZONTAL FILTER */}
+          <nav className="flex gap-3 overflow-x-auto no-scrollbar py-1">
+            {['free', 'general', 'movies', 'characters', 'all'].map((filterKey) => (
+              <button
+                key={filterKey}
+                onClick={() => setActiveFilter(filterKey)}
+                className={`px-5 py-2 rounded-full whitespace-nowrap border-2 font-extrabold text-xs transition-all ${
+                  activeFilter === filterKey
+                    ? 'bg-[#72f5e3] text-[#006f65] border-[#006a61] shadow-[3px_3px_0px_0px_rgba(0,106,97,1)]'
+                    : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                }`}
+              >
+                {filterKey === 'free' && 'Gratis'}
+                {filterKey === 'general' && 'General'}
+                {filterKey === 'movies' && 'Cine & Series'}
+                {filterKey === 'characters' && 'Personajes'}
+                {filterKey === 'all' && 'Todos'}
+              </button>
+            ))}
           </nav>
 
           {/* DECK GRID */}
@@ -216,12 +485,12 @@ export default function QuienSoyGamePage() {
               return (
                 <div
                   key={deck.id}
-                  onClick={() => handleStartGame(deck)}
+                  onClick={() => handleStartTurn(deck)}
                   className={`group relative flex flex-col bg-white border-2 border-[#2c0247] rounded-3xl overflow-hidden transition-all duration-200 hover:-translate-y-1 shadow-md cursor-pointer ${
-                    deck.isPremium ? 'opacity-85' : ''
+                    deck.isPremium ? 'opacity-80' : ''
                   }`}
                 >
-                  <div className="relative h-44 bg-slate-800 overflow-hidden">
+                  <div className="relative h-40 bg-slate-800 overflow-hidden">
                     <Image
                       src={deck.imageUrl || '/games/quien-soy/professions.png'}
                       alt={deck.titleEs}
@@ -229,7 +498,6 @@ export default function QuienSoyGamePage() {
                       className={`object-cover ${deck.isPremium ? 'grayscale opacity-60' : ''}`}
                     />
                     
-                    {/* Favorite Toggle Button */}
                     <button
                       onClick={(e) => toggleFavorite(deck.id, e)}
                       className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center bg-white/90 rounded-full shadow-sm text-pink-500 hover:scale-110 transition-transform"
@@ -237,13 +505,12 @@ export default function QuienSoyGamePage() {
                       <Heart className={`w-4 h-4 ${isFav ? 'fill-ronda-pink text-ronda-pink' : 'text-slate-400'}`} />
                     </button>
 
-                    {/* Premium Lock Overlay */}
                     {deck.isPremium && (
                       <>
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
-                          <Lock className="w-9 h-9 text-white" />
+                          <Lock className="w-8 h-8 text-white" />
                         </div>
-                        <div className="absolute top-2 left-2 bg-[#72f5e3] text-[#006f65] p-1.5 rounded-lg shadow-sm flex items-center">
+                        <div className="absolute top-2 left-2 bg-[#72f5e3] text-[#006f65] p-1.5 rounded-lg shadow-sm">
                           <Crown className="w-4 h-4 fill-current" />
                         </div>
                       </>
@@ -251,7 +518,7 @@ export default function QuienSoyGamePage() {
                   </div>
 
                   <div className="p-3 flex flex-col items-center text-center bg-white">
-                    <h3 className="font-extrabold text-base text-[#2c0247] truncate w-full">
+                    <h3 className="font-extrabold text-sm text-[#2c0247] truncate w-full">
                       {lang === 'en' ? deck.titleEn : deck.titleEs}
                     </h3>
                     <p className="font-bold text-xs text-slate-400 mt-0.5">
@@ -262,33 +529,17 @@ export default function QuienSoyGamePage() {
               );
             })}
           </section>
-
-          {/* REQUEST NEW DECK CTA BANNER */}
-          <div className="relative bg-[#2c0247] p-6 rounded-3xl text-white overflow-hidden shadow-xl mb-8">
-            <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-center sm:text-left">
-                <h4 className="font-extrabold text-lg text-white mb-1">¿No encuentras lo que buscas?</h4>
-                <p className="text-xs text-slate-300">¡Pide un nuevo mazo en el Admin y lo añadiremos!</p>
-              </div>
-              <Link href="/admin/games">
-                <button className="flex items-center gap-2 bg-[#006a61] text-white font-extrabold text-xs px-5 py-3 rounded-full border-b-4 border-[#289689] active:translate-y-1 active:border-b-0 transition-all">
-                  <PlusCircle className="w-4 h-4" />
-                  Gestionar en Admin
-                </button>
-              </Link>
-            </div>
-            <div className="absolute -right-8 -top-8 w-32 h-32 bg-[#006a61]/20 rounded-full blur-2xl"></div>
-            <div className="absolute -left-8 -bottom-8 w-24 h-24 bg-ronda-pink/20 rounded-full blur-2xl"></div>
-          </div>
-        </main>
+        </div>
       )}
 
-      {/* ACTIVE GAMEPLAY SCREEN */}
-      {gameState === 'PLAYING' && selectedDeck && (
-        <div className="max-w-2xl mx-auto w-full px-5 py-6">
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {/* 3. SCREEN: ACTIVE GAMEPLAY                                          */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {viewStep === 'PLAYING' && selectedDeck && (
+        <div className="max-w-2xl mx-auto w-full px-5 py-4">
           <div className="bg-slate-900 border-2 border-ronda-teal rounded-3xl p-8 shadow-2xl flex flex-col items-center gap-8 min-h-[420px] justify-between">
             <div className="w-full flex justify-between items-center text-sm font-bold text-slate-300 border-b border-slate-700/60 pb-4">
-              <span>Mazo: {lang === 'en' ? selectedDeck.titleEn : selectedDeck.titleEs}</span>
+              <span>Jugando: <strong className="text-[#72f5e3]">{activePlayingTeam.name}</strong></span>
               <span className="text-3xl font-black text-ronda-pink">{timerSeconds}s</span>
             </div>
 
@@ -299,7 +550,7 @@ export default function QuienSoyGamePage() {
               </span>
             </div>
 
-            {/* TILT SIMULATOR BUTTONS */}
+            {/* TILT BUTTONS */}
             <div className="grid grid-cols-2 gap-4 w-full">
               <button
                 onClick={() => handleWordAction('pass')}
@@ -318,27 +569,46 @@ export default function QuienSoyGamePage() {
         </div>
       )}
 
-      {/* GAME OVER SUMMARY */}
-      {gameState === 'GAME_OVER' && (
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {/* 4. SCREEN: GAME OVER MATCH SCOREBOARD                               */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {viewStep === 'GAME_OVER' && (
         <div className="max-w-md mx-auto w-full px-5 py-8 text-center space-y-6 bg-white border-2 border-[#2c0247] rounded-3xl shadow-2xl">
-          <h2 className="text-3xl font-black text-ronda-pink">¡Tiempo Agotado!</h2>
+          <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-2">
+            <Trophy className="w-8 h-8" />
+          </div>
 
-          <div className="grid grid-cols-2 gap-4 my-6">
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-              <span className="text-xs font-bold text-slate-500 block mb-1">CORRECTAS</span>
-              <span className="text-4xl font-black text-emerald-600">{correctCount}</span>
-            </div>
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-              <span className="text-xs font-bold text-slate-500 block mb-1">PASADAS</span>
-              <span className="text-4xl font-black text-red-500">{passCount}</span>
-            </div>
+          <h2 className="text-3xl font-black text-[#2c0247]">¡Fin de la Partida!</h2>
+          <p className="text-xs font-bold text-slate-400">Puntuación Final por Equipos ({totalRounds} Rondas)</p>
+
+          {/* TEAM RANKINGS SCOREBOARD */}
+          <div className="space-y-3 my-4">
+            {sortedTeams.map((team, idx) => (
+              <div
+                key={team.id}
+                className={`p-4 rounded-2xl border-2 flex items-center justify-between ${
+                  idx === 0
+                    ? 'bg-amber-50 border-amber-300 shadow-md'
+                    : 'bg-slate-50 border-slate-200'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="font-black text-lg text-[#2c0247] w-6">#{idx + 1}</span>
+                  <span className={`px-3 py-1 rounded-xl text-xs font-extrabold ${team.headerBg} ${team.headerText}`}>
+                    {team.name}
+                  </span>
+                  {idx === 0 && <Crown className="w-5 h-5 text-amber-500 fill-amber-500" />}
+                </div>
+                <span className="font-black text-lg text-[#2c0247]">{team.score} pts</span>
+              </div>
+            ))}
           </div>
 
           <button
-            onClick={() => setGameState('IDLE')}
+            onClick={handleResetFullMatch}
             className="w-full py-4 bg-[#006a61] text-white rounded-2xl font-extrabold flex items-center justify-center gap-2 text-base shadow-lg hover:bg-[#289689] transition-colors"
           >
-            <RotateCcw className="w-5 h-5" /> Volver a Mazos
+            <RotateCcw className="w-5 h-5" /> Nueva Partida (Formar Equipos)
           </button>
         </div>
       )}
@@ -366,7 +636,7 @@ export default function QuienSoyGamePage() {
           }`}
         >
           <HelpCircle className="w-5 h-5" />
-          <span className="text-xs mt-0.5">¿Cómo Jugar?</span>
+          <span className="text-xs mt-0.5">Reglas</span>
         </button>
 
         <button
