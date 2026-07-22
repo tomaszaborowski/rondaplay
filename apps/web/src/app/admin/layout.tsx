@@ -19,7 +19,8 @@ import {
   Bell,
   Settings,
   Languages,
-  FileText
+  FileText,
+  HelpCircle
 } from 'lucide-react';
 
 export default function AdminLayout({
@@ -74,6 +75,7 @@ export default function AdminLayout({
   const navItems = [
     { name: 'Executive Dashboard', path: '/admin', icon: LayoutDashboard },
     { name: 'Game CMS Manager', path: '/admin/games', icon: Gamepad2 },
+    { name: '¿Quién Soy? CMS', path: '/admin/games/quien-soy', icon: HelpCircle },
     { name: 'User Directory', path: '/admin/users', icon: Users },
     { name: 'Web2App Analytics', path: '/admin/monetization', icon: CircleDollarSign },
     { name: 'Content Moderation', path: '/admin/moderation', icon: ShieldAlert },
