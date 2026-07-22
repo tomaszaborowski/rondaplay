@@ -39,6 +39,23 @@ export interface Game {
   variables?: string; // JSON string for game settings
   url?: string;
 }
+
+export interface QuienSoyWord {
+  id: string;
+  es: string;
+  en: string;
+}
+
+export interface QuienSoyDeck {
+  id: string;
+  titleEs: string;
+  titleEn: string;
+  categoryType: 'free' | 'general' | 'movies' | 'characters' | string;
+  imageUrl: string;
+  isPremium: boolean;
+  words: QuienSoyWord[];
+}
+
 export interface AdminUser {
   id: string;
   email: string;
@@ -112,6 +129,14 @@ interface AdminState {
   togglePremiumGame: (id: string) => Promise<void>;
   deleteGame: (id: string) => Promise<void>;
   resetGamesToDefaults: () => Promise<void>;
+
+  // ¿Quién Soy? Categories & Decks Management
+  quienSoyDecks: QuienSoyDeck[];
+  addQuienSoyDeck: (deck: Omit<QuienSoyDeck, 'id'>) => void;
+  updateQuienSoyDeck: (id: string, updated: Partial<QuienSoyDeck>) => void;
+  deleteQuienSoyDeck: (id: string) => void;
+  addQuienSoyWord: (deckId: string, word: Omit<QuienSoyWord, 'id'>) => void;
+  deleteQuienSoyWord: (deckId: string, wordId: string) => void;
 
   // Users
   users: User[];
@@ -459,6 +484,103 @@ export const useAdminStore = create<AdminState>()(
         }
         set({ games: initialGames });
       },
+
+      // ¿Quién Soy? Categories & Decks
+      quienSoyDecks: [
+        {
+          id: 'deck-professions',
+          titleEs: 'Professions',
+          titleEn: 'Professions',
+          categoryType: 'free',
+          imageUrl: '/games/quien-soy/professions.png',
+          isPremium: false,
+          words: [
+            { id: 'p1', es: 'Médico / Doctor', en: 'Doctor' },
+            { id: 'p2', es: 'Astronauta', en: 'Astronaut' },
+            { id: 'p3', es: 'Cocinero / Chef', en: 'Chef' },
+            { id: 'p4', es: 'Policía', en: 'Police Officer' },
+            { id: 'p5', es: 'Bombero', en: 'Firefighter' },
+            { id: 'p6', es: 'Piloto', en: 'Pilot' }
+          ]
+        },
+        {
+          id: 'deck-animes',
+          titleEs: 'Animes',
+          titleEn: 'Animes',
+          categoryType: 'characters',
+          imageUrl: '/games/quien-soy/heroes.png',
+          isPremium: true,
+          words: [
+            { id: 'a1', es: 'Goku', en: 'Goku' },
+            { id: 'a2', es: 'Naruto', en: 'Naruto' },
+            { id: 'a3', es: 'Luffy', en: 'Luffy' },
+            { id: 'a4', es: 'Pikachu', en: 'Pikachu' },
+            { id: 'a5', es: 'Saitama', en: 'Saitama' }
+          ]
+        },
+        {
+          id: 'deck-animals',
+          titleEs: 'Animals',
+          titleEn: 'Animals',
+          categoryType: 'free',
+          imageUrl: '/games/quien-soy/animals.png',
+          isPremium: false,
+          words: [
+            { id: 'w1', es: 'León', en: 'Lion' },
+            { id: 'w2', es: 'Elefante', en: 'Elephant' },
+            { id: 'w3', es: 'Delfín', en: 'Dolphin' },
+            { id: 'w4', es: 'Canguro', en: 'Kangaroo' },
+            { id: 'w5', es: 'Pingüino', en: 'Penguin' },
+            { id: 'w6', es: 'Jirafa', en: 'Giraffe' },
+            { id: 'w7', es: 'Tigre', en: 'Tiger' },
+            { id: 'w8', es: 'Oso Panda', en: 'Panda Bear' }
+          ]
+        },
+        {
+          id: 'deck-hollywood',
+          titleEs: 'Hollywood',
+          titleEn: 'Hollywood',
+          categoryType: 'movies',
+          imageUrl: '/games/quien-soy/movies.png',
+          isPremium: false,
+          words: [
+            { id: 'm1', es: 'Titanic', en: 'Titanic' },
+            { id: 'm2', es: 'Avatar', en: 'Avatar' },
+            { id: 'm3', es: 'El Rey León', en: 'The Lion King' },
+            { id: 'm4', es: 'Matrix', en: 'The Matrix' },
+            { id: 'm5', es: 'Jurassic Park', en: 'Jurassic Park' },
+            { id: 'm6', es: 'Harry Potter', en: 'Harry Potter' },
+            { id: 'm7', es: 'Star Wars', en: 'Star Wars' }
+          ]
+        }
+      ],
+      addQuienSoyDeck: (newDeck) => set((state) => ({
+        quienSoyDecks: [...state.quienSoyDecks, { ...newDeck, id: `deck-${Date.now()}` }]
+      })),
+      updateQuienSoyDeck: (id, updated) => set((state) => ({
+        quienSoyDecks: state.quienSoyDecks.map((d) => d.id === id ? { ...d, ...updated } : d)
+      })),
+      deleteQuienSoyDeck: (id) => set((state) => ({
+        quienSoyDecks: state.quienSoyDecks.filter((d) => d.id !== id)
+      })),
+      addQuienSoyWord: (deckId, newWord) => set((state) => ({
+        quienSoyDecks: state.quienSoyDecks.map((d) => {
+          if (d.id !== deckId) return d;
+          return {
+            ...d,
+            words: [...d.words, { ...newWord, id: `w-${Date.now()}` }]
+          };
+        })
+      })),
+      deleteQuienSoyWord: (deckId, wordId) => set((state) => ({
+        quienSoyDecks: state.quienSoyDecks.map((d) => {
+          if (d.id !== deckId) return d;
+          return {
+            ...d,
+            words: d.words.filter((w) => w.id !== wordId)
+          };
+        })
+      })),
 
       // Users Management
       users: initialUsers,
