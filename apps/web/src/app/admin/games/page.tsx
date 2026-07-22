@@ -50,6 +50,7 @@ export default function GameCMSManager() {
   const [description, setDescription] = useState('');
   const [descriptionEn, setDescriptionEn] = useState('');
   const [variables, setVariables] = useState('{}');
+  const [urlField, setUrlField] = useState('');
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToastMessage(message);
@@ -72,6 +73,7 @@ export default function GameCMSManager() {
     setDescription('');
     setDescriptionEn('');
     setVariables('{\n  "timeLimit": 60\n}');
+    setUrlField('');
     setIsModalOpen(true);
   };
 
@@ -93,6 +95,7 @@ export default function GameCMSManager() {
     setDescription(game.description);
     setDescriptionEn(game.descriptionEn || (existingEnDesc && existingEnDesc !== `game.${game.id}.desc` ? existingEnDesc : game.description));
     setVariables(game.variables || '{}');
+    setUrlField(game.url || '');
     setIsModalOpen(true);
   };
 
@@ -139,7 +142,8 @@ export default function GameCMSManager() {
       status,
       description,
       descriptionEn,
-      variables
+      variables,
+      url: urlField
     };
 
     if (editingGame) {
@@ -485,6 +489,17 @@ export default function GameCMSManager() {
                       className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-ronda-teal outline-none text-xs font-semibold"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">URL de Juego Personalizada (Ej. /game/speed-match)</label>
+                  <input
+                    type="text"
+                    value={urlField}
+                    onChange={(e) => setUrlField(e.target.value)}
+                    placeholder="Ej. /game/imposter"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-ronda-teal outline-none text-xs font-semibold"
+                  />
                 </div>
 
                 <div>

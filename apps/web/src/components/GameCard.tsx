@@ -21,6 +21,7 @@ interface GameCardProps {
   coverImage?: string;
   logoUrl?: string;
   isPremium?: boolean;
+  url?: string;
 }
 
 export const GameCard: React.FC<GameCardProps> = ({
@@ -36,6 +37,7 @@ export const GameCard: React.FC<GameCardProps> = ({
   coverImage,
   logoUrl,
   isPremium = false,
+  url,
 }) => {
   const { t } = useLanguage();
 
@@ -76,7 +78,7 @@ export const GameCard: React.FC<GameCardProps> = ({
 
   const typeBadge = t(`badge.${type}`);
   const btnText   = isPremium ? t('badge.locked') : t('badge.play');
-  const gameLink  = (slug === 'imposter' || slug === 'speed-match') ? `/game/${slug}` : '#';
+  const gameLink  = url || ((slug === 'imposter' || slug === 'speed-match') ? `/game/${slug}` : '#');
 
   return (
     <div className="bg-ronda-light border border-purple-100 rounded-[2rem] overflow-hidden shadow-lg group cursor-pointer flex flex-col h-full hover:-translate-y-2 transition-transform duration-300 relative">

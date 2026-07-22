@@ -36,6 +36,7 @@ export interface Game {
   coverImage?: string;
   logoUrl?: string;
   variables?: string; // JSON string for game settings
+  url?: string;
 }
 export interface AdminUser {
   id: string;
@@ -308,7 +309,9 @@ const initialAvatars: AvatarImage[] = [
   { id: 'av-2', url: '/avatars/avatar-purple.png', characterName: 'Alex Vortex' },
   { id: 'av-3', url: '/avatars/avatar-blue-suit.png', characterName: 'Drift King' },
   { id: 'av-4', url: '/avatars/avatar-pink-granny.png', characterName: 'Pixel Queen' },
-  { id: 'av-5', url: '/avatars/avatar-girl.png', characterName: 'Speed Star' }
+  { id: 'av-5', url: '/avatars/avatar-girl.png', characterName: 'Speed Star' },
+  { id: 'av-6', url: '/avatars/avatar-boy.png', characterName: 'Astro Boy' },
+  { id: 'av-7', url: '/avatars/avatar-green.png', characterName: 'Green Blob' }
 ];
 
 export const useAdminStore = create<AdminState>()(

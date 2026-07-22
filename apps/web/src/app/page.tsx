@@ -138,6 +138,7 @@ export default function Home() {
                 coverImage={game.coverImage}
                 logoUrl={game.logoUrl}
                 isPremium={game.isPremium}
+                url={game.url}
               />
             ))}
           </div>

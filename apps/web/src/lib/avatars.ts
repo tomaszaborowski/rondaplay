@@ -42,6 +42,20 @@ export const RONDA_CHARACTERS: CharacterAvatar[] = [
     badgeColor: '#d95a82',
     accentColor: '#ffd9e1',
   },
+  {
+    id: 'avatar-boy',
+    name: 'Astro Boy',
+    avatarUrl: '/avatars/avatar-boy.png',
+    badgeColor: '#006a61',
+    accentColor: '#75f7e6',
+  },
+  {
+    id: 'avatar-green',
+    name: 'Green Blob',
+    avatarUrl: '/avatars/avatar-green.png',
+    badgeColor: '#34c2b2',
+    accentColor: '#75f7e6',
+  },
 ];
 
 export function getAvatarUrl(characterId?: string, customUrl?: string): string {

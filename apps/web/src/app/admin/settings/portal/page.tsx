@@ -21,7 +21,9 @@ const preUploadedAssets = [
   { name: 'Alex Vortex (Purple)', url: '/avatars/avatar-purple.png' },
   { name: 'Drift King (Blue Suit)', url: '/avatars/avatar-blue-suit.png' },
   { name: 'Pixel Queen (Granny)', url: '/avatars/avatar-pink-granny.png' },
-  { name: 'Speed Star (Girl)', url: '/avatars/avatar-girl.png' }
+  { name: 'Speed Star (Girl)', url: '/avatars/avatar-girl.png' },
+  { name: 'Astro Boy (Cap Boy)', url: '/avatars/avatar-boy.png' },
+  { name: 'Green Blob (Blob)', url: '/avatars/avatar-green.png' }
 ];
 
 export default function PortalSettings() {
