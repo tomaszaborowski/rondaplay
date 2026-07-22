@@ -9,7 +9,7 @@ import { useAdminStore, QuienSoyDeck, QuienSoyWord } from '@/store/adminStore';
 import { 
   ArrowLeft, Heart, Lock, Crown, PlusCircle, Gamepad2, 
   HelpCircle, Settings, RotateCcw, Volume2, VolumeX, CheckCircle, 
-  XCircle, Users, Plus, X, ArrowRight, Trophy, Shield
+  XCircle, Users, Plus, X, ArrowRight, Trophy, Shield, ScreenRotation
 } from 'lucide-react';
 
 export interface Team {
@@ -36,7 +36,7 @@ export default function QuienSoyGamePage() {
   const avatarUrl = (user as any)?.avatarUrl || '/avatars/avatar-green.png';
 
   // Flow State
-  const [viewStep, setViewStep] = useState<'TEAM_SETUP' | 'CATEGORY_SELECT' | 'PLAYING' | 'GAME_OVER'>('TEAM_SETUP');
+  const [viewStep, setViewStep] = useState<'TEAM_SETUP' | 'CATEGORY_SELECT' | 'ROTATION_WARNING' | 'PLAYING' | 'GAME_OVER'>('TEAM_SETUP');
 
   // Teams Configuration
   const [teams, setTeams] = useState<Team[]>([
@@ -107,6 +107,9 @@ export default function QuienSoyGamePage() {
   const [passCount, setPassCount] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
+  // Rotation Screen Countdown Hold State
+  const [rotationCountdown, setRotationCountdown] = useState<number | null>(null);
+
   // Active Bottom Tab
   const [activeTab, setActiveTab] = useState<'play' | 'how' | 'settings'>('play');
 
@@ -151,7 +154,7 @@ export default function QuienSoyGamePage() {
     setTeams((prev) =>
       prev.map((t) => {
         if (t.id !== teamId) return t;
-        if (t.players.length <= 1) return t; // Keep at least 1 player
+        if (t.players.length <= 1) return t;
         return { ...t, players: t.players.filter((_, idx) => idx !== playerIdx) };
       })
     );
@@ -172,8 +175,9 @@ export default function QuienSoyGamePage() {
     return list;
   };
 
-  const handleStartTurn = (deck: QuienSoyDeck) => {
-    if (deck.isPremium) return; // Locked deck guard
+  // When a deck is selected, show Rotation Warning screen first
+  const handleSelectDeckForTurn = (deck: QuienSoyDeck) => {
+    if (deck.isPremium) return;
     setSelectedDeck(deck);
     const shuffled = shuffleWords(deck.words);
     setWordsList(shuffled);
@@ -181,10 +185,51 @@ export default function QuienSoyGamePage() {
     setTimerSeconds(60);
     setCorrectCount(0);
     setPassCount(0);
-    setViewStep('PLAYING');
+    setRotationCountdown(null);
+    setViewStep('ROTATION_WARNING');
   };
 
-  // Timer Tick & Turn Lifecycle
+  // Trigger 2-second hold countdown on phone flip/continue click
+  const handleTriggerRotationStart = () => {
+    if (rotationCountdown !== null) return;
+    setRotationCountdown(2);
+  };
+
+  // Rotation Countdown Timer Effect
+  useEffect(() => {
+    let timer: ReturnType<typeof setInterval> | null = null;
+    if (rotationCountdown !== null) {
+      if (rotationCountdown <= 0) {
+        setRotationCountdown(null);
+        setViewStep('PLAYING');
+      } else {
+        timer = setInterval(() => {
+          setRotationCountdown((prev) => (prev !== null ? prev - 1 : null));
+        }, 1000);
+      }
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [rotationCountdown]);
+
+  // Orientation Change Listener in Rotation Warning
+  useEffect(() => {
+    if (viewStep !== 'ROTATION_WARNING') return;
+
+    const handleOrientation = () => {
+      if (window.orientation === 90 || window.orientation === -90) {
+        handleTriggerRotationStart();
+      }
+    };
+
+    window.addEventListener('orientationchange', handleOrientation);
+    return () => {
+      window.removeEventListener('orientationchange', handleOrientation);
+    };
+  }, [viewStep]);
+
+  // Active Gameplay Timer Tick
   useEffect(() => {
     let timer: ReturnType<typeof setInterval> | null = null;
     if (viewStep === 'PLAYING') {
@@ -219,7 +264,6 @@ export default function QuienSoyGamePage() {
   };
 
   const finishTurn = () => {
-    // Add correctCount score to current playing team
     const activeTeam = activeTeams[currentTeamIndex] || activeTeams[0];
     if (activeTeam) {
       setTeams((prev) =>
@@ -227,10 +271,8 @@ export default function QuienSoyGamePage() {
       );
     }
 
-    // Determine next team or round transition
     const nextTeamIdx = (currentTeamIndex + 1) % activeTeams.length;
     if (nextTeamIdx === 0) {
-      // Completed full rotation for all teams in current round
       const nextRound = currentRound + 1;
       if (nextRound > totalRounds) {
         setViewStep('GAME_OVER');
@@ -253,12 +295,10 @@ export default function QuienSoyGamePage() {
   const activePlayingTeam = activeTeams[currentTeamIndex] || activeTeams[0] || teams[0];
   const currentWord = wordsList[currentIndex];
   const activeText = currentWord ? (lang === 'en' ? currentWord.en : currentWord.es) : '';
-
-  // Calculate Winner Team for Scoreboard
   const sortedTeams = [...activeTeams].sort((a, b) => b.score - a.score);
 
   return (
-    <div className="min-h-screen bg-[#fff7fc] text-[#1e1a1f] font-body flex flex-col justify-between pb-28 pt-20">
+    <div className="min-h-screen bg-[#fff7fc] text-[#1e1a1f] font-body flex flex-col justify-between pb-28 pt-20 relative overflow-hidden">
       
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 1. SCREEN: TEAM MANAGEMENT SETUP                                    */}
@@ -287,7 +327,7 @@ export default function QuienSoyGamePage() {
             </p>
           </section>
 
-          {/* TEAMS GRID (UP TO 4 TEAMS) */}
+          {/* TEAMS GRID */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {teams.map((team) => (
               <div
@@ -319,7 +359,7 @@ export default function QuienSoyGamePage() {
                   )}
                 </div>
 
-                {/* Team Players List / Enable Button */}
+                {/* Team Players List */}
                 <div className="p-4 space-y-3">
                   {team.enabled ? (
                     <>
@@ -366,7 +406,7 @@ export default function QuienSoyGamePage() {
             ))}
           </div>
 
-          {/* ROUNDS CONFIGURATION (2, 4, OR 6 ROUNDS) */}
+          {/* ROUNDS CONFIGURATION */}
           <div className="bg-white border-2 border-slate-200 rounded-3xl p-5 shadow-sm space-y-3 text-center">
             <label className="block text-xs font-extrabold text-[#2c0247] uppercase tracking-wider">
               Rondas por Partida
@@ -389,7 +429,7 @@ export default function QuienSoyGamePage() {
             </div>
           </div>
 
-          {/* PRIMARY CTA: GO TO CATEGORY SELECTION */}
+          {/* PRIMARY CTA */}
           <div className="pt-2">
             <button
               onClick={() => setViewStep('CATEGORY_SELECT')}
@@ -419,7 +459,7 @@ export default function QuienSoyGamePage() {
                 <span>Equipos</span>
               </button>
 
-              <div className="relative h-10 w-28">
+              <div className="relative h-20 w-56">
                 <Image src="/games/quien-soy/logo.png" alt="¿Quién Soy? Logo" fill className="object-contain" />
               </div>
             </div>
@@ -485,7 +525,7 @@ export default function QuienSoyGamePage() {
               return (
                 <div
                   key={deck.id}
-                  onClick={() => handleStartTurn(deck)}
+                  onClick={() => handleSelectDeckForTurn(deck)}
                   className={`group relative flex flex-col bg-white border-2 border-[#2c0247] rounded-3xl overflow-hidden transition-all duration-200 hover:-translate-y-1 shadow-md cursor-pointer ${
                     deck.isPremium ? 'opacity-80' : ''
                   }`}
@@ -533,7 +573,73 @@ export default function QuienSoyGamePage() {
       )}
 
       {/* ─────────────────────────────────────────────────────────────────── */}
-      {/* 3. SCREEN: ACTIVE GAMEPLAY                                          */}
+      {/* 3. SCREEN: ROTATE PHONE / PLACE ON FOREHEAD WARNING                 */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {viewStep === 'ROTATION_WARNING' && (
+        <div className="fixed inset-0 z-50 bg-[#2c0247] flex flex-col justify-between p-6 text-white font-body select-none">
+          {/* Background Mesh Effect */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#431c5d] via-[#2c0247] to-[#3d0019] opacity-90 pointer-events-none"></div>
+
+          {/* Main Rotation Canvas */}
+          <main className="relative z-10 flex-1 flex flex-col items-center justify-center">
+            
+            {/* Rotating Phone Graphic */}
+            <div className="relative mb-8">
+              <div className="w-64 h-64 flex items-center justify-center relative">
+                {/* Outer Glow Ring */}
+                <div className="absolute inset-0 rounded-full border-4 border-dashed border-[#e3b5ff]/30 animate-spin" style={{ animationDuration: '12s' }}></div>
+                
+                {/* Rotating Phone Body */}
+                <div className="animate-[bounce_2s_infinite] flex flex-col items-center">
+                  <div className="w-32 h-56 border-8 border-white/90 rounded-[2.5rem] relative flex items-center justify-center bg-[#2a113a]/90 shadow-[0_0_50px_rgba(227,181,255,0.3)] transform transition-transform hover:rotate-90 duration-500">
+                    <div className="w-16 h-1 bg-white/30 rounded-full absolute top-6"></div>
+                    <ScreenRotation className="w-16 h-16 text-white opacity-80 animate-pulse" />
+                    <div className="w-10 h-10 border-4 border-white/20 rounded-full absolute bottom-4"></div>
+                  </div>
+                </div>
+
+                {/* Dashed Rotation Arc SVG */}
+                <svg className="absolute -top-4 -right-4 w-72 h-72 pointer-events-none opacity-40" viewBox="0 0 100 100">
+                  <path d="M 80,20 A 45,45 0 0 1 90,50" fill="none" stroke="white" strokeDasharray="4 4" strokeLinecap="round" strokeWidth="2" />
+                  <path d="M 90,50 l -3,0 l 3,5 l 3,-5 z" fill="white" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Instruction Text */}
+            <div className="text-center space-y-2 max-w-sm">
+              <h1 className="text-3xl font-black text-white drop-shadow-md">
+                {rotationCountdown !== null ? `¡Empezando en ${rotationCountdown}s!` : 'Coloca el móvil en tu frente'}
+              </h1>
+              <p className="text-sm font-bold text-[#e3b5ff]/80">
+                Gira tu teléfono de lado en la frente para empezar el juego
+              </p>
+            </div>
+          </main>
+
+          {/* Action Buttons */}
+          <footer className="relative z-20 w-full max-w-md mx-auto space-y-3 pb-6">
+            <button
+              onClick={handleTriggerRotationStart}
+              className="w-full h-14 bg-[#006a61] hover:bg-[#289689] rounded-2xl font-black text-base text-white flex items-center justify-center gap-3 shadow-[0_6px_0_0_#289689] active:translate-y-1 active:shadow-none transition-all"
+            >
+              <ScreenRotation className="w-5 h-5" />
+              <span>{rotationCountdown !== null ? `Iniciando (${rotationCountdown}s)...` : 'Girar para continuar'}</span>
+            </button>
+
+            <button
+              onClick={() => setViewStep('CATEGORY_SELECT')}
+              className="w-full h-14 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl font-extrabold text-sm text-white flex items-center justify-center gap-2 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Volver atrás</span>
+            </button>
+          </footer>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {/* 4. SCREEN: ACTIVE GAMEPLAY                                          */}
       {/* ─────────────────────────────────────────────────────────────────── */}
       {viewStep === 'PLAYING' && selectedDeck && (
         <div className="max-w-2xl mx-auto w-full px-5 py-4">
@@ -570,7 +676,7 @@ export default function QuienSoyGamePage() {
       )}
 
       {/* ─────────────────────────────────────────────────────────────────── */}
-      {/* 4. SCREEN: GAME OVER MATCH SCOREBOARD                               */}
+      {/* 5. SCREEN: GAME OVER MATCH SCOREBOARD                               */}
       {/* ─────────────────────────────────────────────────────────────────── */}
       {viewStep === 'GAME_OVER' && (
         <div className="max-w-md mx-auto w-full px-5 py-8 text-center space-y-6 bg-white border-2 border-[#2c0247] rounded-3xl shadow-2xl">
