@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GameCard } from '@/components/GameCard';
 import { Button } from '@/components/Button';
 import { Search, Gamepad2, Brain, Zap, Sparkles } from 'lucide-react';
@@ -9,11 +9,17 @@ import { useAdminStore } from '@/store/adminStore';
 
 export default function Library() {
   const { t } = useLanguage();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const cmsGames = useAdminStore((state) => state.games);
   const [selectedType, setSelectedType] = useState<'all' | 'logic' | 'memory' | 'speed'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const activeGames = cmsGames.filter((g) => g.status === 'active');
+  const activeGames = mounted ? cmsGames.filter((g) => g.status === 'active') : [];
 
   const filteredGames = activeGames.filter((game) => {
     const matchesType = selectedType === 'all' || game.category === selectedType;

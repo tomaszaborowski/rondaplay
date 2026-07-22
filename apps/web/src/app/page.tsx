@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/Button';
@@ -12,8 +12,14 @@ import { Footer } from '@/components/Footer';
 
 export default function Home() {
   const { t } = useLanguage();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const cmsGames = useAdminStore((state) => state.games);
-  const featuredGames = cmsGames.filter((g) => g.status === 'active').slice(0, 3);
+  const featuredGames = mounted ? cmsGames.filter((g) => g.status === 'active').slice(0, 3) : [];
 
   return (
     <div className="flex flex-col min-h-screen">
