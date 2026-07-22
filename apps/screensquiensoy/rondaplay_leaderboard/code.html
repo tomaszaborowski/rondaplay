@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>¿Quién Soy? - Leaderboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&amp;family=Nunito+Sans:ital,wght@0,200..1000;1,200..1000&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#63002d",
+                    "primary": "#2c0247",
+                    "on-background": "#1e1a1f",
+                    "on-tertiary-fixed-variant": "#881644",
+                    "on-tertiary-fixed": "#3f001a",
+                    "correct-green": "#4ade80",
+                    "on-primary-fixed-variant": "#5d3577",
+                    "inverse-on-surface": "#f7eef5",
+                    "surface-bright": "#fff7fc",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#2e0348",
+                    "secondary-fixed-dim": "#55dbca",
+                    "on-surface": "#1e1a1f",
+                    "surface-tint": "#764d91",
+                    "primary-container": "#431c5d",
+                    "ronda-light": "#fdf4ff",
+                    "surface-container-highest": "#e8e0e7",
+                    "incorrect-red": "#f87171",
+                    "surface-container": "#f4ebf2",
+                    "outline": "#7d747f",
+                    "purple-dark": "#2a113a",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#72f5e3",
+                    "inverse-surface": "#332f34",
+                    "on-tertiary-container": "#f06994",
+                    "on-error": "#ffffff",
+                    "ronda-slate": "#2b2d42",
+                    "tertiary": "#3d0019",
+                    "on-secondary-container": "#006f65",
+                    "primary-fixed-dim": "#e3b5ff",
+                    "surface-container-high": "#eee6ec",
+                    "primary-fixed": "#f4daff",
+                    "on-secondary-fixed-variant": "#005048",
+                    "on-tertiary": "#ffffff",
+                    "secondary": "#006a61",
+                    "surface-dim": "#e0d8de",
+                    "secondary-fixed": "#75f7e6",
+                    "surface": "#fff7fc",
+                    "on-surface-variant": "#4c444e",
+                    "pink-dark": "#d95a82",
+                    "inverse-primary": "#e3b5ff",
+                    "tertiary-fixed": "#ffd9e1",
+                    "surface-container-low": "#faf1f8",
+                    "on-primary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "background": "#fff7fc",
+                    "teal-dark": "#289689",
+                    "outline-variant": "#cec3d0",
+                    "surface-variant": "#e8e0e7",
+                    "on-primary-container": "#b285cd",
+                    "on-secondary-fixed": "#00201c",
+                    "tertiary-fixed-dim": "#ffb1c4",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "1.25rem",
+                    "stack-lg": "2rem",
+                    "touch-target-min": "3rem",
+                    "margin-desktop": "2.5rem",
+                    "stack-sm": "0.5rem",
+                    "gutter": "1rem",
+                    "stack-md": "1rem"
+            },
+            "fontFamily": {
+                    "label-lg": ["Nunito Sans"],
+                    "label-md": ["Nunito Sans"],
+                    "headline-lg": ["Fredoka"],
+                    "headline-md": ["Fredoka"],
+                    "display-lg": ["Fredoka"],
+                    "body-lg": ["Nunito Sans"],
+                    "headline-lg-mobile": ["Fredoka"],
+                    "body-md": ["Nunito Sans"]
+            },
+            "fontSize": {
+                    "label-lg": ["14px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "800"}],
+                    "label-md": ["12px", {"lineHeight": "14px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "52px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tactile-btn {
+            position: relative;
+            transition: all 0.1s ease;
+        }
+        .tactile-btn:active {
+            transform: translateY(4px);
+        }
+        .tactile-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: inherit;
+            z-index: -1;
+            transition: all 0.1s ease;
+        }
+        .tactile-btn-teal::after { background-color: #289689; }
+        .tactile-btn-pink::after { background-color: #d95a82; }
+        .tactile-btn-purple::after { background-color: #2a113a; }
+        .tactile-btn:active::after { bottom: -2px; }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cec3d0; border-radius: 10px; }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background overflow-hidden h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-background dark:bg-primary flex justify-between items-center w-full px-margin-mobile py-4 sticky top-0 z-50">
+<button class="tactile-btn text-primary dark:text-inverse-primary hover:opacity-80 transition-transform active:translate-y-[2px]">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed">Clasificación</h1>
+<button class="tactile-btn text-primary dark:text-inverse-primary hover:opacity-80">
+<span class="material-symbols-outlined">share</span>
+</button>
+</header>
+<main class="flex-1 overflow-hidden flex flex-col px-margin-mobile pb-24">
+<!-- Tab Segmented Control -->
+<div class="bg-surface-container rounded-lg p-1.5 flex gap-1 mb-6 shadow-inner">
+<button class="flex-1 py-3 px-2 rounded-lg font-label-lg text-label-lg transition-all duration-200 bg-primary text-on-primary shadow-md">
+                GLOBAL
+            </button>
+<button class="flex-1 py-3 px-2 rounded-lg font-label-lg text-label-lg transition-all duration-200 text-on-surface-variant hover:bg-surface-container-high">
+                AMIGOS
+            </button>
+<button class="flex-1 py-3 px-2 rounded-lg font-label-lg text-label-lg transition-all duration-200 text-on-surface-variant hover:bg-surface-container-high">
+                SEMANAL
+            </button>
+</div>
+<!-- Top 3 Podium -->
+<div class="grid grid-cols-3 gap-3 items-end mb-8 px-2">
+<!-- Rank 2 -->
+<div class="flex flex-col items-center">
+<div class="relative mb-2">
+<div class="w-16 h-16 rounded-full border-4 border-outline-variant bg-surface-container-highest overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A stylized 3D character portrait for a leaderboard, featuring a cool blue-toned young person with glasses and a trendy hat, set against a vibrant purple background with geometric patterns, modern high-contrast aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8bALiP4_hQ9UouODDG8cgIVsxO7fuEhBNRbmufiYsMj29-HLLaiMjcFIT8abt7FsUJqB6vqLSRRvMGvdwbFD0kzt9o-J4otrmQbca8hJfaful80Ii67SmssU8G3-pIcSQ7yIWkwD0bN7tIUe7JPrvTduUeTo4n515TIU9HLw9zJ11YTe4xTj4_sTtdud1RH0aOLaI3MNauFpe12_CAhrH5qfcbWCESzk0dH8jzCyMyw8BKicl7aR6"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-outline-variant text-on-primary-container rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs">2</div>
+</div>
+<span class="font-label-md text-label-md truncate w-full text-center">@alex_k</span>
+<span class="font-label-lg text-label-lg text-secondary">92%</span>
+</div>
+<!-- Rank 1 -->
+<div class="flex flex-col items-center">
+<div class="relative mb-3 scale-110">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-yellow-500 animate-bounce">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<div class="w-20 h-20 rounded-full border-4 border-secondary bg-surface-container-highest overflow-hidden ring-4 ring-secondary/20">
+<img class="w-full h-full object-cover" data-alt="A premium 3D avatar of a champion gamer girl with glowing neon headsets, wearing a high-tech varsity jacket, vibrant orange and teal lighting, professional studio render style, energetic and friendly social game atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtW9x2jT5Np4Wkcy9i7qWoQVuQtM2kJEqSpOz2Aa7JVpwS-n4IdWioiMWvxsipu4Xn9VfffzkcB2g6PiesK4jdErCMXHL2mgt68tnZro2MhTJDOYXCBI0tFmmxGiUDaE3t27pdMBXkVcfg4UQCKjqpdbJZvoIY0nnDYz9mSWgbuIukRnAPx6yLPhE91AdLzSA7KUN8-Eh0mbK3KMN2QObtlkQ0YWcsgO3HK4bLlXv3UYQjDvkL74JK"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-secondary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shadow-lg">1</div>
+</div>
+<span class="font-headline-md text-headline-md truncate w-full text-center">@luna_play</span>
+<span class="font-label-lg text-label-lg text-secondary">98%</span>
+</div>
+<!-- Rank 3 -->
+<div class="flex flex-col items-center">
+<div class="relative mb-2">
+<div class="w-16 h-16 rounded-full border-4 border-on-tertiary-container/30 bg-surface-container-highest overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A playful 3D avatar character with a large smile, wearing colorful earrings and a stylish purple hoodie, bright cinematic lighting, vibrant party game aesthetic with soft focus background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfBH9Dz3gS2i7FQIJh-ZyXVavUNrZxS0qGjoyH_2YC9C54Ue_hf2I5rJjDRwfvo6c9-Ard1TT4B80vw_PeeG990ony_wMmdFoJJmnSK7BeQ6vrcIe3Mi8YuYwBTbyrsZr_8vN7W9AeNRfpJlSVtPsHIGpdLX5ne2Mm8rrFXrd5aVZBOdDrmJBM0EoB3CgQP6BcK7YD_IEHH-oVbrBdHF1SKdvbi9qNzuIXLXWhNfsuLyLaq7Gb2FZh"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-on-tertiary-container/60 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs">3</div>
+</div>
+<span class="font-label-md text-label-md truncate w-full text-center">@marcos_gt</span>
+<span class="font-label-lg text-label-lg text-secondary">89%</span>
+</div>
+</div>
+<!-- Leaderboard List -->
+<div class="flex-1 overflow-y-auto custom-scrollbar pr-1 -mr-1">
+<div class="space-y-3">
+<!-- Entry 4 -->
+<div class="bg-surface-container-low rounded-2xl p-3 flex items-center gap-4 hover:bg-surface-container transition-colors">
+<span class="font-label-lg text-label-lg text-outline w-6 text-center">4</span>
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A minimalist 3D profile icon of a person with a bright yellow t-shirt and short black hair, clean white studio lighting, professional party game interface style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8oYSEhndWOPQqhTynCbVKI4f778b8tpifFVIARhaMlIiY90NzQMvldFCYsCHthnBHlr0coeWCoYztX_e2GHrQg7Yw2cbluwb6cJvjFNG__ns2tDiW85pDMzBr-uNiKNL1r5l8TM4X6cBl6l6pjgmfRmRc6bVlRRruILPrSQw9EcPC0ZgOK3tr59J7i_3XadVYwv71OECvAAzoR3BJnv93y6P9lcmAMd_6Ej7kGZTKwQik7WN2IOAX"/>
+</div>
+<div class="flex-1">
+<p class="font-label-lg text-label-lg">@sofia_vibe</p>
+</div>
+<div class="text-right">
+<p class="font-label-lg text-label-lg text-primary">85%</p>
+</div>
+</div>
+<!-- Entry 5 -->
+<div class="bg-surface-container-low rounded-2xl p-3 flex items-center gap-4 hover:bg-surface-container transition-colors">
+<span class="font-label-lg text-label-lg text-outline w-6 text-center">5</span>
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="3D avatar of an older person with gray hair and a kind expression, wearing a red sweater, high-quality character render for an inclusive family-oriented social app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIAYvdu3hJNWgL8-GVOfIKlH9GekH6CjkTu3cjRReLrtdYXr-Lgfen-2hmnqSbeU3Yv-kkIhzPY1u3f2-2iAVFyZMHp8RjUnS6fYkXWipObl0YXwntGm1NAkaUMQaoZ439S_tkcJPDDZD79YDf_KvViz-IwOBY97WOhz2qs6iThbz-250uc9yNDERJsXrpoE5Y3WQC4eWShslzhu62nlxp14f5HZmNYFtrQ704naXYkYDQXdjdt0LW"/>
+</div>
+<div class="flex-1">
+<p class="font-label-lg text-label-lg">@abuelo_raul</p>
+</div>
+<div class="text-right">
+<p class="font-label-lg text-label-lg text-primary">82%</p>
+</div>
+</div>
+<!-- Entry 6 -->
+<div class="bg-surface-container-low rounded-2xl p-3 flex items-center gap-4 hover:bg-surface-container transition-colors">
+<span class="font-label-lg text-label-lg text-outline w-6 text-center">6</span>
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a modern 3D character with dyed green hair and a denim jacket, set in a bright light-mode UI context with a clean, friendly aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBM1z2-Lobiuq1s-ABSw30pT7iYFzttpuBGOWz-drgDpeJN-1IaKmXEMlqNlYQeycYo-UWO7aKlHng7uum8OvNflIuYtIv2nBXgKypBjDpIXkFIIyjIJ0sP6rEraE6-ZTHcrtUxnFA_J6G1qqrgANTIrSCHiWeqsouWLwj3ATRruXm5p45qcgqVC7OAwXN7rhjSOYnqH1KvzE2W1AzcjHVUaJ3HxTEmVinwUpys1Ip1JGmnicezN1_b"/>
+</div>
+<div class="flex-1">
+<p class="font-label-lg text-label-lg">@green_ghost</p>
+</div>
+<div class="text-right">
+<p class="font-label-lg text-label-lg text-primary">79%</p>
+</div>
+</div>
+<!-- Entry 7 -->
+<div class="bg-surface-container-low rounded-2xl p-3 flex items-center gap-4 hover:bg-surface-container transition-colors">
+<span class="font-label-lg text-label-lg text-outline w-6 text-center">7</span>
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Simple and clean 3D character design of a woman with curly hair and a business-casual style, soft shadows, part of a cohesive game UI avatar set." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9y7L3x0rswwnmZY3kTSYPV5iywU3FfjB4uWExziSiiH55WY-cPhUW9pnboRA4fqXnwDy3Sbe_ib9SZPLAEKxcz4ePND-iORFp6jqsjsGknr9oNChQ0gvHeAZ7g1h5BBDVyLIqrcHRSoPxRI8zAGiia4c60s0E_lj6O5cv2mog-tJ2AatKyXlgHY6uNHiR2G3SK_GNfRMQC0vDW_Gmph8Wyl8j_CrCtkXAnz9KaybbIaeSJF16EclP"/>
+</div>
+<div class="flex-1">
+<p class="font-label-lg text-label-lg">@carla_rules</p>
+</div>
+<div class="text-right">
+<p class="font-label-lg text-label-lg text-primary">75%</p>
+</div>
+</div>
+<!-- Entry 8 -->
+<div class="bg-surface-container-low rounded-2xl p-3 flex items-center gap-4 hover:bg-surface-container transition-colors">
+<span class="font-label-lg text-label-lg text-outline w-6 text-center">8</span>
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Stylized 3D boy avatar with a baseball cap and a fun, energetic expression, high-contrast colors, lighting that complements a premium mobile game UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4FQmvysCiS102GiAkcl2iSatUT0ke1brjJnjMit_CA5b3f-oCHaYBzXR3hba3cLsff5zx0B1bNr2m2whBRgqzrBSoK-o7rFuQbitRriZmiHm8MOjHyn22ZbN0uTKfrRaTBVLmmL4i0frgCVdfoSN1cbVJLYlEztWT2SpwORRYcAajMmq64qT0Umzm9Y2Biuqc8lJWgR8_NzzmOp-Wy7ZxUws7pI5Mf7f8gA7t5q_XThnlsS8kPnJ8"/>
+</div>
+<div class="flex-1">
+<p class="font-label-lg text-label-lg">@pablo_kid</p>
+</div>
+<div class="text-right">
+<p class="font-label-lg text-label-lg text-primary">72%</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Highlighted User Rank Floating Bottom -->
+<div class="fixed bottom-24 left-0 w-full px-margin-mobile pointer-events-none">
+<div class="bg-primary text-on-primary rounded-2xl p-4 flex items-center gap-4 shadow-xl border-2 border-primary-container pointer-events-auto transform translate-y-0 transition-transform active:scale-95">
+<span class="font-headline-md text-headline-md w-10 text-center">42</span>
+<div class="w-12 h-12 rounded-full border-2 border-on-primary/30 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Detailed 3D character portrait of the current user, a person with a bright friendly face, expressive eyes, wearing a purple hoodie, studio lighting with a clean teal background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApY33gjIySOcTByWzIZXlqU5nLRRYrK6hM3l4mINOjpRLQFmVJxreWXcharum95ZgnSnBJqYUsqI06vvY7qhf0LQz28qeNMRVVZBW2INGNTUxPvxA3PhPfsTX_zZfIQ3-6hFPN1MSqSvQdTwUEvw5IgzWDRRUnuGemlmGpsVbB-NIxy_yv9C0LSgGRXGt1oNh7x9LOqkgB34_xIUIokV42LkiuoT3r7JPV0amfkGD4jpEPddtC-Aev"/>
+</div>
+<div class="flex-1">
+<p class="font-label-lg text-label-lg text-secondary-fixed">Tú (User_42)</p>
+<p class="font-label-md text-label-md opacity-80 uppercase tracking-widest">Sigue así!</p>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-headline-md">64%</p>
+</div>
+</div>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-surface-container/80 backdrop-blur-xl rounded-t-lg shadow-lg border-t border-outline-variant/30">
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1.5 opacity-70 hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined">gamepad</span>
+<span class="font-label-md text-label-md">Play</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-xl px-4 py-1.5 scale-95 transition-all duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">leaderboard</span>
+<span class="font-label-md text-label-md">Leaderboard</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1.5 opacity-70 hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">How to Play?</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1.5 opacity-70 hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</button>
+</nav>
+<script>
+        // Tab switching interaction
+        const tabs = document.querySelectorAll('.bg-surface-container button');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.classList.remove('bg-primary', 'text-on-primary', 'shadow-md');
+                    t.classList.add('text-on-surface-variant');
+                });
+                tab.classList.add('bg-primary', 'text-on-primary', 'shadow-md');
+                tab.classList.remove('text-on-surface-variant');
+            });
+        });
+    </script>
+</body></html>

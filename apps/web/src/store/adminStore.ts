@@ -222,6 +222,24 @@ const initialGames: Game[] = [
       cardsPerDeck: 31,
       symbolsPerCard: 6
     }, null, 2)
+  },
+  {
+    id: 'quien-soy',
+    title: '¿Quién Soy? (Charadas)',
+    titleEn: 'Who Am I? (Charades)',
+    description: '¡El clásico juego de adivinanzas bilingüe para toda la familia! Ponte el teléfono en la frente e inclina para acertar o pasar.',
+    descriptionEn: 'The classic bilingual guessing charades game! Place phone on your forehead and tilt to guess or pass.',
+    category: 'logic',
+    minPlayers: 2,
+    maxPlayers: 8,
+    isPremium: false,
+    status: 'active',
+    emoji: '🧙‍♂️',
+    url: '/game/quien-soy',
+    variables: JSON.stringify({
+      timerLimit: 60,
+      haptics: true
+    }, null, 2)
   }
 ];
 

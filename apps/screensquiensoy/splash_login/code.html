@@ -1,0 +1,280 @@
+<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&amp;family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#63002d",
+                    "primary": "#2c0247",
+                    "on-background": "#1e1a1f",
+                    "on-tertiary-fixed-variant": "#881644",
+                    "on-tertiary-fixed": "#3f001a",
+                    "correct-green": "#4ade80",
+                    "on-primary-fixed-variant": "#5d3577",
+                    "inverse-on-surface": "#f7eef5",
+                    "surface-bright": "#fff7fc",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#2e0348",
+                    "secondary-fixed-dim": "#55dbca",
+                    "on-surface": "#1e1a1f",
+                    "surface-tint": "#764d91",
+                    "primary-container": "#431c5d",
+                    "ronda-light": "#fdf4ff",
+                    "surface-container-highest": "#e8e0e7",
+                    "incorrect-red": "#f87171",
+                    "surface-container": "#f4ebf2",
+                    "outline": "#7d747f",
+                    "purple-dark": "#2a113a",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#72f5e3",
+                    "inverse-surface": "#332f34",
+                    "on-tertiary-container": "#f06994",
+                    "on-error": "#ffffff",
+                    "ronda-slate": "#2b2d42",
+                    "tertiary": "#3d0019",
+                    "on-secondary-container": "#006f65",
+                    "primary-fixed-dim": "#e3b5ff",
+                    "surface-container-high": "#eee6ec",
+                    "primary-fixed": "#f4daff",
+                    "on-secondary-fixed-variant": "#005048",
+                    "on-tertiary": "#ffffff",
+                    "secondary": "#006a61",
+                    "surface-dim": "#e0d8de",
+                    "secondary-fixed": "#75f7e6",
+                    "surface": "#fff7fc",
+                    "on-surface-variant": "#4c444e",
+                    "pink-dark": "#d95a82",
+                    "inverse-primary": "#e3b5ff",
+                    "tertiary-fixed": "#ffd9e1",
+                    "surface-container-low": "#faf1f8",
+                    "on-primary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "background": "#fff7fc",
+                    "teal-dark": "#289689",
+                    "outline-variant": "#cec3d0",
+                    "surface-variant": "#e8e0e7",
+                    "on-primary-container": "#b285cd",
+                    "on-secondary-fixed": "#00201c",
+                    "tertiary-fixed-dim": "#ffb1c4",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "1.25rem",
+                    "stack-lg": "2rem",
+                    "touch-target-min": "3rem",
+                    "margin-desktop": "2.5rem",
+                    "stack-sm": "0.5rem",
+                    "gutter": "1rem",
+                    "stack-md": "1rem"
+            },
+            "fontFamily": {
+                    "label-lg": ["Nunito Sans"],
+                    "label-md": ["Nunito Sans"],
+                    "headline-lg": ["Fredoka"],
+                    "headline-md": ["Fredoka"],
+                    "display-lg": ["Fredoka"],
+                    "body-lg": ["Nunito Sans"],
+                    "headline-lg-mobile": ["Fredoka"],
+                    "body-md": ["Nunito Sans"]
+            },
+            "fontSize": {
+                    "label-lg": ["14px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "800"}],
+                    "label-md": ["12px", {"lineHeight": "14px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "52px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+
+        .tactile-button {
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+            position: relative;
+        }
+
+        .tactile-button:active {
+            transform: translateY(4px);
+        }
+
+        /* Teal Tactile Style */
+        .btn-teal {
+            background-color: #006a61; /* secondary */
+            box-shadow: 0 6px 0 0 #289689; /* teal-dark */
+        }
+        .btn-teal:active {
+            box-shadow: 0 2px 0 0 #289689;
+        }
+
+        /* Purple Tactile Style */
+        .btn-purple {
+            background-color: #2c0247; /* primary */
+            box-shadow: 0 6px 0 0 #2a113a; /* purple-dark */
+        }
+        .btn-purple:active {
+            box-shadow: 0 2px 0 0 #2a113a;
+        }
+
+        .floating-bg {
+            background: radial-gradient(circle at top left, #431c5d 0%, #2c0247 100%);
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
+            50% { opacity: 0.2; }
+            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        }
+
+        .glass-panel {
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen font-body-md text-on-primary">
+<!-- Background Elements -->
+<div class="fixed inset-0 floating-bg -z-10">
+<div class="bubble w-32 h-32" style="left: 10%; animation-delay: 0s;"></div>
+<div class="bubble w-20 h-20" style="left: 30%; animation-delay: 5s;"></div>
+<div class="bubble w-40 h-40" style="left: 70%; animation-delay: 2s;"></div>
+<div class="bubble w-24 h-24" style="left: 85%; animation-delay: 8s;"></div>
+</div>
+<!-- Top App Bar -->
+<header class="flex justify-between items-center w-full px-margin-mobile py-4 z-40 fixed top-0">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:opacity-80 active:translate-y-[2px] transition-transform">
+<span class="material-symbols-outlined text-white">arrow_back</span>
+</button>
+
+<div class="w-10"></div> <!-- Spacer for centering -->
+</header>
+<main class="pt-20 pb-32 px-margin-mobile flex flex-col items-center max-w-md mx-auto w-full min-h-screen">
+<!-- Logo Section -->
+<div class="w-full flex justify-center mb-stack-lg">
+<img alt="¿Quién Soy? Logo" class="w-48 h-auto drop-shadow-2xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCT5zXBLd1gyVwzL5dk_vmUbmcAZYqaiErXowbVE-TtQXoJYLRzHQfWFYOkNv7AZTu51u03IDjuAAsv-N9GKYJoF7Y29gI6EAvUAuMp3CAGvYh-7rjEThrEfryl9fuYt-r8waj_gCd5BPYz1L2xvhvqDcdMBg_m1HLXNRTLAvzqEhMKw2EpxUzfqyh1zfnUbRGq2Ubmv8NkZsAGPtIHRRplA2v7K2YRc7N7m6ml7-kldzuC3yRekjroGNHIZ6j9saYnWXfuegfq-VbjWw">
+</div>
+<!-- Login Container -->
+<div class="w-full space-y-stack-lg">
+<!-- RondaPlay CTA -->
+<div class="w-full text-center space-y-stack-sm">
+<button class="tactile-button btn-teal w-full py-4 px-6 rounded-lg text-white flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">gamepad</span>
+<span class="font-headline-md text-headline-md">Login with RondaPlay</span>
+</button>
+<p class="font-label-md text-label-md text-primary-fixed/60 uppercase tracking-widest">Connect with your community</p>
+</div>
+<div class="relative flex items-center py-2">
+<div class="flex-grow border-t border-white/20"></div>
+<span class="flex-shrink mx-4 font-label-lg text-label-lg text-white/40 uppercase">Or Continue as</span>
+<div class="flex-grow border-t border-white/20"></div>
+</div>
+<!-- Form Section -->
+<div class="w-full glass-panel rounded-lg p-6 space-y-6">
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="font-label-lg text-label-lg text-white/80 block ml-2">Guest Player Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/40">person</span>
+<input class="w-full bg-ronda-light border-none rounded-xl py-3 pl-12 pr-4 text-primary font-body-lg focus:ring-2 focus:ring-secondary-container transition-all" placeholder="e.g. SpeedyCat99" type="text">
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-lg text-label-lg text-white/80 block ml-2">@user_name registration</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/40">alternate_email</span>
+<input class="w-full bg-ronda-light border-none rounded-xl py-3 pl-12 pr-4 text-primary font-body-lg focus:ring-2 focus:ring-secondary-container transition-all" placeholder="your_unique_handle" type="text">
+</div>
+</div>
+</div>
+<button class="tactile-button btn-purple w-full py-3 px-6 rounded-lg text-white font-headline-md text-headline-md flex items-center justify-center gap-2">
+                    Enter Game
+                    <span class="material-symbols-outlined">play_arrow</span>
+</button>
+</div>
+<!-- Language Toggle (Bilingual UI Mandate) -->
+<div class="flex justify-center gap-2 mt-stack-md">
+<button class="bg-white/10 px-4 py-2 rounded-full flex items-center gap-2 hover:bg-white/20 transition-colors border border-white/10">
+<span class="font-label-lg text-label-lg text-white">English</span>
+<span class="text-white/20">|</span>
+<span class="font-label-lg text-label-lg text-white/60">Español</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-surface-container/80 backdrop-blur-xl shadow-lg rounded-t-lg border-t border-outline-variant/30">
+<!-- Play (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-4 py-1.5 transition-all duration-300 scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">gamepad</span>
+<span class="font-label-md text-label-md">Play</span>
+</a>
+<!-- How to Play? -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 opacity-70 hover:bg-surface-container-highest rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">How to Play?</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 opacity-70 hover:bg-surface-container-highest rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions for input focus
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.parentElement.classList.add('scale-[1.02]');
+                input.parentElement.parentElement.classList.add('transition-transform');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.parentElement.classList.remove('scale-[1.02]');
+            });
+        });
+
+        // Simple button active state handler for non-tactile buttons
+        const genericButtons = document.querySelectorAll('button:not(.tactile-button)');
+        genericButtons.forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('scale-95'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('scale-95'));
+            btn.addEventListener('mouseleave', () => btn.classList.remove('scale-95'));
+        });
+    </script>
+
+
+</body></html>
