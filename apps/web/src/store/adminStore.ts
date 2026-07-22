@@ -40,6 +40,7 @@ export interface Game {
 export interface AdminUser {
   id: string;
   email: string;
+  password?: string;
   role: 'superadmin' | 'moderator' | 'admin';
   createdAt: string;
 }
@@ -92,7 +93,7 @@ interface AdminState {
 
   // Admin User management
   adminUsers: AdminUser[];
-  addAdminUser: (email: string, role: AdminUser['role']) => void;
+  addAdminUser: (email: string, password: string, role: AdminUser['role']) => void;
   deleteAdminUser: (id: string) => void;
 
   // Avatars management
@@ -298,21 +299,16 @@ const initialPages: ContentPage[] = [
 ];
 
 const initialAdminUsers: AdminUser[] = [
-  { id: 'adm-1', email: 'admin@rondaplay.com', role: 'superadmin', createdAt: '2026-07-20' },
-  { id: 'adm-2', email: 'moderator@rondaplay.com', role: 'moderator', createdAt: '2026-07-21' }
+  { id: 'adm-1', email: 'admin@rondaplay.com', password: 'admin', role: 'superadmin', createdAt: '2026-07-20' },
+  { id: 'adm-2', email: 'moderator@rondaplay.com', password: 'admin', role: 'moderator', createdAt: '2026-07-21' }
 ];
 
 const initialAvatars: AvatarImage[] = [
-  { id: 'av-1', url: '/images/speed-match/characters/Abeja.png', characterName: 'Abeja' },
-  { id: 'av-2', url: '/images/speed-match/characters/Apple.png', characterName: 'Apple' },
-  { id: 'av-3', url: '/images/speed-match/characters/Brocolli.png', characterName: 'Brócolli' },
-  { id: 'av-4', url: '/images/speed-match/characters/Bunny.png', characterName: 'Bunny' },
-  { id: 'av-5', url: '/images/speed-match/characters/Cangrejo.png', characterName: 'Cangrejo' },
-  { id: 'av-6', url: '/images/speed-match/characters/Dog.png', characterName: 'Perro' },
-  { id: 'av-7', url: '/images/speed-match/characters/Dragon.png', characterName: 'Dragón' },
-  { id: 'av-8', url: '/images/speed-match/characters/Jirafa.png', characterName: 'Jirafa' },
-  { id: 'av-9', url: '/images/speed-match/characters/Lion.png', characterName: 'León' },
-  { id: 'av-10', url: '/images/speed-match/characters/Octopus.png', characterName: 'Pulpo' }
+  { id: 'av-1', url: '/avatars/avatar-detective.png', characterName: 'El Impostor' },
+  { id: 'av-2', url: '/avatars/avatar-purple.png', characterName: 'Alex Vortex' },
+  { id: 'av-3', url: '/avatars/avatar-blue-suit.png', characterName: 'Drift King' },
+  { id: 'av-4', url: '/avatars/avatar-pink-granny.png', characterName: 'Pixel Queen' },
+  { id: 'av-5', url: '/avatars/avatar-girl.png', characterName: 'Speed Star' }
 ];
 
 export const useAdminStore = create<AdminState>()(
@@ -321,16 +317,12 @@ export const useAdminStore = create<AdminState>()(
       // Auth
       isLoggedIn: false,
       login: (email, password) => {
-        if (email === 'admin@rondaplay.com' && password === 'admin') {
-          set({ isLoggedIn: true });
-          return true;
-        }
         let success = false;
         set((state) => {
-          const found = state.adminUsers?.some(
+          const found = state.adminUsers?.find(
             (adm) => adm.email.toLowerCase() === email.trim().toLowerCase()
           );
-          if (found && password === 'admin') {
+          if (found && found.password === password) {
             success = true;
             return { isLoggedIn: true };
           }
@@ -342,12 +334,13 @@ export const useAdminStore = create<AdminState>()(
 
       // Admin User management
       adminUsers: initialAdminUsers,
-      addAdminUser: (email, role) => set((state) => ({
+      addAdminUser: (email, password, role) => set((state) => ({
         adminUsers: [
           ...state.adminUsers,
           {
             id: `adm-${Date.now()}`,
             email: email.trim().toLowerCase(),
+            password,
             role,
             createdAt: new Date().toISOString().split('T')[0]
           }

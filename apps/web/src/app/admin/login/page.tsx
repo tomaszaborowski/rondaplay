@@ -21,7 +21,7 @@ export default function AdminLogin() {
     if (success) {
       router.push('/admin');
     } else {
-      setError('Invalid credentials! Try admin@rondaplay.com / admin');
+      setError('Invalid credentials!');
     }
   };
 
@@ -90,10 +90,6 @@ export default function AdminLogin() {
             Sign In
           </Button>
         </form>
-
-        <div className="mt-8 text-center text-xs text-ronda-slate/40 relative z-10">
-          Demo Credentials: <span className="font-bold text-ronda-teal">admin@rondaplay.com</span> / <span className="font-bold text-ronda-teal">admin</span>
-        </div>
       </div>
     </div>
   );

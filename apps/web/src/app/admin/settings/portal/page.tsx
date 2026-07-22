@@ -17,31 +17,11 @@ import {
 } from 'lucide-react';
 
 const preUploadedAssets = [
-  { name: 'Abeja', url: '/images/speed-match/characters/Abeja.png' },
-  { name: 'Apple', url: '/images/speed-match/characters/Apple.png' },
-  { name: 'Asparagus', url: '/images/speed-match/characters/Asparagus.png' },
-  { name: 'Avellanas', url: '/images/speed-match/characters/Avellanas.png' },
-  { name: 'Ballena', url: '/images/speed-match/characters/Ballena.png' },
-  { name: 'Barolome', url: '/images/speed-match/characters/Barolome.png' },
-  { name: 'Brocolli', url: '/images/speed-match/characters/Brocolli.png' },
-  { name: 'Bunny', url: '/images/speed-match/characters/Bunny.png' },
-  { name: 'Caballo', url: '/images/speed-match/characters/Caballo.png' },
-  { name: 'Cafe', url: '/images/speed-match/characters/Cafe.png' },
-  { name: 'Cake', url: '/images/speed-match/characters/Cake.png' },
-  { name: 'Cangrejo', url: '/images/speed-match/characters/Cangrejo.png' },
-  { name: 'Cappuchino', url: '/images/speed-match/characters/Cappuchino.png' },
-  { name: 'Castle', url: '/images/speed-match/characters/Castle.png' },
-  { name: 'Cherry', url: '/images/speed-match/characters/Cherry.png' },
-  { name: 'Cinnamon', url: '/images/speed-match/characters/Cinnamon.png' },
-  { name: 'Cocodrile', url: '/images/speed-match/characters/Cocodrile.png' },
-  { name: 'Coral', url: '/images/speed-match/characters/Coral.png' },
-  { name: 'Corn', url: '/images/speed-match/characters/Corn.png' },
-  { name: 'Croissant', url: '/images/speed-match/characters/Croissant.png' },
-  { name: 'Dog', url: '/images/speed-match/characters/Dog.png' },
-  { name: 'Dragon', url: '/images/speed-match/characters/Dragon.png' },
-  { name: 'Jirafa', url: '/images/speed-match/characters/Jirafa.png' },
-  { name: 'Lion', url: '/images/speed-match/characters/Lion.png' },
-  { name: 'Octopus', url: '/images/speed-match/characters/Octopus.png' }
+  { name: 'El Impostor (Detective)', url: '/avatars/avatar-detective.png' },
+  { name: 'Alex Vortex (Purple)', url: '/avatars/avatar-purple.png' },
+  { name: 'Drift King (Blue Suit)', url: '/avatars/avatar-blue-suit.png' },
+  { name: 'Pixel Queen (Granny)', url: '/avatars/avatar-pink-granny.png' },
+  { name: 'Speed Star (Girl)', url: '/avatars/avatar-girl.png' }
 ];
 
 export default function PortalSettings() {
@@ -59,6 +39,7 @@ export default function PortalSettings() {
 
   // Form states - Admins
   const [adminEmail, setAdminEmail] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
   const [adminRole, setAdminRole] = useState<'admin' | 'moderator' | 'superadmin'>('admin');
 
   // Form states - Avatars
@@ -79,7 +60,10 @@ export default function PortalSettings() {
   // Add Administrator handler
   const handleAddAdmin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!adminEmail.trim()) return;
+    if (!adminEmail.trim() || !adminPassword.trim()) {
+      showToast('Please fill out all fields.', 'error');
+      return;
+    }
 
     // Check duplicate
     const exists = adminUsers.some(
@@ -90,8 +74,9 @@ export default function PortalSettings() {
       return;
     }
 
-    addAdminUser(adminEmail.trim(), adminRole);
+    addAdminUser(adminEmail.trim(), adminPassword.trim(), adminRole);
     setAdminEmail('');
+    setAdminPassword('');
     showToast('Administrator registered successfully!');
   };
 
@@ -262,6 +247,20 @@ export default function PortalSettings() {
                   placeholder="admin-user@example.com"
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-ronda-teal transition-all text-sm font-semibold text-ronda-slate"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                  Access Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
                   required
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-ronda-teal transition-all text-sm font-semibold text-ronda-slate"
                 />
