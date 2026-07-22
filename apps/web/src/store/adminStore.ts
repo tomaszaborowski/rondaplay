@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { translations as defaultTranslations } from '@/translations';
+import { getGamesFromFirestore, saveGameToFirestore, deleteGameFromFirestore } from '@/lib/games';
 
 // ─── Content Page (CMS) ───────────────────────────────────────────────────────
 export type BlockType = 'heading' | 'subheading' | 'paragraph' | 'divider' | 'callout' | 'list';
@@ -105,11 +106,12 @@ interface AdminState {
 
   // Games
   games: Game[];
-  addGame: (game: Omit<Game, 'id'>) => void;
-  updateGame: (id: string, updated: Partial<Game>) => void;
-  togglePremiumGame: (id: string) => void;
-  deleteGame: (id: string) => void;
-  resetGamesToDefaults: () => void;
+  fetchGames: () => Promise<void>;
+  addGame: (game: Omit<Game, 'id'>) => Promise<void>;
+  updateGame: (id: string, updated: Partial<Game>) => Promise<void>;
+  togglePremiumGame: (id: string) => Promise<void>;
+  deleteGame: (id: string) => Promise<void>;
+  resetGamesToDefaults: () => Promise<void>;
 
   // Users
   users: User[];
@@ -315,8 +317,7 @@ const initialAvatars: AvatarImage[] = [
 ];
 
 export const useAdminStore = create<AdminState>()(
-  persist(
-    (set) => ({
+  (set) => ({
       // Auth
       isLoggedIn: false,
       login: (email, password) => {
@@ -378,70 +379,68 @@ export const useAdminStore = create<AdminState>()(
 
       // Games CRUD
       games: initialGames,
-      addGame: (newGame) => set((state) => {
+      fetchGames: async () => {
+        const onlineGames = await getGamesFromFirestore(initialGames);
+        set({ games: onlineGames });
+      },
+      addGame: async (newGame) => {
         const id = `game-${Date.now()}`;
         const slug = id;
-        const nextSiteTranslations = {
-          es: { ...state.siteTranslations.es },
-          en: { ...state.siteTranslations.en },
-        };
-        if (newGame.title) {
-          nextSiteTranslations.es[`game.${slug}.title`] = newGame.title;
-          nextSiteTranslations.en[`game.${slug}.title`] = newGame.titleEn || newGame.title;
-        }
-        if (newGame.description) {
-          nextSiteTranslations.es[`game.${slug}.desc`] = newGame.description;
-          nextSiteTranslations.en[`game.${slug}.desc`] = newGame.descriptionEn || newGame.description;
-        }
-        return {
-          games: [...state.games, { ...newGame, id: slug }],
-          siteTranslations: nextSiteTranslations,
-        };
-      }),
-      updateGame: (id, updated) => set((state) => {
-        const nextSiteTranslations = {
-          es: { ...state.siteTranslations.es },
-          en: { ...state.siteTranslations.en },
-        };
-        if (updated.title) {
-          nextSiteTranslations.es[`game.${id}.title`] = updated.title;
-          if (updated.titleEn) {
-            nextSiteTranslations.en[`game.${id}.title`] = updated.titleEn;
-          }
-        }
-        if (updated.description) {
-          nextSiteTranslations.es[`game.${id}.desc`] = updated.description;
-          if (updated.descriptionEn) {
-            nextSiteTranslations.en[`game.${id}.desc`] = updated.descriptionEn;
-          }
-        }
-        return {
-          games: state.games.map((g) => g.id === id ? { ...g, ...updated } : g),
-          siteTranslations: nextSiteTranslations,
-        };
-      }),
-      togglePremiumGame: (id) => set((state) => ({
-        games: state.games.map((g) => g.id === id ? { ...g, isPremium: !g.isPremium } : g)
-      })),
-      deleteGame: (id) => set((state) => ({
-        games: state.games.filter((g) => g.id !== id)
-      })),
-      resetGamesToDefaults: () => set((state) => {
-        const nextSiteTranslations = {
-          es: { ...state.siteTranslations.es },
-          en: { ...state.siteTranslations.en },
-        };
-        initialGames.forEach((g) => {
-          nextSiteTranslations.es[`game.${g.id}.title`] = g.title;
-          nextSiteTranslations.es[`game.${g.id}.desc`] = g.description;
-          if (g.titleEn) nextSiteTranslations.en[`game.${g.id}.title`] = g.titleEn;
-          if (g.descriptionEn) nextSiteTranslations.en[`game.${g.id}.desc`] = g.descriptionEn;
+        const gameObj = { ...newGame, id: slug };
+        await saveGameToFirestore(gameObj);
+        set((state) => ({
+          games: [...state.games, gameObj]
+        }));
+      },
+      updateGame: async (id, updated) => {
+        let updatedGameObj: Game | null = null;
+        set((state) => {
+          const list = state.games.map((g) => {
+            if (g.id === id) {
+              updatedGameObj = { ...g, ...updated };
+              return updatedGameObj;
+            }
+            return g;
+          });
+          return { games: list };
         });
-        return {
-          games: initialGames,
-          siteTranslations: nextSiteTranslations
-        };
-      }),
+        if (updatedGameObj) {
+          await saveGameToFirestore(updatedGameObj);
+        }
+      },
+      togglePremiumGame: async (id) => {
+        let updatedGameObj: Game | null = null;
+        set((state) => {
+          const list = state.games.map((g) => {
+            if (g.id === id) {
+              updatedGameObj = { ...g, isPremium: !g.isPremium };
+              return updatedGameObj;
+            }
+            return g;
+          });
+          return { games: list };
+        });
+        if (updatedGameObj) {
+          await saveGameToFirestore(updatedGameObj);
+        }
+      },
+      deleteGame: async (id) => {
+        await deleteGameFromFirestore(id);
+        set((state) => ({
+          games: state.games.filter((g) => g.id !== id)
+        }));
+      },
+      resetGamesToDefaults: async () => {
+        // Delete all currently tracked games
+        for (const g of useAdminStore.getState().games) {
+          await deleteGameFromFirestore(g.id);
+        }
+        // Save initial seed games to Firestore
+        for (const g of initialGames) {
+          await saveGameToFirestore(g);
+        }
+        set({ games: initialGames });
+      },
 
       // Users Management
       users: initialUsers,
@@ -622,10 +621,6 @@ export const useAdminStore = create<AdminState>()(
         })
       })),
     }),
-    {
-      name: 'rondaplay_admin_store',
-    }
-  )
 );
 
 

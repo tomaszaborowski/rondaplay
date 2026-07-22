@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAdminStore, Game } from '@/store/adminStore';
 import { Button } from '@/components/Button';
 import { GameCard } from '@/components/GameCard';
@@ -16,17 +16,23 @@ import {
   Upload,
   Image as ImageIcon,
   Sparkles,
-  RotateCcw
+  RotateCcw,
+  X
 } from 'lucide-react';
 
 export default function GameCMSManager() {
   const games = useAdminStore((state) => state.games);
   const siteTranslations = useAdminStore((state) => state.siteTranslations);
+  const fetchGames = useAdminStore((state) => state.fetchGames);
   const addGame = useAdminStore((state) => state.addGame);
   const updateGame = useAdminStore((state) => state.updateGame);
   const deleteGame = useAdminStore((state) => state.deleteGame);
   const togglePremiumGame = useAdminStore((state) => state.togglePremiumGame);
   const resetGamesToDefaults = useAdminStore((state) => state.resetGamesToDefaults);
+
+  useEffect(() => {
+    fetchGames();
+  }, [fetchGames]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -119,7 +125,7 @@ export default function GameCMSManager() {
     reader.readAsDataURL(file);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
@@ -147,18 +153,18 @@ export default function GameCMSManager() {
     };
 
     if (editingGame) {
-      updateGame(editingGame.id, payload);
+      await updateGame(editingGame.id, payload);
       showToast('¡Juego actualizado con éxito!');
     } else {
-      addGame(payload);
+      await addGame(payload);
       showToast('¡Nuevo juego añadido con éxito!');
     }
     setIsModalOpen(false);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('¿Estás seguro de eliminar este juego?')) {
-      deleteGame(id);
+      await deleteGame(id);
       showToast('¡Juego eliminado con éxito!');
     }
   };
@@ -194,9 +200,9 @@ export default function GameCMSManager() {
 
         <div className="flex gap-2 w-full sm:w-auto">
           <Button
-            onClick={() => {
+            onClick={async () => {
               if (confirm('¿Restaurar los juegos por defecto del sistema? Esto sobrescribirá los títulos y descripciones por defecto.')) {
-                resetGamesToDefaults();
+                await resetGamesToDefaults();
                 showToast('¡Juegos restaurados por defecto con éxito!');
               }
             }}
@@ -324,6 +330,14 @@ export default function GameCMSManager() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl w-full max-w-4xl p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto border border-slate-100 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 transition-colors p-1 z-10"
+              title="Close modal"
+              type="button"
+            >
+              <X className="w-6 h-6" />
+            </button>
             
             {/* Left Side: Form Inputs */}
             <div className="lg:col-span-7 space-y-4">

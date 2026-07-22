@@ -12,23 +12,17 @@ import { Footer } from '@/components/Footer';
 
 export default function Home() {
   const { t } = useLanguage();
-  const [hydrated, setHydrated] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const fetchGames = useAdminStore((state) => state.fetchGames);
 
   useEffect(() => {
-    // Zustand persist hydration listeners
-    const unsubHydrate = useAdminStore.persist.onHydrate(() => setHydrated(false));
-    const unsubFinishHydrate = useAdminStore.persist.onFinishHydration(() => setHydrated(true));
-
-    setHydrated(useAdminStore.persist.hasHydrated());
-
-    return () => {
-      unsubHydrate();
-      unsubFinishHydrate();
-    };
-  }, []);
+    fetchGames().then(() => {
+      setMounted(true);
+    });
+  }, [fetchGames]);
 
   const cmsGames = useAdminStore((state) => state.games);
-  const featuredGames = hydrated ? cmsGames.filter((g) => g.status === 'active') : [];
+  const featuredGames = mounted ? cmsGames.filter((g) => g.status === 'active') : [];
 
   return (
     <div className="flex flex-col min-h-screen">
