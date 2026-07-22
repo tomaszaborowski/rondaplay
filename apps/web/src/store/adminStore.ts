@@ -299,7 +299,7 @@ const initialPages: ContentPage[] = [
 ];
 
 const initialAdminUsers: AdminUser[] = [
-  { id: 'adm-1', email: 'admin@rondaplay.com', password: 'admin', role: 'superadmin', createdAt: '2026-07-20' },
+  { id: 'adm-1', email: 'admin@rondaplay.com', password: 'To61845910*', role: 'superadmin', createdAt: '2026-07-20' },
   { id: 'adm-2', email: 'moderator@rondaplay.com', password: 'admin', role: 'moderator', createdAt: '2026-07-21' }
 ];
 
