@@ -89,7 +89,15 @@ export const GameCard: React.FC<GameCardProps> = ({
 
   const typeBadge = t(`badge.${type}`);
   const btnText   = isPremium ? t('badge.locked') : t('badge.play');
-  const gameLink  = url || ((slug === 'imposter' || slug === 'speed-match') ? `/game/${slug}` : '#');
+
+  const getGameLink = () => {
+    if (url) return url.replace('/game/impostor', '/game/imposter');
+    if (slug === 'imposter' || slug === 'impostor') return '/game/imposter';
+    if (slug === 'quien-soy') return '/game/quien-soy';
+    if (slug === 'speed-match') return '/game/speed-match';
+    return '#';
+  };
+  const gameLink = getGameLink();
 
   return (
     <div className="bg-ronda-light border border-purple-100 rounded-[2rem] overflow-hidden shadow-lg group cursor-pointer flex flex-col h-full hover:-translate-y-2 transition-transform duration-300 relative">
