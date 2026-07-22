@@ -1,0 +1,52 @@
+[
+  {
+    "id": "deck-animals",
+    "titleEs": "Animales Salvajes",
+    "titleEn": "Wild Animals",
+    "imageUrl": "/avatars/avatar-green.png",
+    "isPremium": false,
+    "category": "animals",
+    "words": [
+      { "id": "w1", "es": "León", "en": "Lion" },
+      { "id": "w2", "es": "Elefante", "en": "Elephant" },
+      { "id": "w3", "es": "Delfín", "en": "Dolphin" },
+      { "id": "w4", "es": "Canguro", "en": "Kangaroo" },
+      { "id": "w5", "es": "Pingüino", "en": "Penguin" },
+      { "id": "w6", "es": "Jirafa", "en": "Giraffe" },
+      { "id": "w7", "es": "Tigre", "en": "Tiger" },
+      { "id": "w8", "es": "Oso Panda", "en": "Panda Bear" }
+    ]
+  },
+  {
+    "id": "deck-movies",
+    "titleEs": "Películas Famosas",
+    "titleEn": "Blockbuster Movies",
+    "imageUrl": "/avatars/avatar-boy.png",
+    "isPremium": false,
+    "category": "movies",
+    "words": [
+      { "id": "m1", "es": "Titanic", "en": "Titanic" },
+      { "id": "m2", "es": "Avatar", "en": "Avatar" },
+      { "id": "m3", "es": "El Rey León", "en": "The Lion King" },
+      { "id": "m4", "es": "Matrix", "en": "The Matrix" },
+      { "id": "m5", "es": "Jurassic Park", "en": "Jurassic Park" },
+      { "id": "m6", "es": "Harry Potter", "en": "Harry Potter" },
+      { "id": "m7", "es": "Star Wars", "en": "Star Wars" }
+    ]
+  },
+  {
+    "id": "deck-celebrities",
+    "titleEs": "Famosos & Estrellas",
+    "titleEn": "Celebrities & Superstars",
+    "imageUrl": "/avatars/avatar-pink-granny.png",
+    "isPremium": true,
+    "category": "celebrities",
+    "words": [
+      { "id": "c1", "es": "Lionel Messi", "en": "Lionel Messi" },
+      { "id": "c2", "es": "Taylor Swift", "en": "Taylor Swift" },
+      { "id": "c3", "es": "Cristiano Ronaldo", "en": "Cristiano Ronaldo" },
+      { "id": "c4", "es": "Shakira", "en": "Shakira" },
+      { "id": "c5", "es": "Will Smith", "en": "Will Smith" }
+    ]
+  }
+]

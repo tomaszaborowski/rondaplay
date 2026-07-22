@@ -1,0 +1,61 @@
+import { I18n } from 'i18n-js';
+
+export const translations = {
+  es: {
+    appTitle: '¿Quién Soy?',
+    tagline: 'El juego de adivinanzas bilingüe para toda la familia',
+    play: 'Jugar',
+    settings: 'Configuración',
+    leaderboard: 'Clasificación',
+    howToPlay: 'Cómo Jugar',
+    howToPlayInstructions: 'Coloca el teléfono en tu frente. Inclina HACIA ABAJO si adivinan la palabra. Inclina HACIA ARRIBA para pasar.',
+    correct: '¡CORRECTO!',
+    pass: 'PASAR',
+    gameOver: '¡Tiempo Agotado!',
+    score: 'Puntuación',
+    successRate: 'Tasa de Éxito',
+    playAgain: 'Jugar de Nuevo',
+    backToHome: 'Volver al Inicio',
+    selectDeck: 'Seleccionar Mazo',
+    timerLimit: 'Tiempo de Juego',
+    haptics: 'Vibración',
+    soundEffects: 'Efectos de Sonido',
+    language: 'Idioma',
+    spanish: 'Español',
+    english: 'Inglés',
+    friends: 'Amigos',
+    global: 'Global',
+    rondaPlayLinked: 'Conectado con @user_name',
+  },
+  en: {
+    appTitle: 'Who Am I?',
+    tagline: 'The bilingual charades guessing game for everyone',
+    play: 'Play',
+    settings: 'Settings',
+    leaderboard: 'Leaderboard',
+    howToPlay: 'How to Play',
+    howToPlayInstructions: 'Place phone on your forehead. Tilt DOWN for Correct. Tilt UP to Pass.',
+    correct: 'CORRECT!',
+    pass: 'PASS',
+    gameOver: 'Game Over!',
+    score: 'Score',
+    successRate: 'Success Rate',
+    playAgain: 'Play Again',
+    backToHome: 'Back to Home',
+    selectDeck: 'Select Deck',
+    timerLimit: 'Timer Limit',
+    haptics: 'Haptics',
+    soundEffects: 'Sound Effects',
+    language: 'Language',
+    spanish: 'Spanish',
+    english: 'English',
+    friends: 'Friends',
+    global: 'Global',
+    rondaPlayLinked: 'Connected to @user_name',
+  },
+};
+
+export const i18n = new I18n(translations);
+i18n.defaultLocale = 'es';
+i18n.locale = 'es';
+i18n.enableFallback = true;
