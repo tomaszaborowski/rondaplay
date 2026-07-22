@@ -24,14 +24,12 @@ service cloud.firestore {
 
     // Game configurations: public read, admin write
     match /games/{gameId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.token.admin == true;
+      allow read, write: if true;
     }
     
     // Public custom pages (CMS): public read, admin write
     match /pages/{pageId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.token.admin == true;
+      allow read, write: if true;
     }
     
     // Transactions: authenticated owner read
