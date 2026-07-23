@@ -1,4 +1,6 @@
-import { Accelerometer, Subscription } from 'expo-sensors';
+import { Accelerometer } from 'expo-sensors';
+
+type SensorSubscription = { remove: () => void };
 
 export type TiltAction = 'CORRECT' | 'PASS' | 'NEUTRAL';
 
@@ -14,7 +16,7 @@ export interface SensorManagerConfig {
 }
 
 export class SensorManager {
-  private subscription: Subscription | null = null;
+  private subscription: SensorSubscription | null = null;
   private isDebouncing: boolean = false;
 
   private passThreshold: number;

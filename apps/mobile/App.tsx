@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, ScrollView, Image } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import * as Haptics from 'expo-haptics';
 import { useGameStore } from './src/store/gameStore';
@@ -8,6 +8,7 @@ import { SensorManager } from './src/sensors/SensorManager';
 import { rondaPlayApi } from './src/services/RondaPlayApi';
 import { i18n } from './src/i18n';
 import defaultDecks from './src/data/decks.json';
+import { GAMES_CATALOG, MobileGame } from './src/data/gamesCatalog';
 import { Deck } from './src/types';
 
 const sensorManager = new SensorManager();
@@ -30,6 +31,8 @@ export default function App() {
     resetGame,
   } = useGameStore();
 
+  const [activeTab, setActiveTab] = useState<'hub' | 'library' | 'leaderboard' | 'profile'>('hub');
+  const [selectedGame, setSelectedGame] = useState<MobileGame>(GAMES_CATALOG[0]);
   const [currentPitch, setCurrentPitch] = useState(0);
 
   // Initialize Default Deck
@@ -39,9 +42,9 @@ export default function App() {
     }
   }, [selectedDeck, selectDeck]);
 
-  // Manage Orientation & Sensor Lifecycle
+  // Manage Orientation & Sensor Lifecycle during ¿Quién Soy? active gameplay
   useEffect(() => {
-    if (gameState === 'PLAYING') {
+    if (gameState === 'PLAYING' && selectedGame.id === 'quien-soy') {
       // Force Landscape Orientation for active gameplay
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
 
@@ -68,9 +71,9 @@ export default function App() {
     return () => {
       sensorManager.stopListening();
     };
-  }, [gameState, hapticsEnabled, registerWordResult]);
+  }, [gameState, selectedGame, hapticsEnabled, registerWordResult]);
 
-  // Active Timer Effect
+  // Active Gameplay Timer Tick
   useEffect(() => {
     let timer: ReturnType<typeof setInterval> | null = null;
     if (gameState === 'PLAYING') {
@@ -90,16 +93,18 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
 
-      {/* GAMEPLAY OVERLAY SCREEN */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {/* 1. ACTIVE GAMEPLAY SCREEN (FOREHEAD / TILT)                        */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
       {gameState === 'PLAYING' && (
         <View style={styles.gameplayContainer}>
           <View style={styles.timerHeader}>
             <Text style={styles.timerText}>{timeRemainingSeconds}s</Text>
-            <Text style={styles.pitchText}>Pitch: {currentPitch}°</Text>
+            <Text style={styles.pitchText}>Inclinación: {currentPitch}°</Text>
           </View>
 
           <View style={styles.cardBox}>
-            <Text style={styles.wordText}>{wordText || i18n.t('gameOver')}</Text>
+            <Text style={styles.wordText}>{wordText || '¡Juego terminado!'}</Text>
           </View>
 
           <View style={styles.actionsBar}>
@@ -110,7 +115,7 @@ export default function App() {
                 registerWordResult('pass');
               }}
             >
-              <Text style={styles.btnText}>{i18n.t('pass')}</Text>
+              <Text style={styles.btnText}>❌ PASAR (Tilt Up)</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -120,25 +125,29 @@ export default function App() {
                 registerWordResult('correct');
               }}
             >
-              <Text style={styles.btnText}>{i18n.t('correct')}</Text>
+              <Text style={styles.btnText}>✅ CORRECTO (Tilt Down)</Text>
             </TouchableOpacity>
           </View>
         </View>
       )}
 
-      {/* GAME OVER SUMMARY SCREEN */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {/* 2. GAME OVER SUMMARY SCOREBOARD                                    */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
       {gameState === 'GAME_OVER' && (
         <View style={styles.menuContainer}>
-          <Text style={styles.titleText}>{i18n.t('gameOver')}</Text>
-          <Text style={styles.scoreText}>
-            {i18n.t('correct')}: {correctCount} | {i18n.t('pass')}: {passCount}
-          </Text>
+          <Text style={styles.brandSubtitle}>Partida Finalizada</Text>
+          <Text style={styles.titleText}>¡Tiempo Agotado!</Text>
+          
+          <View style={styles.scoreBoardBox}>
+            <Text style={styles.scoreText}>✅ Correctas: {correctCount}</Text>
+            <Text style={styles.scoreText}>❌ Pasadas: {passCount}</Text>
+          </View>
 
           <TouchableOpacity
             style={styles.primaryBtn}
             onPress={async () => {
-              // Submit match metrics to RondaPlay backend API
-              const { matchHistory, selectedDeck } = useGameStore.getState();
+              const { matchHistory } = useGameStore.getState();
               const total = correctCount + passCount;
               const rate = total > 0 ? Number((correctCount / total).toFixed(2)) : 0;
 
@@ -150,34 +159,146 @@ export default function App() {
                 successRate: rate,
                 durationSeconds: 60,
                 matchHistory,
-                username: 'RondaPlayer',
+                username: 'SpeedyCat99',
               });
 
               resetGame();
             }}
           >
-            <Text style={styles.primaryBtnText}>{i18n.t('playAgain')}</Text>
+            <Text style={styles.primaryBtnText}>Volver al Catálogo</Text>
           </TouchableOpacity>
         </View>
       )}
 
-      {/* HOME MENU SCREEN */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {/* 3. MULTI-GAME HUB MAIN SCREEN                                       */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
       {gameState === 'IDLE' && (
-        <View style={styles.menuContainer}>
-          <Text style={styles.brandSubtitle}>RondaPlay</Text>
-          <Text style={styles.titleText}>{i18n.t('appTitle')}</Text>
-          <Text style={styles.tagline}>{i18n.t('tagline')}</Text>
-
-          <View style={styles.deckCard}>
-            <Text style={styles.deckLabel}>Mazo Seleccionado:</Text>
-            <Text style={styles.deckTitle}>
-              {selectedDeck ? (language === 'en' ? selectedDeck.titleEn : selectedDeck.titleEs) : 'Cargando...'}
-            </Text>
+        <View style={styles.hubContainer}>
+          {/* Header */}
+          <View style={styles.headerBar}>
+            <Text style={styles.headerLogo}>RondaPlay</Text>
+            <View style={styles.userBadge}>
+              <Text style={styles.userName}>@SpeedyCat99</Text>
+            </View>
           </View>
 
-          <TouchableOpacity style={styles.primaryBtn} onPress={() => startGame()}>
-            <Text style={styles.primaryBtnText}>{i18n.t('play')}</Text>
-          </TouchableOpacity>
+          {/* Hub Content */}
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            {activeTab === 'hub' && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Catálogo de Juegos Party</Text>
+                
+                {GAMES_CATALOG.map((game) => (
+                  <TouchableOpacity
+                    key={game.id}
+                    style={[styles.gameCard, { borderColor: game.color }]}
+                    onPress={() => {
+                      setSelectedGame(game);
+                      if (game.id === 'quien-soy') {
+                        startGame();
+                      }
+                    }}
+                  >
+                    <View style={styles.gameCardHeader}>
+                      <Text style={styles.gameEmoji}>{game.emoji}</Text>
+                      <View style={styles.gameTitleBox}>
+                        <Text style={styles.gameTitle}>{game.title}</Text>
+                        <Text style={styles.gamePlayers}>{game.minPlayers}-{game.maxPlayers} Jugadores</Text>
+                      </View>
+                    </View>
+                    <Text style={styles.gameDesc}>{game.description}</Text>
+                    
+                    <TouchableOpacity
+                      style={[styles.playBadge, { backgroundColor: game.color }]}
+                      onPress={() => {
+                        setSelectedGame(game);
+                        if (game.id === 'quien-soy') {
+                          startGame();
+                        }
+                      }}
+                    >
+                      <Text style={styles.playBadgeText}>Jugar Ahora →</Text>
+                    </TouchableOpacity>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+
+            {activeTab === 'library' && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Biblioteca de Mazos y Roles</Text>
+                {defaultDecks.map((deck) => (
+                  <TouchableOpacity
+                    key={deck.id}
+                    style={styles.libraryCard}
+                    onPress={() => {
+                      selectDeck(deck as Deck);
+                      setActiveTab('hub');
+                    }}
+                  >
+                    <Text style={styles.deckName}>{deck.titleEs}</Text>
+                    <Text style={styles.deckWordsCount}>{deck.words.length} Cartas</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+
+            {activeTab === 'leaderboard' && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Tabla de Clasificación Global</Text>
+                <View style={styles.rankRow}>
+                  <Text style={styles.rankNum}>#1</Text>
+                  <Text style={styles.rankUser}>@SpeedyCat99</Text>
+                  <Text style={styles.rankPts}>1,240 pts</Text>
+                </View>
+                <View style={styles.rankRow}>
+                  <Text style={styles.rankNum}>#2</Text>
+                  <Text style={styles.rankUser}>@PartyMaster</Text>
+                  <Text style={styles.rankPts}>980 pts</Text>
+                </View>
+              </View>
+            )}
+
+            {activeTab === 'profile' && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Mi Perfil RondaPlay</Text>
+                <Text style={styles.profileHandle}>@SpeedyCat99</Text>
+                <Text style={styles.profileSub}>RondaPlay Player Level 12</Text>
+              </View>
+            )}
+          </ScrollView>
+
+          {/* Fixed Bottom Navigation Bar */}
+          <View style={styles.tabBar}>
+            <TouchableOpacity
+              style={[styles.tabItem, activeTab === 'hub' && styles.tabItemActive]}
+              onPress={() => setActiveTab('hub')}
+            >
+              <Text style={styles.tabText}>🎮 Juegos</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.tabItem, activeTab === 'library' && styles.tabItemActive]}
+              onPress={() => setActiveTab('library')}
+            >
+              <Text style={styles.tabText}>📚 Biblioteca</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.tabItem, activeTab === 'leaderboard' && styles.tabItemActive]}
+              onPress={() => setActiveTab('leaderboard')}
+            >
+              <Text style={styles.tabText}>🏆 Tabla</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.tabItem, activeTab === 'profile' && styles.tabItemActive]}
+              onPress={() => setActiveTab('profile')}
+            >
+              <Text style={styles.tabText}>👤 Perfil</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </SafeAreaView>
@@ -187,7 +308,179 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#fff7fc',
+  },
+  hubContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  headerBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e8e0e7',
+  },
+  headerLogo: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#2c0247',
+  },
+  userBadge: {
+    backgroundColor: '#f4ebf2',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  userName: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#2c0247',
+  },
+  scrollContent: {
+    padding: 20,
+    paddingBottom: 100,
+  },
+  section: {
+    gap: 16,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#2c0247',
+    marginBottom: 8,
+  },
+  gameCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 2,
+    shadowColor: '#2c0247',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
+    marginBottom: 16,
+  },
+  gameCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginBottom: 10,
+  },
+  gameEmoji: {
+    fontSize: 36,
+  },
+  gameTitleBox: {
+    flex: 1,
+  },
+  gameTitle: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#2c0247',
+  },
+  gamePlayers: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#7d747f',
+  },
+  gameDesc: {
+    fontSize: 13,
+    color: '#4c444e',
+    lineHeight: 18,
+    marginBottom: 16,
+  },
+  playBadge: {
+    paddingVertical: 12,
+    borderRadius: 16,
+    alignItems: 'center',
+  },
+  playBadgeText: {
+    color: '#ffffff',
+    fontWeight: '900',
+    fontSize: 14,
+  },
+  libraryCard: {
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#e8e0e7',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  deckName: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#2c0247',
+  },
+  deckWordsCount: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#006a61',
+  },
+  rankRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#e8e0e7',
+    marginBottom: 10,
+  },
+  rankNum: {
+    fontWeight: '900',
+    color: '#d95a82',
+  },
+  rankUser: {
+    fontWeight: '800',
+    color: '#2c0247',
+  },
+  rankPts: {
+    fontWeight: '900',
+    color: '#006a61',
+  },
+  profileHandle: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#2c0247',
+  },
+  profileSub: {
+    fontSize: 14,
+    color: '#7d747f',
+    fontWeight: '700',
+  },
+  tabBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#ffffff',
+    paddingVertical: 12,
+    paddingBottom: 24,
+    borderTopWidth: 1,
+    borderTopColor: '#e8e0e7',
+  },
+  tabItem: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 14,
+  },
+  tabItemActive: {
+    backgroundColor: '#72f5e3',
+  },
+  tabText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#2c0247',
   },
   menuContainer: {
     flex: 1,
@@ -196,48 +489,36 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   brandSubtitle: {
-    color: '#06B6D4',
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 2,
-    marginBottom: 4,
+    color: '#006a61',
+    fontSize: 14,
+    fontWeight: '800',
     textTransform: 'uppercase',
+    marginBottom: 4,
   },
   titleText: {
-    color: '#FFFFFF',
-    fontSize: 38,
-    fontWeight: '800',
-    marginBottom: 8,
+    color: '#2c0247',
+    fontSize: 32,
+    fontWeight: '900',
+    marginBottom: 16,
   },
-  tagline: {
-    color: '#94A3B8',
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 32,
-  },
-  deckCard: {
-    backgroundColor: '#1E293B',
-    padding: 20,
+  scoreBoardBox: {
+    backgroundColor: '#ffffff',
+    padding: 24,
     borderRadius: 20,
     width: '100%',
     alignItems: 'center',
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#e8e0e7',
+    gap: 8,
   },
-  deckLabel: {
-    color: '#64748B',
-    fontSize: 12,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  deckTitle: {
-    color: '#EC4899',
-    fontSize: 22,
-    fontWeight: '700',
+  scoreText: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#2c0247',
   },
   primaryBtn: {
-    backgroundColor: '#06B6D4',
+    backgroundColor: '#006a61',
     paddingVertical: 16,
     paddingHorizontal: 48,
     borderRadius: 99,
@@ -245,13 +526,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   primaryBtnText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '700',
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '900',
   },
   gameplayContainer: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#2c0247',
     justifyContent: 'space-between',
     padding: 20,
   },
@@ -261,28 +542,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   timerText: {
-    color: '#EC4899',
-    fontSize: 28,
-    fontWeight: '800',
+    color: '#72f5e3',
+    fontSize: 32,
+    fontWeight: '900',
   },
   pitchText: {
-    color: '#64748B',
+    color: '#cec3d0',
     fontSize: 14,
+    fontWeight: '700',
   },
   cardBox: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#ffffff',
     borderRadius: 24,
     padding: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#38BDF8',
+    borderWidth: 3,
+    borderColor: '#72f5e3',
   },
   wordText: {
-    color: '#FFFFFF',
-    fontSize: 42,
+    color: '#2c0247',
+    fontSize: 44,
     fontWeight: '900',
     textAlign: 'center',
+    textTransform: 'uppercase',
   },
   actionsBar: {
     flexDirection: 'row',
@@ -291,24 +574,18 @@ const styles = StyleSheet.create({
   btn: {
     flex: 1,
     paddingVertical: 18,
-    borderRadius: 16,
+    borderRadius: 18,
     alignItems: 'center',
   },
   btnPass: {
-    backgroundColor: '#EF4444',
+    backgroundColor: '#ba1a1a',
   },
   btnCorrect: {
-    backgroundColor: '#22C55E',
+    backgroundColor: '#006a61',
   },
   btnText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  scoreText: {
-    color: '#F8FAFC',
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 24,
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '900',
   },
 });
