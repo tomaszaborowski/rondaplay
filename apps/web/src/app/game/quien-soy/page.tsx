@@ -175,9 +175,26 @@ export default function QuienSoyGamePage() {
     return list;
   };
 
+  // Flash feedback state for visual juice ('correct' | 'pass' | null)
+  const [flashFeedback, setFlashFeedback] = useState<'correct' | 'pass' | null>(null);
+  const lastTiltTimeRef = React.useRef<number>(0);
+
+  // Request iOS / Mobile Motion Permission helper
+  const requestMotionPermission = async () => {
+    if (typeof (DeviceOrientationEvent as any)?.requestPermission === 'function') {
+      try {
+        const resp = await (DeviceOrientationEvent as any).requestPermission();
+        console.log('DeviceOrientation permission:', resp);
+      } catch (err) {
+        console.error('Error requesting orientation permission:', err);
+      }
+    }
+  };
+
   // When a deck is selected, show Rotation Warning screen first
   const handleSelectDeckForTurn = (deck: QuienSoyDeck) => {
     if (deck.isPremium) return;
+    requestMotionPermission();
     setSelectedDeck(deck);
     const shuffled = shuffleWords(deck.words);
     setWordsList(shuffled);
@@ -190,7 +207,8 @@ export default function QuienSoyGamePage() {
   };
 
   // Trigger 2-second hold countdown on phone flip/continue click
-  const handleTriggerRotationStart = () => {
+  const handleTriggerRotationStart = async () => {
+    await requestMotionPermission();
     if (rotationCountdown !== null) return;
     setRotationCountdown(2);
   };
@@ -249,6 +267,21 @@ export default function QuienSoyGamePage() {
   }, [viewStep]);
 
   const handleWordAction = (status: 'correct' | 'pass') => {
+    // Haptic vibration feedback
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      if (status === 'correct') {
+        navigator.vibrate([60, 40, 60]);
+      } else {
+        navigator.vibrate([150]);
+      }
+    }
+
+    // Set visual flash feedback effect
+    setFlashFeedback(status);
+    setTimeout(() => {
+      setFlashFeedback(null);
+    }, 450);
+
     if (status === 'correct') {
       setCorrectCount((prev) => prev + 1);
     } else {
@@ -262,6 +295,42 @@ export default function QuienSoyGamePage() {
       setCurrentIndex(nextIndex);
     }
   };
+
+  // Device Orientation Motion Tilt Detector during Active Gameplay
+  useEffect(() => {
+    if (viewStep !== 'PLAYING') return;
+
+    const handleDeviceTilt = (e: DeviceOrientationEvent) => {
+      const now = Date.now();
+      // Require 1000ms cooldown between tilt triggers
+      if (now - lastTiltTimeRef.current < 1000) return;
+
+      const beta = e.beta ?? 0;   // Pitch tilt [-180, 180]
+      const gamma = e.gamma ?? 0; // Roll tilt [-90, 90]
+
+      // Detect Tilt DOWN (Face towards floor = Correct)
+      // When phone is on forehead:
+      // Forward tilt: beta < 35° or gamma < -35°
+      const isTiltDown = (beta > 0 && beta < 35) || gamma < -35;
+
+      // Detect Tilt UP (Face towards ceiling = Pass)
+      // Backward tilt: beta > 140° or beta < -40° or gamma > 35°
+      const isTiltUp = (beta > 140 || beta < -40) || gamma > 35;
+
+      if (isTiltDown) {
+        lastTiltTimeRef.current = now;
+        handleWordAction('correct');
+      } else if (isTiltUp) {
+        lastTiltTimeRef.current = now;
+        handleWordAction('pass');
+      }
+    };
+
+    window.addEventListener('deviceorientation', handleDeviceTilt, true);
+    return () => {
+      window.removeEventListener('deviceorientation', handleDeviceTilt, true);
+    };
+  }, [viewStep, currentIndex, wordsList]);
 
   const finishTurn = () => {
     const activeTeam = activeTeams[currentTeamIndex] || activeTeams[0];
@@ -653,7 +722,29 @@ export default function QuienSoyGamePage() {
       {/* 4. SCREEN: ACTIVE GAMEPLAY                                          */}
       {/* ─────────────────────────────────────────────────────────────────── */}
       {viewStep === 'PLAYING' && selectedDeck && (
-        <div className="max-w-2xl mx-auto w-full px-5 py-4">
+        <div className="max-w-2xl mx-auto w-full px-5 py-4 relative">
+          {/* Fullscreen Flash Visual Juice Feedback Overlay */}
+          {flashFeedback && (
+            <div
+              className={`fixed inset-0 z-50 flex flex-col items-center justify-center text-white transition-all duration-200 ${
+                flashFeedback === 'correct' ? 'bg-emerald-600' : 'bg-red-600'
+              }`}
+            >
+              {flashFeedback === 'correct' ? (
+                <div className="flex flex-col items-center gap-4 animate-bounce">
+                  <CheckCircle className="w-36 h-36 text-white drop-shadow-2xl" />
+                  <span className="text-5xl font-black uppercase tracking-wider drop-shadow-lg">¡CORRECTO!</span>
+                  <span className="text-2xl font-extrabold bg-white/20 px-6 py-2 rounded-full border border-white/30">+1 Punto</span>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-4 animate-pulse">
+                  <XCircle className="w-36 h-36 text-white drop-shadow-2xl" />
+                  <span className="text-5xl font-black uppercase tracking-wider drop-shadow-lg">¡PASAR!</span>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="bg-slate-900 border-2 border-ronda-teal rounded-3xl p-8 shadow-2xl flex flex-col items-center gap-8 min-h-[420px] justify-between">
             <div className="w-full flex justify-between items-center text-sm font-bold text-slate-300 border-b border-slate-700/60 pb-4">
               <span>Jugando: <strong className="text-[#72f5e3]">{activePlayingTeam.name}</strong></span>
