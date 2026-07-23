@@ -307,16 +307,27 @@ export default function QuienSoyGamePage() {
         <main className="px-5 max-w-2xl mx-auto w-full space-y-6 pt-2">
           
           {/* TOP BAR */}
-          <header className="w-full flex items-center justify-between py-2 border-b border-slate-200/60">
-            <Link href="/">
-              <button className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#2c0247] transition-colors">
-                <ArrowLeft className="w-6 h-6 text-ronda-pink" />
-              </button>
-            </Link>
-            <h1 className="text-2xl font-black text-[#2c0247]">¿Quién Soy?</h1>
-            <button className="p-2 rounded-xl text-slate-400 hover:text-slate-600">
-              <HelpCircle className="w-6 h-6" />
-            </button>
+          <header className="sticky top-0 z-50 bg-[#fff7fc]/95 backdrop-blur-md border-b border-slate-200/60 px-5 py-3 flex justify-between items-center w-full -mx-5">
+            <div className="flex items-center gap-3">
+              <Link href="/">
+                <button className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#2c0247] font-bold text-xs transition-colors">
+                  <ArrowLeft className="w-4 h-4 text-ronda-pink" />
+                  <span>Inicio</span>
+                </button>
+              </Link>
+
+              <div className="relative h-20 w-56">
+                <Image src="/games/quien-soy/logo.png" alt="¿Quién Soy? Logo" fill className="object-contain" />
+              </div>
+            </div>
+
+            {/* Active User Avatar & Name */}
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold text-xs text-[#2c0247]">@{username}</span>
+              <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-[#2c0247] relative">
+                <Image src={avatarUrl} alt="User Avatar" fill className="object-cover" />
+              </div>
+            </div>
           </header>
 
           {/* TITLE SECTION */}
