@@ -9,7 +9,7 @@ import { useAdminStore, QuienSoyDeck, QuienSoyWord } from '@/store/adminStore';
 import { 
   ArrowLeft, Heart, Lock, Crown, PlusCircle, Gamepad2, 
   HelpCircle, Settings, RotateCcw, Volume2, VolumeX, CheckCircle, 
-  XCircle, Users, Plus, X, ArrowRight, Trophy, Shield, ScreenRotation
+  XCircle, Users, Plus, X, ArrowRight, Trophy, Shield, Smartphone
 } from 'lucide-react';
 
 export interface Team {
@@ -593,7 +593,7 @@ export default function QuienSoyGamePage() {
                 <div className="animate-[bounce_2s_infinite] flex flex-col items-center">
                   <div className="w-32 h-56 border-8 border-white/90 rounded-[2.5rem] relative flex items-center justify-center bg-[#2a113a]/90 shadow-[0_0_50px_rgba(227,181,255,0.3)] transform transition-transform hover:rotate-90 duration-500">
                     <div className="w-16 h-1 bg-white/30 rounded-full absolute top-6"></div>
-                    <ScreenRotation className="w-16 h-16 text-white opacity-80 animate-pulse" />
+                    <Smartphone className="w-16 h-16 text-white opacity-80 animate-pulse" />
                     <div className="w-10 h-10 border-4 border-white/20 rounded-full absolute bottom-4"></div>
                   </div>
                 </div>
@@ -623,7 +623,7 @@ export default function QuienSoyGamePage() {
               onClick={handleTriggerRotationStart}
               className="w-full h-14 bg-[#006a61] hover:bg-[#289689] rounded-2xl font-black text-base text-white flex items-center justify-center gap-3 shadow-[0_6px_0_0_#289689] active:translate-y-1 active:shadow-none transition-all"
             >
-              <ScreenRotation className="w-5 h-5" />
+              <Smartphone className="w-5 h-5" />
               <span>{rotationCountdown !== null ? `Iniciando (${rotationCountdown}s)...` : 'Girar para continuar'}</span>
             </button>
 
